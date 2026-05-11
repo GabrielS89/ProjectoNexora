@@ -4,9 +4,24 @@
     <meta charset="UTF-8">
     <title>Registro Empresa</title>
 </head>
+
+<?php
+    // Mostrar mensajes de error si existen en la URL
+    if (isset($_GET['error'])) {
+        if ($_GET['error'] == 'campos_vacios') {
+            echo '<p>Por favor, rellena todos los campos obligatorios (Email, Password, RUT).</p>';
+        } elseif ($_GET['error'] == 'registro_fallido') {
+            echo '<p>Error al registrar: El Email o el RUT ya podrían estar en uso.</p>';
+        }
+    }
+    if (isset($_GET['registro']) && $_GET['registro'] == 'exito') {
+        echo '<p>¡Registro exitoso! Ahora puedes iniciar sesión.</p>';
+    }
+?>
+
 <body>
     <h1>Registro para Empresas</h1>
-    <form action="../controllers/autenticador.php" method="POST">
+    <form action="../src/controllers/autenticador.php" method="POST">
         <input type="hidden" name="action" value="register">
         <input type="hidden" name="tipo_usuario" value="empresa">
 
