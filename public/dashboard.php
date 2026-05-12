@@ -6,6 +6,9 @@ if (!isset($_SESSION['usuario_id'])) {
     header('Location: /git/login/Proyecto3ro/public/login.php');
     exit();
 }
+
+// Definir si el usuario tiene permisos de administrador (Rol 2 o 3)
+$es_admin = isset($_SESSION['usuario_rol']) && in_array($_SESSION['usuario_rol'], [2, 3]);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -31,20 +34,34 @@ if (!isset($_SESSION['usuario_id'])) {
                 <p><strong>Tipo de Usuario:</strong> <?php echo ucfirst($_SESSION['usuario_tipo']); ?></p>
             </div>
         </div>
-        
+        <br>
         <div>
+            <?php if ($es_admin): ?>
+            <div>
+                <h3>Panel Administrativo</h3>
+                <p>Tienes acceso a herramientas de gestión de usuarios y sistema.</p>
+                <a href="../src/views/adminpanel.php" style="font-weight: bold;">Acceder al Panel de Admin</a>
+            </div>
+            <?php endif; ?>
+
+<br>
+
             <div>
                 <h3>Mi Perfil</h3>
                 <p>Ver y editar la información de tu perfil así como tus preferencias de cuenta.</p>
                 <a href="dashboard.php">Ver Perfil</a>
             </div>
             
+<br>
+
             <div>
                 <h3>Configuración</h3>
                 <p>Ajusta tus preferencias de privacidad y notificaciones del sistema.</p>
                 <a href="dashboard.php">Ir a Configuración</a>
             </div>
             
+<br>
+
             <div>
                 <h3>Soporte</h3>
                 <p>Si tienes dudas o necesitas ayuda, contáctate con nuestro equipo de soporte.</p>

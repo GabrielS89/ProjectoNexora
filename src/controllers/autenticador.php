@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         
         // Intentar login
         if ($user->login($email, $password)) {
-            header('Location: /git/login/Proyecto3ro/public/welcome.php');
+            header('Location: /git/login/Proyecto3ro/src/views/welcome.php');
             exit();
         } else {
             header('Location: /git/login/Proyecto3ro/public/login.php?error=credenciales_invalidas');
@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $datosRegistro = [
                 'email'           => filter_var($_POST['email'], FILTER_SANITIZE_EMAIL),
                 'nombre_empresa'  => htmlspecialchars($_POST['nombre_empresa']),
-                'password'        => $_POST['password'], 
+                'password'        => $_POST['password'],
                 'telefono'        => htmlspecialchars($_POST['telefono']),
                 'rut'             => htmlspecialchars($_POST['rut']),
                 'direccion'       => htmlspecialchars($_POST['direccion']),

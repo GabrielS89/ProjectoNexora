@@ -58,25 +58,36 @@ class User {
     // Login
 
     public function login($email, $password) {
-        try {
-            $sql = "SELECT ID_Usuario, Email, Contrasena, Tipo_Persona FROM USUARIO WHERE Email = ?";
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([$email]);
+    try {
+    
+        $sql = "SELECT ID_Usuario, Email, Contrasena, Tipo_Persona, ID_Rol FROM USUARIO WHERE Email = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$email]);
+        
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        // Verificar la contraseña
+        if ($user && password_verify($password, $user['Contrasena'])) {
             
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
-            
-            if ($user && password_verify($password, $user['Contrasena'])) {
+            if (session_status() === PHP_SESSION_NONE) {
                 session_start();
-                $_SESSION['usuario_id'] = $user['ID_Usuario'];
-                $_SESSION['usuario_email'] = $user['Email'];
-                $_SESSION['usuario_tipo'] = $user['Tipo_Persona'];
-                return true;
             }
-            return false;
-        } catch (Exception $e) {
-            return false;
+
+            
+            $_SESSION['usuario_id'] = $user['ID_Usuario'];
+            $_SESSION['usuario_email'] = $user['Email'];
+            $_SESSION['usuario_tipo'] = $user['Tipo_Persona'];
+            
+            // Definir Tipo de Usuario (Admin o User)
+            $_SESSION['usuario_rol'] = $user['ID_Rol'];
+            
+            return true;
         }
+        return false;
+    } catch (Exception $e) {
+        return false;
     }
+}
 
     // Insertar en la tabla USUARIO
 
