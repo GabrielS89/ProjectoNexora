@@ -10,38 +10,40 @@ class User {
         try {
             $this->pdo->beginTransaction();
 
-            // 1. Insertar en la tabla USUARIO
+    // Insertar en la tabla USUARIO
+    
             $hash = password_hash($data['password'], PASSWORD_DEFAULT);
             $sqlUser = "INSERT INTO USUARIO (Email, Nombre, Telefono, Contrasena, ID_Rol, Tipo_Persona) 
                         VALUES (?, ?, ?, ?, 1, 'Empresa')";
             $stmt = $this->pdo->prepare($sqlUser);
             $stmt->execute([$data['email'], $data['nombre_empresa'], $data['telefono'], $hash]);
             
-            // Recuperamos el ID generado automáticamente para usarlo en las siguientes tablas
+    // Recuperamos el ID generado automáticamente para usarlo en las siguientes tablas
             $idUsuario = $this->pdo->lastInsertId();
 
-            // 2. Insertar en la tabla EMPRESA
+    // Insertar en la tabla EMPRESA
             $sqlEmp = "INSERT INTO EMPRESA (ID_Usuario, RUT, Nombre_Empresa, Direccion, Descripcion, Categoria_Empresarial) 
                     VALUES (?, ?, ?, ?, ?, ?)";
             $stmtEmp = $this->pdo->prepare($sqlEmp);
             $stmtEmp->execute([
-                $idUsuario, 
-                $data['rut'], 
-                $data['nombre_empresa'], 
-                $data['direccion'], 
-                $data['descripcion'], 
+                $idUsuario,
+                $data['rut'],
+                $data['nombre_empresa'],
+                $data['direccion'],
+                $data['descripcion'],
                 $data['sector']
             ]);
 
-            // 3. Insertar en la tabla REPRESENTANTE
+      // Insertar en la tabla REPRESENTANTE
+
             $sqlRep = "INSERT INTO REPRESENTANTE (Nombre_Completo, Cargo, Email_Contacto, Telefono_Contacto, ID_Empresa) 
                     VALUES (?, ?, ?, ?, ?)";
             $stmtRep = $this->pdo->prepare($sqlRep);
             $stmtRep->execute([
-                $data['rep_nombre'], 
-                $data['rep_cargo'], 
-                $data['rep_email'], 
-                $data['rep_telefono'], 
+                $data['rep_nombre'],
+                $data['rep_cargo'],
+                $data['rep_email'],
+                $data['rep_telefono'],
                 $idUsuario
             ]);
 
@@ -52,6 +54,8 @@ class User {
             return false;
         }
     }
+
+    // Login
 
     public function login($email, $password) {
         try {
@@ -74,15 +78,25 @@ class User {
         }
     }
 
+    // Insertar en la tabla USUARIO
+
     public function registerUnipersonal($data) {
         try {
-            // Insertar en la tabla USUARIO
+            
             $hash = password_hash($data['password'], PASSWORD_DEFAULT);
             $sqlUser = "INSERT INTO USUARIO (Email, Nombre, Telefono, Contrasena, ID_Rol, Tipo_Persona) 
-                        VALUES (?, ?, ?, ?, 2, 'Unipersonal')";
+                        VALUES (?, ?, ?, ?, 1, 'Unipersonal')";
             $stmt = $this->pdo->prepare($sqlUser);
             $stmt->execute([$data['email'], $data['nombre'], $data['telefono'], $hash]);
             
+            $idUsuario = $this->pdo->lastInsertId();
+
+     // Insertar en la tabla UNIPERSONAL
+
+            $sqlUni = "INSERT INTO unipersonal (ID_Usuario) VALUES (?)";
+            $stmtUni = $this->pdo->prepare($sqlUni);
+            $stmtUni->execute([$idUsuario]);
+
             return true;
         } catch (Exception $e) {
             return false;
