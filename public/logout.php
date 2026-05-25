@@ -1,6 +1,6 @@
 <?php
-session_start();
+require_once(__DIR__ . '/../includes/config.php');
 session_destroy();
-header('Location: /git/login/Proyecto3ro/public/login.php?logout=exito');
+header('Location: ' . PUBLIC_PATH . '/login.php?logout=exito');
 exit();
 ?>

@@ -74,9 +74,9 @@ class User {
             }
 
             
-            $_SESSION['usuario_id'] = $user['ID_Usuario'];
-            $_SESSION['usuario_email'] = $user['Email'];
-            $_SESSION['usuario_tipo'] = $user['Tipo_Persona'];
+            $_SESSION['user_id'] = $user['ID_Usuario'];
+            $_SESSION['email'] = $user['Email'];
+            $_SESSION['tipo_usuario'] = $user['Tipo_Persona'];
             
             // Definir Tipo de Usuario (Admin o User)
             $_SESSION['usuario_rol'] = $user['ID_Rol'];
