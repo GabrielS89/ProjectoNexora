@@ -81,6 +81,11 @@ if (isset($require_admin) && $require_admin) {
                             Contacto
                         </a>
                     </li>
+                    <li>
+                        <a href="<?php echo VIEWS_PATH; ?>/tienda.php">
+                            Tienda
+                        </a>
+                        
                 <?php endif; ?>
             </ul>
 
@@ -90,17 +95,35 @@ if (isset($require_admin) && $require_admin) {
                     <div class="user-info">
                         <strong><?php echo htmlspecialchars($currentUser['email']); ?></strong>
                     </div>
+                    <div class="user-avatar">
+                        <img
+                                src="<?php echo htmlspecialchars($currentUser['avatar'] ?? VIEWS_PATH . '/uploads/default-avatar.png'); ?>"
+                                alt="Avatar"
+                                class="avatar-img"
+                                style="width: 40px; height: 40px; border-radius: 50%;"
+                            >
+                    </div>
                     <a href="<?php echo PUBLIC_PATH; ?>/logout.php" class="btn btn-danger">
                         Cerrar Sesión
                     </a>
                 <?php else: ?>
                     <!-- Usuario no logueado -->
+                    <div class="user-avatar">
+                        <img
+                            src="<?php echo VIEWS_PATH; ?>/uploads/default-avatar.png"
+                            alt="Avatar predeterminado"
+                            class="avatar-img"
+                            style="width: 40px; height: 40px; border-radius: 50%;"
+                        >
+                    </div>
                     <a href="<?php echo PUBLIC_PATH; ?>/login.php" class="btn btn-primary">
                         Iniciar Sesión
                     </a>
-                
                     <a href="<?php echo PUBLIC_PATH; ?>/registro_empresa.php" class="btn btn-primary">
-                        Registrarse
+                        Registrarse como Empresa
+                    </a>
+                    <a href="<?php echo PUBLIC_PATH; ?>/registro_persona.php" class="btn btn-primary">
+                        Registrarse como Persona
                     </a>
                 <?php endif; ?>
             </div>

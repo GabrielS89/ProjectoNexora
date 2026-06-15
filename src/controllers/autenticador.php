@@ -59,21 +59,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         
     } elseif ($_POST['action'] === 'register') {
         
-        $tipo_usuario = isset($_POST['tipo_usuario']) ? $_POST['tipo_usuario'] : 'empresa';
-        
-        if ($tipo_usuario === 'unipersonal') {
-            // Registro Unipersonal
+        $tipo_usuario = isset($_POST['tipo_usuario']) ? $_POST['tipo_usuario'] : 'Empresa';
+        $tipo_usuario_normalizado = strtolower(trim($tipo_usuario));
+
+        if ($tipo_usuario_normalizado === 'persona') {
+            // Registro Persona
             $datosRegistro = [
                 'email'    => filter_var($_POST['email'], FILTER_SANITIZE_EMAIL),
                 'nombre'   => htmlspecialchars($_POST['nombre']),
                 'password' => $_POST['password'],
                 'telefono' => htmlspecialchars($_POST['telefono']),
-                'tipo'     => 'Unipersonal'
+                'tipo'     => 'Persona'
             ];
 
             // Validación básica - todos los campos obligatorios
             if (empty($datosRegistro['email']) || empty($datosRegistro['password']) || empty($datosRegistro['nombre']) || empty($datosRegistro['telefono'])) {
-                header('Location: ' . PUBLIC_PATH . '/registro_unipersonal.php?error=campos_vacios');
+                header('Location: ' . PUBLIC_PATH . '/registro_persona.php?error=campos_vacios');
                 exit();
             }
             
@@ -81,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $erroresPassword = validarPassword($datosRegistro['password']);
             if (!empty($erroresPassword)) {
                 $mensajeError = urlencode(implode(". ", $erroresPassword));
-                header('Location: ' . PUBLIC_PATH . '/registro_unipersonal.php?error=password_invalido&mensaje=' . $mensajeError);
+                header('Location: ' . PUBLIC_PATH . '/registro_persona.php?error=password_invalido&mensaje=' . $mensajeError);
                 exit();
             }
 
@@ -90,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 header('Location: ' . PUBLIC_PATH . '/login.php?registro=exito');
                 exit();
             } else {
-                header('Location: ' . PUBLIC_PATH . '/registro_unipersonal.php?error=registro_fallido');
+                header('Location: ' . PUBLIC_PATH . '/registro_persona.php?error=registro_fallido');
                 exit();
             }
         } else {

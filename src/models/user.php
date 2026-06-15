@@ -96,7 +96,7 @@ class User {
             
             $hash = password_hash($data['password'], PASSWORD_DEFAULT);
             $sqlUser = "INSERT INTO USUARIO (Email, Nombre, Telefono, Contrasena, ID_Rol, Tipo_Persona) 
-                        VALUES (?, ?, ?, ?, 1, 'Unipersonal')";
+                        VALUES (?, ?, ?, ?, 1, 'Persona')";
             $stmt = $this->pdo->prepare($sqlUser);
             $stmt->execute([$data['email'], $data['nombre'], $data['telefono'], $hash]);
             
@@ -104,7 +104,7 @@ class User {
 
      // Insertar en la tabla UNIPERSONAL
 
-            $sqlUni = "INSERT INTO unipersonal (ID_Usuario) VALUES (?)";
+            $sqlUni = "INSERT INTO persona (ID_Usuario) VALUES (?)";
             $stmtUni = $this->pdo->prepare($sqlUni);
             $stmtUni->execute([$idUsuario]);
 

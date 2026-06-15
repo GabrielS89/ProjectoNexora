@@ -25,11 +25,17 @@ $es_admin = isset($_SESSION['usuario_rol']) && in_array($_SESSION['usuario_rol']
     </div>
     <br>
     <div>
+
+    <h2>Actualice su Foto de Perfil</h2>
+    <p>Sube una nueva foto de perfil para personalizar tu cuenta.</p>
+
+    </div>
+    <div>
         <?php if ($es_admin): ?>
         <div>
             <h3>Panel Administrativo</h3>
             <p>Tienes acceso a herramientas de gestión de usuarios y sistema.</p>
-            <a href="<?php echo PUBLIC_PATH; ?>/../src/views/adminpanel.php">Acceder al Panel de Admin</a>
+            <a href="<?php echo VIEWS_PATH; ?>/adminpanel.php">Acceder al Panel de Admin</a>
         </div>
         <?php endif; ?>
 
@@ -38,7 +44,7 @@ $es_admin = isset($_SESSION['usuario_rol']) && in_array($_SESSION['usuario_rol']
         <div>
             <h3>Mi Perfil</h3>
             <p>Ver y editar la información de tu perfil así como tus preferencias de cuenta.</p>
-            <a href="<?php echo PUBLIC_PATH; ?>/dashboard.php">Ver Perfil</a>
+            <a href="<?php echo VIEWS_PATH; ?>/dashboard.php">Ver Perfil</a>
         </div>
         
         <br>
@@ -46,7 +52,7 @@ $es_admin = isset($_SESSION['usuario_rol']) && in_array($_SESSION['usuario_rol']
         <div>
             <h3>Configuración</h3>
             <p>Ajusta tus preferencias de privacidad y notificaciones del sistema.</p>
-            <a href="<?php echo PUBLIC_PATH; ?>/dashboard.php">Ir a Configuración</a>
+            <a href="<?php echo VIEWS_PATH; ?>/settings.php">Ir a Configuración</a>
         </div>
         
         <br>
@@ -54,7 +60,7 @@ $es_admin = isset($_SESSION['usuario_rol']) && in_array($_SESSION['usuario_rol']
         <div>
             <h3>Soporte</h3>
             <p>Si tienes dudas o necesitas ayuda, contáctate con nuestro equipo de soporte.</p>
-            <a href="<?php echo PUBLIC_PATH; ?>/dashboard.php">Contactar Soporte</a>
+            <a href="<?php echo VIEWS_PATH; ?>/support.php">Contactar Soporte</a>
         </div>
     </div>
 </div>
