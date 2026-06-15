@@ -13,7 +13,7 @@ require_once(INCLUDES_DIR . '/header.php');
     
     <div>
         <a href="<?php echo PUBLIC_PATH; ?>/login.php">Iniciar Sesión</a>
-        <a href="<?php echo PUBLIC_PATH; ?>/registro_persona.php">Registrarse como Usuario Unipersonal</a>
+        <a href="<?php echo PUBLIC_PATH; ?>/registro_persona.php">Registrarse como Usuario Persona</a>
         <a href="<?php echo PUBLIC_PATH; ?>/registro_empresa.php">Registrarse como Empresa</a>
     </div>
 
