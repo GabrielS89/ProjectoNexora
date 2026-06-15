@@ -1,8 +1,31 @@
 <?php
-require_once '../../database/database.php';
-require_once '../models/User.php';
+require_once(__DIR__ . '/../../includes/config.php');
+require_once(__DIR__ . '/../models/User.php');
 
 $user = new User($pdo);
+
+// Función para validar contraseña
+function validarPassword($password) {
+    $errores = [];
+    
+    if (strlen($password) < 8) {
+        $errores[] = "La contraseña debe tener al menos 8 caracteres";
+    }
+    if (!preg_match('/[A-Z]/', $password)) {
+        $errores[] = "La contraseña debe contener al menos una letra mayúscula";
+    }
+    if (!preg_match('/[a-z]/', $password)) {
+        $errores[] = "La contraseña debe contener al menos una letra minúscula";
+    }
+    if (!preg_match('/[0-9]/', $password)) {
+        $errores[] = "La contraseña debe contener al menos un número";
+    }
+    if (!preg_match('/[!@#$%^&*()_+\-=\[\]{};:\'",.<>?\\/]/', $password)) {
+        $errores[] = "La contraseña debe contener al menos un carácter especial (!@#$%^&*...)";
+    }
+    
+    return $errores;
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     
@@ -13,16 +36,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         
         // Validación básica
         if (empty($email) || empty($password)) {
-            header('Location: /git/login/Proyecto3ro/public/login.php?error=campos_vacios');
+            header('Location: ' . PUBLIC_PATH . '/login.php?error=campos_vacios');
+            exit();
+        }
+        
+        // Validar formato de contraseña
+        $erroresPassword = validarPassword($password);
+        if (!empty($erroresPassword)) {
+            $mensajeError = urlencode(implode(". ", $erroresPassword));
+            header('Location: ' . PUBLIC_PATH . '/login.php?error=password_invalido&mensaje=' . $mensajeError);
             exit();
         }
         
         // Intentar login
         if ($user->login($email, $password)) {
-            header('Location: /git/login/Proyecto3ro/src/views/welcome.php');
+            header('Location: ' . PUBLIC_PATH . '/../src/views/welcome.php');
             exit();
         } else {
-            header('Location: /git/login/Proyecto3ro/public/login.php?error=credenciales_invalidas');
+            header('Location: ' . PUBLIC_PATH . '/login.php?error=credenciales_invalidas');
             exit();
         }
         
@@ -40,18 +71,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 'tipo'     => 'Unipersonal'
             ];
 
-            // Validación básica
-            if (empty($datosRegistro['email']) || empty($datosRegistro['password']) || empty($datosRegistro['nombre'])) {
-                header('Location: /git/login/Proyecto3ro/public/registro_unipersonal.php?error=campos_vacios');
+            // Validación básica - todos los campos obligatorios
+            if (empty($datosRegistro['email']) || empty($datosRegistro['password']) || empty($datosRegistro['nombre']) || empty($datosRegistro['telefono'])) {
+                header('Location: ' . PUBLIC_PATH . '/registro_unipersonal.php?error=campos_vacios');
+                exit();
+            }
+            
+            // Validar formato de contraseña
+            $erroresPassword = validarPassword($datosRegistro['password']);
+            if (!empty($erroresPassword)) {
+                $mensajeError = urlencode(implode(". ", $erroresPassword));
+                header('Location: ' . PUBLIC_PATH . '/registro_unipersonal.php?error=password_invalido&mensaje=' . $mensajeError);
                 exit();
             }
 
             // Intentar registro unipersonal
             if ($user->registerUnipersonal($datosRegistro)) {
-                header('Location: /git/login/Proyecto3ro/public/login.php?registro=exito');
+                header('Location: ' . PUBLIC_PATH . '/login.php?registro=exito');
                 exit();
             } else {
-                header('Location: /git/login/Proyecto3ro/public/registro_unipersonal.php?error=registro_fallido');
+                header('Location: ' . PUBLIC_PATH . '/registro_unipersonal.php?error=registro_fallido');
                 exit();
             }
         } else {
@@ -71,25 +110,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 'rep_telefono'    => htmlspecialchars($_POST['rep_telefono'])
             ];
 
-            // Validación básica: campos obligatorios
-            if (empty($datosRegistro['email']) || empty($datosRegistro['password']) || empty($datosRegistro['rut'])) {
-                header('Location: /git/login/Proyecto3ro/public/registro_empresa.php?error=campos_vacios');
+            // Validación básica: todos los campos obligatorios
+            if (empty($datosRegistro['email']) || empty($datosRegistro['password']) || empty($datosRegistro['rut']) ||
+                empty($datosRegistro['nombre_empresa']) || empty($datosRegistro['telefono']) || empty($datosRegistro['direccion']) ||
+                empty($datosRegistro['sector']) || empty($datosRegistro['descripcion']) || empty($datosRegistro['rep_nombre']) ||
+                empty($datosRegistro['rep_cargo']) || empty($datosRegistro['rep_email']) || empty($datosRegistro['rep_telefono'])) {
+                header('Location: ' . PUBLIC_PATH . '/registro_empresa.php?error=campos_vacios');
+                exit();
+            }
+            
+            // Validar formato de contraseña
+            $erroresPassword = validarPassword($datosRegistro['password']);
+            if (!empty($erroresPassword)) {
+                $mensajeError = urlencode(implode(". ", $erroresPassword));
+                header('Location: ' . PUBLIC_PATH . '/registro_empresa.php?error=password_invalido&mensaje=' . $mensajeError);
                 exit();
             }
 
             // Intentar realizar el registro a través del modelo
             if ($user->register($datosRegistro)) {
-                header('Location: /git/login/Proyecto3ro/public/login.php?registro=exito');
+                header('Location: ' . PUBLIC_PATH . '/login.php?registro=exito');
                 exit();
             } else {
-                header('Location: /git/login/Proyecto3ro/public/registro_empresa.php?error=registro_fallido');
+                header('Location: ' . PUBLIC_PATH . '/registro_empresa.php?error=registro_fallido');
                 exit();
             }
         }
     }
 } else {
     // Si se accede directamente sin POST
-    header('Location: /git/login/Proyecto3ro/public/login.php');
+    header('Location: ' . PUBLIC_PATH . '/login.php');
     exit();
 }
 ?>
