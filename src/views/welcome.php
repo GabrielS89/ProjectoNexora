@@ -1,6 +1,7 @@
 <?php
 $require_login = true;
 $page_title = 'Bienvenido - Proyecto 3ro MA';
+require_once(__DIR__ . '/../../includes/config.php');
 require_once(INCLUDES_DIR . '/header.php');
 ?>
     <div class="container">
@@ -14,7 +15,7 @@ require_once(INCLUDES_DIR . '/header.php');
         </div>
         
         <div class="btn-group">
-            <a href="<?php echo PUBLIC_PATH; ?>/dashboard.php" class="btn btn-primary">Ir al Panel de Control</a>
+            <a href="<?php echo VIEWS_PATH; ?>/dashboard.php" class="btn btn-primary">Ir al Panel de Control</a>
             <a href="<?php echo PUBLIC_PATH; ?>/logout.php" class="btn btn-danger">Cerrar Sesión</a>
         </div>
         

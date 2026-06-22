@@ -1,7 +1,7 @@
 <?php
 $require_login = true;
 $page_title = 'Panel de Control - Proyecto 3ro';
-require_once('/git/proyecto3ro/includes/config.php');
+require_once(__DIR__ . '/../../includes/config.php');
 require_once(INCLUDES_DIR . '/header.php');
 // Definir si el usuario tiene permisos de administrador (Rol 2 o 3)
 $es_admin = isset($_SESSION['usuario_rol']) && in_array($_SESSION['usuario_rol'], [2, 3]);
@@ -25,11 +25,17 @@ $es_admin = isset($_SESSION['usuario_rol']) && in_array($_SESSION['usuario_rol']
     </div>
     <br>
     <div>
+
+    <h2>Actualice su Foto de Perfil</h2>
+    <p>Sube una nueva foto de perfil para personalizar tu cuenta.</p>
+
+    </div>
+    <div>
         <?php if ($es_admin): ?>
         <div>
             <h3>Panel Administrativo</h3>
             <p>Tienes acceso a herramientas de gestión de usuarios y sistema.</p>
-            <a href="<?php echo PUBLIC_PATH; ?>/../src/views/adminpanel.php">Acceder al Panel de Admin</a>
+            <a href="<?php echo VIEWS_PATH; ?>/adminpanel.php">Acceder al Panel de Admin</a>
         </div>
         <?php endif; ?>
 
@@ -38,7 +44,7 @@ $es_admin = isset($_SESSION['usuario_rol']) && in_array($_SESSION['usuario_rol']
         <div>
             <h3>Mi Perfil</h3>
             <p>Ver y editar la información de tu perfil así como tus preferencias de cuenta.</p>
-            <a href="<?php echo PUBLIC_PATH; ?>/dashboard.php">Ver Perfil</a>
+            <a href="<?php echo VIEWS_PATH; ?>/dashboard.php">Ver Perfil</a>
         </div>
         
         <br>
@@ -46,7 +52,7 @@ $es_admin = isset($_SESSION['usuario_rol']) && in_array($_SESSION['usuario_rol']
         <div>
             <h3>Configuración</h3>
             <p>Ajusta tus preferencias de privacidad y notificaciones del sistema.</p>
-            <a href="<?php echo PUBLIC_PATH; ?>/dashboard.php">Ir a Configuración</a>
+            <a href="<?php echo VIEWS_PATH; ?>/settings.php">Ir a Configuración</a>
         </div>
         
         <br>
@@ -59,4 +65,4 @@ $es_admin = isset($_SESSION['usuario_rol']) && in_array($_SESSION['usuario_rol']
     </div>
 </div>
 
-<?php require_once(__DIR__ . '/../includes/footer.php'); ?>
+<?php require_once(__DIR__ . '/../../includes/footer.php'); ?>

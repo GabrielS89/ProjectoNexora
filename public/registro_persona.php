@@ -22,7 +22,7 @@ if (isset($_GET['registro']) && $_GET['registro'] == 'exito') {
     <h1>Registro para Clientes Regulares</h1>
     <form action="../src/controllers/autenticador.php" method="POST">
         <input type="hidden" name="action" value="register">
-        <input type="hidden" name="tipo_usuario" value="unipersonal">
+        <input type="hidden" name="tipo_usuario" value="persona">
 
         <label>Nombre:</label><br>
         <input type="text" name="nombre" required><br><br>

@@ -15,7 +15,6 @@ define('INCLUDES_PATH', BASE_URL . '/includes');
 define('VIEWS_PATH', BASE_URL . '/src/views');
 
 // Definir rutas de sistema (paths) reutilizables para includes y public
-
 define('ROOT_DIR', dirname(__DIR__));
 define('INCLUDES_DIR', __DIR__); // directorio físico de includes
 define('PUBLIC_DIR', ROOT_DIR . '/public');

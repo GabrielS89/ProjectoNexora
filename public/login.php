@@ -42,7 +42,7 @@ require_once(INCLUDES_DIR . '/header.php');
 
     <p>¿No tienes cuenta? Regístrate como:</p>
     <div>
-        <a href="<?php echo PUBLIC_PATH; ?>/registro_unipersonal.php">Usuario Unipersonal</a>
+        <a href="<?php echo PUBLIC_PATH; ?>/registro_persona.php">Usuario Persona</a>
         <a href="<?php echo PUBLIC_PATH; ?>/registro_empresa.php">Empresa</a>
     </div>
 </div>

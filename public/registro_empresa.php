@@ -84,7 +84,7 @@ if (isset($_GET['registro']) && $_GET['registro'] == 'exito') {
 <div>
     <hr>
     <p>¿Eres una persona individual? Regístrate aquí:</p>
-    <a href="<?php echo PUBLIC_PATH; ?>/registro_unipersonal.php">👤 Registrarse como Usuario Unipersonal</a>
+    <a href="<?php echo PUBLIC_PATH; ?>/registro_persona.php">👤 Registrarse como Usuario Unipersonal</a>
     <hr>
 </div>
 
