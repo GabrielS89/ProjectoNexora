@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Registro Unipersonal - Proyecto 3ro';
+$page_title = 'Registro Cliente Persona - Proyecto 3ro';
 require_once(__DIR__ . '/../includes/config.php');
 require_once(INCLUDES_DIR . '/header.php');
 
@@ -19,7 +19,7 @@ if (isset($_GET['registro']) && $_GET['registro'] == 'exito') {
 ?>
 
 <div>
-    <h1>Registro para Clientes (Unipersonal)</h1>
+    <h1>Registro para Clientes Regulares</h1>
     <form action="../src/controllers/autenticador.php" method="POST">
         <input type="hidden" name="action" value="register">
         <input type="hidden" name="tipo_usuario" value="unipersonal">

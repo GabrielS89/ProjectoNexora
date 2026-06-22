@@ -13,7 +13,7 @@ class User {
     // Insertar en la tabla USUARIO
     
             $hash = password_hash($data['password'], PASSWORD_DEFAULT);
-            $sqlUser = "INSERT INTO USUARIO (Email, Nombre, Telefono, Contrasena, ID_Rol, Tipo_Persona) 
+            $sqlUser = "INSERT INTO USUARIO (Email, Nombre, Telefono, Contrasena, ID_Rol, Tipo_Persona)
                         VALUES (?, ?, ?, ?, 1, 'Empresa')";
             $stmt = $this->pdo->prepare($sqlUser);
             $stmt->execute([$data['email'], $data['nombre_empresa'], $data['telefono'], $hash]);
@@ -22,7 +22,7 @@ class User {
             $idUsuario = $this->pdo->lastInsertId();
 
     // Insertar en la tabla EMPRESA
-            $sqlEmp = "INSERT INTO EMPRESA (ID_Usuario, RUT, Nombre_Empresa, Direccion, Descripcion, Categoria_Empresarial) 
+            $sqlEmp = "INSERT INTO EMPRESA (ID_Usuario, RUT, Nombre_Empresa, Direccion, Descripcion, Categoria_Empresarial)
                     VALUES (?, ?, ?, ?, ?, ?)";
             $stmtEmp = $this->pdo->prepare($sqlEmp);
             $stmtEmp->execute([
@@ -36,7 +36,7 @@ class User {
 
       // Insertar en la tabla REPRESENTANTE
 
-            $sqlRep = "INSERT INTO REPRESENTANTE (Nombre_Completo, Cargo, Email_Contacto, Telefono_Contacto, ID_Empresa) 
+            $sqlRep = "INSERT INTO REPRESENTANTE (Nombre_Completo, Cargo, Email_Contacto, Telefono_Contacto, ID_Empresa)
                     VALUES (?, ?, ?, ?, ?)";
             $stmtRep = $this->pdo->prepare($sqlRep);
             $stmtRep->execute([
@@ -95,16 +95,16 @@ class User {
         try {
             
             $hash = password_hash($data['password'], PASSWORD_DEFAULT);
-            $sqlUser = "INSERT INTO USUARIO (Email, Nombre, Telefono, Contrasena, ID_Rol, Tipo_Persona) 
-                        VALUES (?, ?, ?, ?, 1, 'Unipersonal')";
+            $sqlUser = "INSERT INTO USUARIO (Email, Nombre, Telefono, Contrasena, ID_Rol, Tipo_Persona)
+                        VALUES (?, ?, ?, ?, 1, 'Persona')";
             $stmt = $this->pdo->prepare($sqlUser);
             $stmt->execute([$data['email'], $data['nombre'], $data['telefono'], $hash]);
             
             $idUsuario = $this->pdo->lastInsertId();
 
-     // Insertar en la tabla UNIPERSONAL
+     // Insertar en la tabla Persona
 
-            $sqlUni = "INSERT INTO unipersonal (ID_Usuario) VALUES (?)";
+            $sqlUni = "INSERT INTO persona (ID_Usuario) VALUES (?)";
             $stmtUni = $this->pdo->prepare($sqlUni);
             $stmtUni->execute([$idUsuario]);
 

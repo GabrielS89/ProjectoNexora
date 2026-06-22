@@ -20,12 +20,12 @@ define('ROOT_DIR', dirname(__DIR__));
 define('INCLUDES_DIR', __DIR__); // directorio físico de includes
 define('PUBLIC_DIR', ROOT_DIR . '/public');
 
-// Función auxiliar para verificar si el usuario está logueado
+// Función para verificar si el usuario está logueado
 function isUserLoggedIn() {
     return isset($_SESSION['user_id']);
 }
 
-// Función auxiliar para obtener el usuario actual
+// Función para obtener el usuario actual
 function getCurrentUser() {
     if (isset($_SESSION['user_id'])) {
         return array(

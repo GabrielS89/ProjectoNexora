@@ -3,7 +3,7 @@ $page_title = 'Registro Empresa - Proyecto 3ro';
 require_once(__DIR__ . '/../includes/config.php');
 require_once(INCLUDES_DIR . '/header.php');
 
-// Mostrar mensajes de error si existen en la URL
+// Mostrar mensajes de error
 if (isset($_GET['error'])) {
     if ($_GET['error'] == 'campos_vacios') {
         echo '<p>Por favor, rellena todos los campos obligatorios.</p>';

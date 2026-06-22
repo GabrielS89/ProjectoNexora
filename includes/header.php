@@ -1,8 +1,5 @@
 <?php
-/**
- * Header persistente con navbar
- * Este archivo debe incluirse al principio de cada página
- */
+// Header persistente con navbar Este archivo debe incluirse al principio de cada página
 
 // Incluir configuración y sesión
 require_once(INCLUDES_DIR . '/config.php');
@@ -34,16 +31,18 @@ if (isset($require_admin) && $require_admin) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $page_title ?? 'Proyecto 3ro'; ?></title>
 </head>
+    <!-- Abrir Body en Header-->
+
 <body>
     <!-- NAVBAR -->
     <nav>
+
         <div class="navbar-container">
-            <a href="<?php echo PUBLIC_PATH; ?>/index.php" class="navbar-brand">
-                PoisonIvy
-            </a>
+            <a href="<?php echo PUBLIC_PATH; ?>/index.php" class="navbar-brand"> PoisonIvy </a>
 
             <ul class="navbar-menu">
                 <?php if ($isLoggedIn): ?>
+
                     <!-- Menú para usuarios logueados -->
                     <li>
                         <a href="<?php echo VIEWS_PATH; ?>/dashboard.php">
@@ -64,7 +63,9 @@ if (isset($require_admin) && $require_admin) {
                         <a href=#planes>
                             Planes
                         </a>
+
                 <?php else: ?>
+
                     <!-- Menú para usuarios no logueados -->
                     <li>
                         <a href="<?php echo PUBLIC_PATH; ?>/index.php">
@@ -72,20 +73,22 @@ if (isset($require_admin) && $require_admin) {
                         </a>
                     </li>
                     <li>
-                        <a href="#">
+                        <a href="#AcercaDe">
                             Acerca de
                         </a>
                     </li>
                     <li>
-                        <a href="#">
+                        <a href="<?php echo PUBLIC_PATH; ?>/contacto.php">
                             Contacto
                         </a>
                     </li>
+
                 <?php endif; ?>
             </ul>
 
             <div class="auth-buttons">
                 <?php if ($isLoggedIn): ?>
+
                     <!-- Usuario logueado -->
                     <div class="user-info">
                         <strong><?php echo htmlspecialchars($currentUser['email']); ?></strong>
@@ -103,11 +106,11 @@ if (isset($require_admin) && $require_admin) {
                         Registrarse
                     </a>
                 <?php endif; ?>
+
             </div>
+
         </div>
+
     </nav>
 
-
-
-    <!-- Contenedor principal -->
-    <div class="main-content">
+<div class="main-content"> </div>

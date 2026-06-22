@@ -54,7 +54,7 @@ $es_admin = isset($_SESSION['usuario_rol']) && in_array($_SESSION['usuario_rol']
         <div>
             <h3>Soporte</h3>
             <p>Si tienes dudas o necesitas ayuda, contáctate con nuestro equipo de soporte.</p>
-            <a href="<?php echo PUBLIC_PATH; ?>/dashboard.php">Contactar Soporte</a>
+            <a href="<?php echo PUBLIC_PATH; ?>/contacto.php">Contactar Soporte</a>
         </div>
     </div>
 </div>
