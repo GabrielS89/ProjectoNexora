@@ -14,7 +14,7 @@ require_once(INCLUDES_DIR . '/header.php');
     </div>
 </div>
 
-<section id="AcercaDe" class="features-grid">
+<section id="acercaDe" class="features-grid">
     <div class="feature-card">
         <h3>Gestión de Usuarios</h3>
         <p>Administra usuarios, roles y permisos con controles sencillos.</p>

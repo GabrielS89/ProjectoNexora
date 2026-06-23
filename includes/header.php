@@ -67,9 +67,10 @@ if (isset($require_admin) && $require_admin) {
                         </a>
                     </li>
                     <li>
-                        <a href=#planes>
+                        <a href="<?php echo PUBLIC_PATH; ?>/index.php#planes">
                             Planes
                         </a>
+                    </li>
 
                 <?php else: ?>
 
@@ -80,7 +81,7 @@ if (isset($require_admin) && $require_admin) {
                         </a>
                     </li>
                     <li>
-                        <a href="<?php echo PUBLIC_PATH; ?>/index.php#AcercaDe">
+                        <a href="<?php echo PUBLIC_PATH; ?>/index.php#acercaDe">
                             Acerca de
                         </a>
                     </li>
