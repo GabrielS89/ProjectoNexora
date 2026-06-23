@@ -9,7 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once(__DIR__ . '/../database/database.php');
 
 // Definir URLs base
-define('BASE_URL', 'http://localhost//git/Proyecto3ro');
+define('BASE_URL', 'http://localhost//Proyecto3ro');
 define('PUBLIC_PATH', BASE_URL . '/public');
 define('INCLUDES_PATH', BASE_URL . '/includes');
 define('VIEWS_PATH', BASE_URL . '/src/views');
