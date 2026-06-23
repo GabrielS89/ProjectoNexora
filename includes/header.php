@@ -29,6 +29,13 @@ if (isset($require_admin) && $require_admin) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Fuentes de Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- CONEXIÓN DINÁMICA AL CSS -->
+    <link rel="stylesheet" href="<?php echo INCLUDES_PATH; ?>/css/style.css">
     <title><?php echo $page_title ?? 'Proyecto 3ro'; ?></title>
 </head>
     <!-- Abrir Body en Header-->
@@ -38,7 +45,7 @@ if (isset($require_admin) && $require_admin) {
     <nav>
 
         <div class="navbar-container">
-            <a href="<?php echo PUBLIC_PATH; ?>/index.php" class="navbar-brand"> PoisonIvy </a>
+            <a href="<?php echo PUBLIC_PATH; ?>/index.php" class="navbar-brand"> Nexora </a>
 
             <ul class="navbar-menu">
                 <?php if ($isLoggedIn): ?>
@@ -82,15 +89,6 @@ if (isset($require_admin) && $require_admin) {
                             Contacto
                         </a>
                     </li>
-<<<<<<< HEAD
-
-=======
-                    <li>
-                        <a href="<?php echo VIEWS_PATH; ?>/tienda.php">
-                            Tienda
-                        </a>
-                        
->>>>>>> 26cd8b2aaedbc48ab6bbd8d7dc673d2b1a447097
                 <?php endif; ?>
             </ul>
 
