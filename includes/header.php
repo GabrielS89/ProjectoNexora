@@ -80,7 +80,7 @@ if (isset($require_admin) && $require_admin) {
                         </a>
                     </li>
                     <li>
-                        <a href="#AcercaDe">
+                        <a href="<?php echo PUBLIC_PATH; ?>/index.php#AcercaDe">
                             Acerca de
                         </a>
                     </li>
@@ -137,4 +137,5 @@ if (isset($require_admin) && $require_admin) {
 
     </nav>
 
-<div class="main-content"> </div>
+<div class="page-wrapper">
+    <div class="main-content">

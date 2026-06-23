@@ -1,21 +1,25 @@
-/* ========================================================
-   VARIABLES DE COLOR Y DISEÑO
-   ======================================================== */
+/*  ========================================================
+    VARIABLES DE COLOR Y DISEÑO
+    ======================================================== */
 :root {
-    --bg-color: #070b09;           
-    --primary-green: #118a5e;      
+    --bg-color: #070b09;
+    --primary-green: #118a5e;
     --primary-green-hover: #17b379;
     --secondary-green: #0d4a35;
-    --text-main: #e2e8f0;          
+    --text-main: #e2e8f0;
     --text-muted: #94a3b8;
-    --card-bg: rgba(13, 25, 19, 0.6);   
+    --card-bg: rgba(13, 25, 19, 0.6);
     --card-border: rgba(17, 138, 94, 0.3);
     --glass-bg: rgba(7, 11, 9, 0.85);
+
+    user-select: none;      /* evita selección de texto */
+    outline: none;          /* elimina borde de foco */
+    cursor: default;        /* cursor normal */
 }
 
-/* ========================================================
-   RESETEO Y CUERPO PRINCIPAL (FONDO 3D)
-   ======================================================== */
+/*  ========================================================
+    RESETEO Y CUERPO PRINCIPAL (FONDO 3D)
+    ======================================================== */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -31,30 +35,31 @@ body {
     min-height: 100vh;
     
     /* Esencial para que el fondo se quede atrás */
-    position: relative; 
-    z-index: 1; 
+    position: relative;
+    z-index: 1;
+    
 }
 
 body::before {
     content: '';
-    position: fixed; 
+    position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
     
     
-    background-image: url('/img/fondo-verde.png'); 
+    background-image: url('fondo-verde.png');
     
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    opacity: 0.15; 
-    z-index: -1; 
+    opacity: 0.15;
+    z-index: -1;
 }
 
 h1, h2, h3 { color: #ffffff; }
 
-/* ========================================================
+/*  ========================================================
 NAVBAR (Barra de Navegación)
-   ======================================================== */
+    ======================================================== */
 nav {
     position: fixed;
     top: 0;
@@ -77,7 +82,7 @@ nav {
 .navbar-brand {
     font-size: 1.7rem;
     font-weight: 800;
-    text-transform: uppercase; 
+    text-transform: uppercase;
     letter-spacing: 2px;
     text-decoration: none;
     display: flex;
@@ -137,9 +142,9 @@ nav {
     align-items: center;
 }
 
-/* ========================================================
-   CONTENIDO PRINCIPAL Y BOTONES
-   ======================================================== */
+/*  ========================================================
+    CONTENIDO PRINCIPAL Y BOTONES
+    ======================================================== */
 .main-content {
     margin-top: 80px;
     padding: 3rem 5%;
@@ -196,9 +201,9 @@ nav {
     background: rgba(220, 53, 69, 0.2);
 }
 
-/* ========================================================
-   SECCIONES DEL INDEX (Hero, Info, Planes)
-   ======================================================== */
+/*  ========================================================
+    SECCIONES DEL INDEX (Hero, Info, Planes)
+    ======================================================== */
 .hero-section {
     text-align: center;
     padding: 4rem 0;
@@ -249,15 +254,24 @@ nav {
 .feature-card h3 { color: var(--primary-green); }
 
 /* Grilla de Planes Interactiva */
-.planes-section { margin-top: 3rem; }
-
-.section-desc { color: var(--text-muted); margin-bottom: 2rem; }
-
-.planes-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
+.planes-section {
+    margin-top: 3rem;
+    text-align: center;
+    padding: 0 1rem;
 }
+
+.section-desc { color: var(--text-muted); margin-bottom: 1.5rem; max-width: 900px; margin-left: auto; margin-right: auto; }
+
+/* Mostrar 3 planes en una fila usando flex, con soporte responsivo */
+.planes-grid {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    align-items: stretch;
+    flex-wrap: wrap;
+}
+
+.plan-card { flex: 1 1 300px; max-width: 360px; }
 
 .plan-card {
     background: var(--card-bg);
@@ -333,9 +347,9 @@ nav {
     transform: rotate(45deg);
 }
 
-/* ========================================================
-   FORMULARIOS (Login, Registros)
-   ======================================================== */
+/*  ========================================================
+    FORMULARIOS (Login, Registros)
+    ======================================================== */
 form {
     background: var(--card-bg);
     padding: 2.5rem;
@@ -374,9 +388,9 @@ form input:focus, form select:focus, form textarea:focus {
 form button { width: 100%; padding: 1rem; }
 form small { color: var(--text-muted); display: block; margin-top: -1rem; margin-bottom: 1rem; font-size: 0.8rem;}
 
-/* ========================================================
-   FOOTER
-   ======================================================== */
+/*  ========================================================
+    FOOTER
+    ======================================================== */
 footer {
     background: var(--glass-bg);
     border-top: 1px solid var(--card-border);
