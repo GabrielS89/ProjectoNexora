@@ -9,8 +9,7 @@ require_once(INCLUDES_DIR . '/header.php');
 
     <div class="hero-buttons">
         <a class="btn btn-primary" href="<?php echo PUBLIC_PATH; ?>/login.php">Iniciar Sesión</a>
-        <a class="btn btn-outline" href="<?php echo PUBLIC_PATH; ?>/registro_persona.php">Registrarse como Persona</a>
-        <a class="btn btn-outline" href="<?php echo PUBLIC_PATH; ?>/registro_empresa.php">Registrarse como Empresa</a>
+        <a class="btn btn-outline" href="<?php echo PUBLIC_PATH; ?>/registro.php">Registro</a>
     </div>
 </div>
 

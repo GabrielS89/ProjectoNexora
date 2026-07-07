@@ -1,9 +1,9 @@
 <?php
-$page_title = 'Registro Empresa - Proyecto 3ro';
+$page_title = 'Registro - Proyecto 3ro';
 require_once(__DIR__ . '/../includes/config.php');
 require_once(INCLUDES_DIR . '/header.php');
 
-// Mostrar mensajes de error
+// Mensajes de error
 if (isset($_GET['error'])) {
     if ($_GET['error'] == 'campos_vacios') {
         echo '<p>Por favor, rellena todos los campos obligatorios.</p>';
@@ -19,12 +19,21 @@ if (isset($_GET['registro']) && $_GET['registro'] == 'exito') {
 ?>
 
 <div>
-    <h1>Registro para Empresas</h1>
+    <h1>Registro de Usuario</h1>
+    <p>Selecciona el tipo de usuario:</p>
+    <div class="hero-buttons">
+        <button type="button" id="btnEmpresa" class="btn btn-primary" onclick="mostrarFormulario('empresa')">Registrarse como Empresa</button>
+        <button type="button" id="btnPersona" class="btn btn-primary" onclick="mostrarFormulario('persona')">Registrarse como Persona</button>
+    </div>
+</div>
+
+<!-- FORMULARIO EMPRESA -->
+<div id="formEmpresa">
+    <h2>Registro para Empresas</h2>
     <form action="../src/controllers/autenticador.php" method="POST">
         <input type="hidden" name="action" value="register">
         <input type="hidden" name="tipo_usuario" value="empresa">
 
-        <h3>Datos de la Cuenta</h3>
         <label>Nombre de la Empresa:</label><br>
         <input type="text" name="nombre_empresa" required><br><br>
 
@@ -38,7 +47,6 @@ if (isset($_GET['registro']) && $_GET['registro'] == 'exito') {
         <label>Número de contacto:</label><br>
         <input type="text" name="telefono" required><br><br>
 
-        <h3>Información Corporativa</h3>
         <label>RUT / Identificación Fiscal:</label><br>
         <input type="text" name="rut" required><br><br>
 
@@ -78,14 +86,51 @@ if (isset($_GET['registro']) && $_GET['registro'] == 'exito') {
 
         <button type="submit">Registrar Empresa</button>
     </form>
-    <a href="<?php echo PUBLIC_PATH; ?>/login.php">Volver al login</a>
 </div>
 
-<div>
-    <hr>
-    <p>¿Eres una persona individual? Regístrate aquí:</p>
-    <a href="<?php echo PUBLIC_PATH; ?>/registro_persona.php">Registrarse como Usuario Unipersonal</a>
-    <hr>
+<!-- FORMULARIO PERSONA -->
+<div id="formPersona">
+    <h2>Registro para Clientes Regulares</h2>
+    <form action="../src/controllers/autenticador.php" method="POST">
+        <input type="hidden" name="action" value="register">
+        <input type="hidden" name="tipo_usuario" value="persona">
+
+        <label>Nombre:</label><br>
+        <input type="text" name="nombre" required><br><br>
+
+        <label>Email:</label><br>
+        <input type="email" name="email" required><br><br>
+
+        <label>Contraseña:</label><br>
+        <small>Mínimo 8 caracteres, mayúscula, minúscula, número y carácter especial (!@#$%^&*)</small><br>
+        <input type="password" name="password" required><br><br>
+
+        <label>Número de teléfono:</label><br>
+        <input type="text" name="telefono" required><br><br>
+
+        <button type="submit">Crear cuenta personal</button>
+    </form>
 </div>
+
+<a href="<?php echo PUBLIC_PATH; ?>/login.php">Volver al login</a>
+
+<script>
+function mostrarFormulario(tipo) {
+    document.getElementById("formEmpresa").style.display = (tipo === "empresa") ? "block" : "none";
+    document.getElementById("formPersona").style.display = (tipo === "persona") ? "block" : "none";
+    
+    // Cambiar estilo de los botones
+    var btnEmpresa = document.getElementById("btnEmpresa");
+    var btnPersona = document.getElementById("btnPersona");
+    
+    if (tipo === "empresa") {
+        btnEmpresa.style.opacity = "1";
+        btnPersona.style.opacity = "0.5";
+    } else if (tipo === "persona") {
+        btnPersona.style.opacity = "1";
+        btnEmpresa.style.opacity = "0.5";
+    }
+}
+</script>
 
 <?php require_once(INCLUDES_DIR . '/footer.php'); ?>

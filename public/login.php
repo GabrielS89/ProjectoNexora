@@ -40,10 +40,9 @@ require_once(INCLUDES_DIR . '/header.php');
 
     <hr>
 
-    <p>¿No tienes cuenta? Regístrate como:</p>
+    <p>¿No tienes cuenta?</p>
     <div>
-        <a href="<?php echo PUBLIC_PATH; ?>/registro_persona.php">Usuario Persona</a>
-        <a href="<?php echo PUBLIC_PATH; ?>/registro_empresa.php">Empresa</a>
+        <a href="<?php echo PUBLIC_PATH; ?>/registro.php">Registro</a>
     </div>
 </div>
 

@@ -124,11 +124,8 @@ if (isset($require_admin) && $require_admin) {
                     <a href="<?php echo PUBLIC_PATH; ?>/login.php" class="btn btn-primary">
                         Iniciar Sesión
                     </a>
-                    <a href="<?php echo PUBLIC_PATH; ?>/registro_empresa.php" class="btn btn-primary">
-                        Registrarse como Empresa
-                    </a>
-                    <a href="<?php echo PUBLIC_PATH; ?>/registro_persona.php" class="btn btn-primary">
-                        Registrarse como Persona
+                    <a href="<?php echo PUBLIC_PATH; ?>/registro.php" class="btn btn-primary">
+                        Registro
                     </a>
                 <?php endif; ?>
 

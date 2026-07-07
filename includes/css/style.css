@@ -232,6 +232,12 @@ nav {
     display: flex;
     justify-content: center;
     gap: 1rem;
+    margin-bottom: 20px;
+}
+
+#formEmpresa, #formPersona {
+    display: none;
+    margin-top: 20px;
 }
 
 /* Tarjetas de Información */
