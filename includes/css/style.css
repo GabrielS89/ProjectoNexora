@@ -410,3 +410,17 @@ footer ul { list-style: none; display: flex; justify-content: center; gap: 1rem;
 footer a { color: var(--text-main); text-decoration: none; transition: 0.3s; }
 footer a:hover { color: var(--primary-green); }
 footer p { color: var(--text-muted); margin-top: 1rem; font-size: 0.9rem; }
+
+/*  ========================================================
+    TIENDA ECOMMERCE
+    ======================================================== */
+
+.containerTienda{
+    margin-top: 80px;
+    padding: 3rem 5%;
+    flex-grow: 1;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+}

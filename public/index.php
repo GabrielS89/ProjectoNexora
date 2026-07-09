@@ -5,7 +5,7 @@ require_once(INCLUDES_DIR . '/header.php');
 ?>
 <div class="hero-section">
     <h1>¡Bienvenido a <span>Nexora</span>!</h1>
-    <p class="hero-subtitle">Una plataforma segura para gestionar usuarios y empresas con herramientas administrativas, control y soporte.</p>
+    <p class="hero-subtitle">Servicio integral de Infraestructura y Tecnología</p>
 
     <div class="hero-buttons">
         <a class="btn btn-primary" href="<?php echo PUBLIC_PATH; ?>/login.php">Iniciar Sesión</a>

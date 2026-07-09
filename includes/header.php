@@ -111,6 +111,9 @@ if (isset($require_admin) && $require_admin) {
                     <a href="<?php echo PUBLIC_PATH; ?>/logout.php" class="btn btn-danger">
                         Cerrar Sesión
                     </a>
+                    <a href="<?php echo VIEWS_PATH; ?>/tienda.php" class="btn btn-primary">
+                        Tienda
+                    </a>
                 <?php else: ?>
                     <!-- Usuario no logueado -->
                     <div class="user-avatar">
