@@ -1,5 +1,5 @@
 <?php
-// Header persistente con navbar Este archivo debe incluirse al principio de cada página
+// Header persistente con navbar. Este archivo debe incluirse al principio de cada página
 
 // Incluir configuración y sesión
 require_once(INCLUDES_DIR . '/config.php');
@@ -24,33 +24,37 @@ if (isset($require_admin) && $require_admin) {
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <!-- Fuentes de Google Fonts -->
+
+    <!-- Fuentes Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     
-    <!-- CONEXIÓN DINÁMICA AL CSS -->
+    <!-- Conexión CSS -->
     <link rel="stylesheet" href="<?php echo INCLUDES_PATH; ?>/css/style.css">
     <title><?php echo $page_title ?? 'Proyecto 3ro'; ?></title>
+
 </head>
-    <!-- Abrir Body en Header-->
+<!-- Abrir Body en Header-->
 
 <body>
-    <!-- NAVBAR -->
-    <nav>
 
-        <div class="navbar-container">
+<!-- Navbar -->
+<nav>
+
+            <div class="navbar-container">
             <a href="<?php echo PUBLIC_PATH; ?>/index.php" class="navbar-brand"> Nexora </a>
-
             <ul class="navbar-menu">
-                <?php if ($isLoggedIn): ?>
 
-                    <!-- Menú para usuarios logueados -->
+<?php if ($isLoggedIn): ?>
+<!-- Menú para usuarios logueados -->
                     <li>
                         <a href="<?php echo VIEWS_PATH; ?>/dashboard.php">
                             Dashboard
@@ -72,9 +76,9 @@ if (isset($require_admin) && $require_admin) {
                         </a>
                     </li>
 
-                <?php else: ?>
-
+                    <?php else: ?>
                     <!-- Menú para usuarios no logueados -->
+
                     <li>
                         <a href="<?php echo PUBLIC_PATH; ?>/index.php">
                             Inicio
@@ -92,11 +96,11 @@ if (isset($require_admin) && $require_admin) {
                     </li>
                 <?php endif; ?>
             </ul>
-
             <div class="auth-buttons">
-                <?php if ($isLoggedIn): ?>
 
-                    <!-- Usuario logueado -->
+<?php if ($isLoggedIn): ?>
+<!-- Usuario logueado -->
+
                     <div class="user-info">
                         <strong><?php echo htmlspecialchars($currentUser['email']); ?></strong>
                     </div>
@@ -111,32 +115,34 @@ if (isset($require_admin) && $require_admin) {
                     <a href="<?php echo PUBLIC_PATH; ?>/logout.php" class="btn btn-danger">
                         Cerrar Sesión
                     </a>
-                    <a href="<?php echo VIEWS_PATH; ?>/tienda.php" class="btn btn-primary">
-                        Tienda
-                    </a>
-                <?php else: ?>
-                    <!-- Usuario no logueado -->
-                    <div class="user-avatar">
-                        <img
-                            src="<?php echo VIEWS_PATH; ?>/uploads/default-avatar.png"
-                            alt="Avatar predeterminado"
-                            class="avatar-img"
-                            style="width: 40px; height: 40px; border-radius: 50%;"
-                        >
-                    </div>
-                    <a href="<?php echo PUBLIC_PATH; ?>/login.php" class="btn btn-primary">
-                        Iniciar Sesión
-                    </a>
-                    <a href="<?php echo PUBLIC_PATH; ?>/registro.php" class="btn btn-primary">
-                        Registro
-                    </a>
-                <?php endif; ?>
 
-            </div>
+
+
+<?php else: ?>
+<!-- Usuario no logueado -->
+
+                        <div class="user-avatar">
+                            <img
+                                src="<?php echo VIEWS_PATH; ?>/uploads/default-avatar.png"
+                                alt="Avatar predeterminado"
+                                class="avatar-img"
+                                style="width: 40px; height: 40px; border-radius: 50%;"
+                            >
+                        </div>
+                        <a href="<?php echo PUBLIC_PATH; ?>/login.php" class="btn btn-primary">
+                            Iniciar Sesión
+                        </a>
+                        <a href="<?php echo PUBLIC_PATH; ?>/registro.php" class="btn btn-primary">
+                            Registro
+                        </a>
+<?php endif; ?>
+
 
         </div>
+    </div>
+</nav>
 
-    </nav>
 
-<div class="page-wrapper">
+
+    <div class="page-wrapper">
     <div class="main-content">
