@@ -2,7 +2,11 @@
 $require_login = true;
 $page_title = 'Panel de Control - Proyecto 3ro';
 require_once(__DIR__ . '/../../includes/config.php');
-require_once(INCLUDES_DIR . '/header.php');
+
+$is_partial = isset($_REQUEST['partial']) && $_REQUEST['partial'] == 1;
+if (!$is_partial) {
+    require_once(INCLUDES_DIR . '/header.php');
+}
 // Definir si el usuario tiene permisos de administrador (Rol 2 o 3)
 $es_admin = isset($_SESSION['usuario_rol']) && in_array($_SESSION['usuario_rol'], [2, 3]);
 require_once(__DIR__ . '/../../database/database.php');
@@ -16,18 +20,30 @@ $precio_editar = '';
 $stock_editar = '';
 $categoria_editar = '';
 $proveedor_editar = '';
+$error_message = '';
 
 // Crear / Actualizar
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = $_POST['id'] ?? '';
-    $nombre = $_POST['nombre'] ?? '';
-    $descripcion = $_POST['descripcion'] ?? '';
+    $nombre = trim($_POST['nombre'] ?? '');
+    $descripcion = trim($_POST['descripcion'] ?? '');
     $precio = $_POST['precio'] ?? '';
     $stock = $_POST['stock'] ?? '';
-    $categoria = $_POST['categoria'] ?? '';
+    $categoria = trim($_POST['categoria'] ?? '');
     $proveedor = $_POST['id_proveedor'] ?? '';
 
-    if (!empty($nombre)) {
+    $campos_requeridos = [$nombre, $descripcion, $precio, $stock, $categoria, $proveedor];
+    $falta_campo = false;
+    foreach ($campos_requeridos as $valor) {
+        if ($valor === '' || $valor === null) {
+            $falta_campo = true;
+            break;
+        }
+    }
+
+    if ($falta_campo) {
+        $error_message = 'Todos los campos deben completarse antes de guardar.';
+    } else {
         if (!empty($id)) {
             $stmt = $pdo->prepare("UPDATE producto 
                 SET Nombre=?, Descripcion=?, Precio_Base=?, Stock_Actual=?, Categoria=?, ID_Proveedor=? 
@@ -39,9 +55,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 VALUES (?, ?, ?, ?, ?, ?)");
             $stmt->execute([$nombre, $descripcion, $precio, $stock, $categoria, $proveedor]);
         }
+        if (!$is_partial) {
+            header("Location: adminpanelTienda.php");
+            exit;
+        }
     }
-    header("Location: adminpanelTienda.php");
-    exit;
 }
 
 // Borrar / Editar
@@ -50,8 +68,10 @@ if (isset($_GET['action'])) {
     if ($_GET['action'] === 'delete' && !empty($id)) {
         $stmt = $pdo->prepare("DELETE FROM producto WHERE ID_Producto=?");
         $stmt->execute([$id]);
-        header("Location: adminpanelTienda.php");
-        exit;
+        if (!$is_partial) {
+            header("Location: adminpanelTienda.php");
+            exit;
+        }
     }
     if ($_GET['action'] === 'edit' && !empty($id)) {
         $stmt = $pdo->prepare("SELECT * FROM producto WHERE ID_Producto=?");
@@ -84,6 +104,7 @@ $stmtProv = $pdo->query("SELECT ID_Proveedor, Nombre_Empresa FROM proveedor ORDE
 $proveedores = $stmtProv->fetchAll();
 ?>
 
+<?php if (!$is_partial): ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -91,16 +112,20 @@ $proveedores = $stmtProv->fetchAll();
     <title>CRUD Productos</title>
 </head>
 <body>
+<?php endif; ?>
     <h2><?php echo $modo_edicion ? "Editar Producto" : "Agregar Nuevo Producto"; ?></h2>
-    <form action="adminpanelTienda.php" method="POST">
+    <?php if (!empty($error_message)): ?>
+        <p style="color: red;"><strong><?php echo htmlspecialchars($error_message); ?></strong></p>
+    <?php endif; ?>
+    <form action="adminpanelTienda.php?partial=1" method="POST">
         <input type="hidden" name="id" value="<?php echo $id_editar; ?>">
-        <label>Nombre:</label><input type="text" name="nombre" value="<?php echo $nombre_editar; ?>" required><br>
-        <label>Descripción:</label><textarea name="descripcion"><?php echo $descripcion_editar; ?></textarea><br>
-        <label>Precio Base:</label><input type="number" step="0.01" name="precio" value="<?php echo $precio_editar; ?>"><br>
-        <label>Stock:</label><input type="number" name="stock" value="<?php echo $stock_editar; ?>"><br>
-        <label>Categoría:</label><input type="text" name="categoria" value="<?php echo $categoria_editar; ?>"><br>
+        <label>Nombre:</label><input type="text" name="nombre" value="<?php echo htmlspecialchars($nombre_editar); ?>" required><br>
+        <label>Descripción:</label><textarea name="descripcion" required><?php echo htmlspecialchars($descripcion_editar); ?></textarea><br>
+        <label>Precio Base:</label><input type="number" step="0.01" name="precio" value="<?php echo htmlspecialchars($precio_editar); ?>" required><br>
+        <label>Stock:</label><input type="number" name="stock" value="<?php echo htmlspecialchars($stock_editar); ?>" required><br>
+        <label>Categoría:</label><input type="text" name="categoria" value="<?php echo htmlspecialchars($categoria_editar); ?>" required><br>
         <label>Proveedor:</label>
-        <select name="id_proveedor">
+        <select name="id_proveedor" required>
             <option value="">-- Selecciona --</option>
             <?php foreach ($proveedores as $prov): ?>
                 <option value="<?= $prov['ID_Proveedor']; ?>" <?= ($prov['ID_Proveedor']==$proveedor_editar)?'selected':''; ?>>
@@ -124,11 +149,13 @@ $proveedores = $stmtProv->fetchAll();
                 <td><?= htmlspecialchars($p['Categoria']); ?></td>
                 <td><?= htmlspecialchars($p['Nombre_Empresa']); ?></td>
                 <td>
-                    <a href="adminpanelTienda.php?action=edit&id=<?= $p['ID_Producto']; ?>">Editar</a>
-                    <a href="adminpanelTienda.php?action=delete&id=<?= $p['ID_Producto']; ?>" onclick="return confirm('¿Seguro?');">Borrar</a>
+                    <a class="partial-link" href="adminpanelTienda.php?action=edit&id=<?= $p['ID_Producto']; ?>&partial=1">Editar</a>
+                    <a class="partial-link" href="adminpanelTienda.php?action=delete&id=<?= $p['ID_Producto']; ?>&partial=1" data-confirm="¿Seguro?">Borrar</a>
                 </td>
             </tr>
         <?php endforeach; ?>
     </table>
+<?php if (!$is_partial): ?>
 </body>
 </html>
+<?php endif; ?>
