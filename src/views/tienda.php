@@ -95,4 +95,6 @@ if (empty($productos)) {
     <?php endforeach; ?>
 </div>
 
+</body>
+
 <?php require_once(__DIR__ . '/../../includes/footer.php'); ?>

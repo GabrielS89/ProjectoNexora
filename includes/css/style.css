@@ -79,7 +79,7 @@
 .theme-switch-wrapper {
     display: flex;
     align-items: center;
-    margin-right: 8px;
+    margin-right: 8px;v
 }
 
 .theme-switch {
@@ -496,7 +496,8 @@ nav {
     border-color: var(--primary-green);
 }
 
-.plan-card:hover::before { transform: scaleX(1); }
+.plan-card:hover::before { transform: scaleX(1);
+}
 
 .plan-card h3 { font-size: 1.75rem; margin-bottom: 0.4rem; }
 

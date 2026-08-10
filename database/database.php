@@ -5,16 +5,17 @@ $dbname = 'nexorabd'; // Nombre de la base de datos
 $username = 'root';        // Usuario de la base de datos
 $password = '';            // Contraseña del usuario
 
-try {
-    // Creamos un objeto PDO con la información de conexión
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-    
-    // Configuramos PDO para que lance excepciones si hay errores
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$charset = 'utf8mb4';
 
-   // conexión fue exitosa
-} catch (PDOException $e) {
-    // Si ocurre un error, mostramos el mensaje y detenemos la ejecución
-    die("Error connecting to the database: " . $e->getMessage());
+$dbname = "mysql:host=$host;dbname=$dbname;charset=$charset";
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+];
+
+try {
+    $pdo = new PDO($dbname, $username, $password, $options);
+} catch (\PDOException $e) {
+    die("Error de conexión: " . $e->getMessage());
 }
 ?>

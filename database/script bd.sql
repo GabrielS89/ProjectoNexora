@@ -1,5 +1,6 @@
 CREATE DATABASE IF NOT EXISTS `nexorabd` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `nexorabd`;
+USE nexorabd;
+
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -39,7 +40,7 @@ CREATE TABLE `usuario` (
   `Tipo_Persona` enum('Persona','Empresa') NOT NULL,
   `ID_Rol` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
+  
 -- --------------------------------------------------------
 -- Estructura de tabla para la tabla `persona`
 --
@@ -270,3 +271,8 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+-- Usuarios de prueba
+
+INSERT INTO `usuario` (`ID_Usuario`, `Email`, `Contrasena`, `Nombre`, `Telefono`, `Tipo_Persona`, `ID_Rol`) 
+VALUES (NULL, 'admin@gmail.com', '$2y$10$Y88JPjuSGTXC4AoFl/q15eKDw0QD4Gc/LXeZB.RYt94kpSUnHkIp2', 'Admin', '0999999999', 'Persona', '2')
