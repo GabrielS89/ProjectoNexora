@@ -36,6 +36,15 @@ if (isset($require_admin) && $require_admin) {
     
     <!-- CONEXIÓN DINÁMICA AL CSS -->
     <link rel="stylesheet" href="<?php echo INCLUDES_PATH; ?>/css/style.css">
+    <!-- Script temprano para evitar parpadeo de tema -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
     <title><?php echo $page_title ?? 'Proyecto 3ro'; ?></title>
 </head>
     <!-- Abrir Body en Header-->
@@ -94,6 +103,14 @@ if (isset($require_admin) && $require_admin) {
             </ul>
 
             <div class="auth-buttons">
+                <!-- SWITCH CAMBIO DE TEMA CLARO / OSCURO -->
+                <div class="theme-switch-wrapper" title="Modo Claro / Oscuro">
+                    <label class="theme-switch" for="theme-toggle">
+                        <input type="checkbox" id="theme-toggle" onchange="toggleTheme(this)">
+                        <span class="theme-slider"></span>
+                    </label>
+                </div>
+
                 <?php if ($isLoggedIn): ?>
 
                     <!-- Usuario logueado -->
@@ -130,6 +147,23 @@ if (isset($require_admin) && $require_admin) {
                 <?php endif; ?>
 
             </div>
+
+            <!-- SCRIPT GESTOR DE TEMA CLARO / OSCURO -->
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const currentTheme = localStorage.getItem('theme') || 'light';
+                    const toggleCheckbox = document.getElementById('theme-toggle');
+                    if (toggleCheckbox) {
+                        toggleCheckbox.checked = (currentTheme === 'dark');
+                    }
+                });
+
+                function toggleTheme(checkbox) {
+                    const theme = checkbox.checked ? 'dark' : 'light';
+                    document.documentElement.setAttribute('data-theme', theme);
+                    localStorage.setItem('theme', theme);
+                }
+            </script>
 
         </div>
 

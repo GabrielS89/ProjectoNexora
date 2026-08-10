@@ -1,70 +1,88 @@
 <?php
-$page_title = 'Inicio - Proyecto 3ro';
+$page_title = 'Nexora - Infraestructura y Gestión Eficiente';
 require_once(__DIR__ . '/../includes/config.php');
 require_once(INCLUDES_DIR . '/header.php');
 ?>
+
+<!-- HERO SECTION -->
 <div class="hero-section">
-    <h1>¡Bienvenido a <span>Nexora</span>!</h1>
-    <p class="hero-subtitle">Una plataforma segura para gestionar usuarios y empresas con herramientas administrativas, control y soporte.</p>
+    <span style="background: var(--light-green-tint); color: var(--primary-green); padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; margin-bottom: 1rem;">
+        Plataforma Empresarial 2026
+    </span>
+    <h1>Soluciones Inteligentes para <span>Nexora</span></h1>
+    <p class="hero-subtitle">Plataforma integral para gestionar usuarios, empresas, infraestructura IT y herramientas administrativas con máxima seguridad.</p>
 
     <div class="hero-buttons">
-        <a class="btn btn-primary" href="<?php echo PUBLIC_PATH; ?>/login.php">Iniciar Sesión</a>
-        <a class="btn btn-outline" href="<?php echo PUBLIC_PATH; ?>/registro.php">Registro</a>
+        <?php if (isUserLoggedIn()): ?>
+            <a class="btn btn-primary" href="<?php echo VIEWS_PATH; ?>/dashboard.php">Ir a mi Panel de Control</a>
+            <a class="btn btn-outline" href="<?php echo VIEWS_PATH; ?>/tienda.php">Explorar Tienda</a>
+        <?php else: ?>
+            <a class="btn btn-primary" href="<?php echo PUBLIC_PATH; ?>/login.php">Iniciar Sesión</a>
+            <a class="btn btn-outline" href="<?php echo PUBLIC_PATH; ?>/registro.php">Crear Cuenta Gratis</a>
+        <?php endif; ?>
     </div>
 </div>
 
+<!-- FEATURES CARDS -->
 <section id="acercaDe" class="features-grid">
-    <div class="feature-card">
+    <div class="feature-card" style="background: var(--card-bg);">
+        <div style="font-size: 2rem; margin-bottom: 0.5rem;">👥</div>
         <h3>Gestión de Usuarios</h3>
-        <p>Administra usuarios, roles y permisos con controles sencillos.</p>
+        <p>Administra clientes individuales y corporativos, asignando roles, permisos y niveles de acceso de forma centralizada.</p>
     </div>
-    <div class="feature-card">
+    <div class="feature-card" style="background: var(--card-bg);">
+        <div style="font-size: 2rem; margin-bottom: 0.5rem;">📊</div>
         <h3>Panel Administrativo</h3>
-        <p>Accede a herramientas avanzadas para supervisar y configurar tu plataforma.</p>
+        <p>Herramientas avanzadas para supervisar la plataforma, auditar cuentas y configurar parámetros del entorno.</p>
     </div>
-    <div class="feature-card">
-        <h3>Seguridad y Soporte</h3>
-        <p>Protección de datos y asistencia técnica para tu entorno productivo.</p>
+    <div class="feature-card" style="background: var(--card-bg);">
+        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔒</div>
+        <h3>Seguridad & Garantía</h3>
+        <p>Encriptación BCRYPT de credenciales, control de sesiones persistentes y soporte técnico profesional.</p>
     </div>
 </section>
 
+<!-- PLANES DE INFRAESTRUCTURA -->
 <section id="planes" class="planes-section">
     <h2>Planes de Infraestructura</h2>
-    <p class="section-desc">Paquetes prediseñados para la rápida implementación de espacios de trabajo.</p>
+    <p class="section-desc">Paquetes integrales prediseñados para la puesta en marcha inmediata de estaciones de trabajo y red.</p>
 
     <div class="plans-grid planes-grid">
         <div class="plan-card destacado">
             <div class="badge">Popular</div>
             <h3>Plan Start-Up</h3>
-            <p class="plan-subtitle">4 Estaciones</p>
+            <p class="plan-subtitle">4 Estaciones de Trabajo</p>
             <ul>
-                <li>Suministro de 4 equipos.</li>
-                <li>Instalación de cableado estructurado.</li>
-                <li>Red Wi‑Fi y configuración básica.</li>
+                <li>Suministro de 4 equipos de cómputo.</li>
+                <li>Cableado estructurado de red local.</li>
+                <li>Conectividad Wi-Fi de alta velocidad.</li>
+                <li>Configuración inicial de software.</li>
             </ul>
-            <a class="btn btn-primary" href="#">Contratar</a>
+            <a class="btn btn-primary" href="<?php echo PUBLIC_PATH; ?>/contacto.php">Contratar Plan</a>
         </div>
 
         <div class="plan-card">
             <h3>Plan Business</h3>
             <p class="plan-subtitle">8 Estaciones + Sala de Juntas</p>
             <ul>
-                <li>Suministro de 8 equipos.</li>
-                <li>Instalación de infraestructura en áreas comunes.</li>
-                <li>Soporte y configuración avanzada.</li>
+                <li>Suministro de 8 equipos de cómputo.</li>
+                <li>Infraestructura en áreas comunes.</li>
+                <li>Access Point corporativo empresarial.</li>
+                <li>Soporte técnico prioritario.</li>
             </ul>
-            <a class="btn btn-outline" href="#">Contratar</a>
+            <a class="btn btn-outline" href="<?php echo PUBLIC_PATH; ?>/contacto.php">Contratar Plan</a>
         </div>
 
         <div class="plan-card">
             <h3>Plan Custom</h3>
-            <p class="plan-subtitle">Personalizado</p>
+            <p class="plan-subtitle">100% Personalizado</p>
             <ul>
-                <li>Consultoría y selección de componentes.</li>
-                <li>Software bajo licencia según necesidad.</li>
-                <li>Distribución y puesta en marcha a medida.</li>
+                <li>Consultoría técnica presencial.</li>
+                <li>Selección de hardware y componentes.</li>
+                <li>Licenciamiento de software a medida.</li>
+                <li>Puesta en marcha e integración.</li>
             </ul>
-            <a class="btn btn-outline" href="#">Solicitar cotización</a>
+            <a class="btn btn-outline" href="<?php echo PUBLIC_PATH; ?>/contacto.php">Solicitar Cotización</a>
         </div>
     </div>
 </section>
