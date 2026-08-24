@@ -3,27 +3,60 @@ $page_title = 'Registro - Proyecto 3ro';
 require_once(__DIR__ . '/../includes/config.php');
 require_once(INCLUDES_DIR . '/header.php');
 
-// Mensajes de error
-if (isset($_GET['error'])) {
-    if ($_GET['error'] == 'campos_vacios') {
-        echo '<p>Por favor, rellena todos los campos obligatorios.</p>';
-    } elseif ($_GET['error'] == 'password_invalido') {
-        echo '<p><strong>Contraseña inválida:</strong><br>' . htmlspecialchars($_GET['mensaje']) . '</p>';
-    } elseif ($_GET['error'] == 'registro_fallido') {
-        echo '<p>Error al registrar: El Email o el RUT ya podrían estar en uso.</p>';
+
+
+// Mensajes de estado/errores devueltos por el autenticador
+$alert = '';
+$err = isset($_GET['error']) ? $_GET['error'] : null;
+$msg = isset($_GET['mensaje']) ? urldecode($_GET['mensaje']) : '';
+
+if ($err !== null) {
+    switch ($err) {
+        case 'campos_vacios':
+            $alert = '<p style="color:darkred;"><strong>Error:</strong> Por favor, rellena todos los campos obligatorios.</p>';
+            break;
+        case 'password_invalido':
+            $alert = '<p style="color:darkred;"><strong>Contraseña inválida:</strong><br>' . htmlspecialchars($msg) . '</p>';
+            break;
+        case 'email_usado':
+            $alert = '<p style="color:darkred;"><strong>Error:</strong> El email ya está registrado.</p>';
+            break;
+        case 'telefono_usado':
+            $alert = '<p style="color:darkred;"><strong>Error:</strong> El teléfono ya está registrado.</p>';
+            break;
+        case 'rut_usado':
+            $alert = '<p style="color:darkred;"><strong>Error:</strong> El RUT ya está registrado.</p>';
+            break;
+        case 'nombre_empresa_usado':
+            $alert = '<p style="color:darkred;"><strong>Error:</strong> El nombre de la empresa ya está registrado.</p>';
+            break;
+        default:
+            // Mensaje genérico: si hay detalle lo mostramos, si no mostramos la clave de error
+            $alert = '<p style="color:darkred;"><strong>Error:</strong> ' . htmlspecialchars($msg ?: $err) . '</p>';
     }
 }
+
 if (isset($_GET['registro']) && $_GET['registro'] == 'exito') {
-    echo '<p>¡Registro exitoso! Ahora puedes iniciar sesión.</p>';
+    $alert = '<p style="color:green;"><strong>Registro exitoso:</strong> Ahora puedes iniciar sesión.</p>';
 }
+
+// Mostrar excepción interna si el autenticador la pasó en 'e'
+if (isset($_GET['e']) && $_GET['e'] !== '') {
+    $exc = urldecode($_GET['e']);
+    $alert .= '<pre style="color:darkred; white-space:pre-wrap;"><strong>Excepción:</strong> ' . htmlspecialchars($exc) . '</pre>';
+}
+
+if ($alert !== '') echo $alert;
 ?>
 
 <div>
+
     <h1>Registro de Usuario</h1>
     <p>Selecciona el tipo de usuario:</p>
     <div class="hero-buttons">
         <button type="button" id="btnEmpresa" class="btn btn-primary" onclick="mostrarFormulario('empresa')">Registrarse como Empresa</button>
         <button type="button" id="btnPersona" class="btn btn-primary" onclick="mostrarFormulario('persona')">Registrarse como Persona</button>
+        <div class="g-signin2" data-onsuccess="onSignIn"></div>
     </div>
 </div>
 
@@ -51,10 +84,16 @@ if (isset($_GET['registro']) && $_GET['registro'] == 'exito') {
         <input type="text" name="rut" required><br><br>
 
         <label>Dirección:</label><br>
-        <input type="text" name="direccion" required><br><br>
+
+        <label>Calle:</label><br>
+        <input type="text" name="calle" required><br><br>
+        <label>Esquina:</label><br>
+        <input type="text" name="esquina" required><br><br>
+        <label>Número de Puerta:</label><br>
+        <input type="text" name="num-puerta" required><br><br>
 
         <label>Sector o Industria:</label><br>
-        <select name="sector" required>
+        <select name="categoria" required>
             <option value="">-- Selecciona un sector --</option>
             <option value="tecnologia">Tecnología</option>
             <option value="comercio">Comercio</option>
@@ -110,6 +149,11 @@ if (isset($_GET['registro']) && $_GET['registro'] == 'exito') {
 
         <button type="submit">Crear cuenta personal</button>
     </form>
+
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+    
+
 </div>
 
 <a href="<?php echo PUBLIC_PATH; ?>/login.php">Volver al login</a>

@@ -9,7 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once(__DIR__ . '/../database/database.php');
 
 // Definir URLs base
-define('BASE_URL', 'http://localhost//Proyecto3ro');
+define('BASE_URL', '/Proyecto3ro');
 define('PUBLIC_PATH', BASE_URL . '/public');
 define('INCLUDES_PATH', BASE_URL . '/includes');
 define('VIEWS_PATH', BASE_URL . '/src/views');
@@ -18,7 +18,8 @@ define('VIEWS_PATH', BASE_URL . '/src/views');
 define('ROOT_DIR', dirname(__DIR__));
 define('INCLUDES_DIR', __DIR__); // directorio físico de includes
 define('PUBLIC_DIR', ROOT_DIR . '/public');
-
+define('MODELS_PATH', ROOT_DIR . '/src/models');
+define('CONTROLLERS_PATH', ROOT_DIR . '/src/controllers');
 // Función para verificar si el usuario está logueado
 function isUserLoggedIn() {
     return isset($_SESSION['user_id']);

@@ -55,19 +55,9 @@ if (isset($require_admin) && $require_admin) {
 
 <?php if ($isLoggedIn): ?>
 <!-- Menú para usuarios logueados -->
-                    <li>
-                        <a href="<?php echo VIEWS_PATH; ?>/dashboard.php">
-                            Dashboard
-                        </a>
-                    </li>
-                    <li>
+                        <li>
                         <a href="<?php echo PUBLIC_PATH; ?>/index.php">
                             Inicio
-                        </a>
-                    </li>
-                    <li>
-                        <a href="<?php echo VIEWS_PATH; ?>/tienda.php">
-                            Tienda
                         </a>
                     </li>
                     <li>
@@ -75,6 +65,18 @@ if (isset($require_admin) && $require_admin) {
                             Planes
                         </a>
                     </li>
+                    <li>
+                        <a href="<?php echo VIEWS_PATH; ?>/dashboard.php">
+                            Dashboard
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="<?php echo VIEWS_PATH; ?>/tienda.php">
+                            Tienda
+                        </a>
+                    </li>
+                    
 
                     <?php else: ?>
                     <!-- Menú para usuarios no logueados -->
@@ -102,15 +104,17 @@ if (isset($require_admin) && $require_admin) {
 <!-- Usuario logueado -->
 
                     <div class="user-info">
-                        <strong><?php echo htmlspecialchars($currentUser['email']); ?></strong>
+                    <a href="<?php echo VIEWS_PATH; ?>/perfil.php" style="color:inherit; text-decoration:none;">    <strong><?php echo htmlspecialchars($currentUser['email']); ?></strong> </a>
                     </div>
                     <div class="user-avatar">
-                        <img
+                    <a href="<?php echo VIEWS_PATH; ?>/perfil.php">  <img
                                 src="<?php echo htmlspecialchars($currentUser['avatar'] ?? VIEWS_PATH . '/uploads/default-avatar.png'); ?>"
                                 alt="Avatar"
                                 class="avatar-img"
                                 style="width: 40px; height: 40px; border-radius: 50%;"
                             >
+                    </a>
+                    
                     </div>
                     <a href="<?php echo PUBLIC_PATH; ?>/logout.php" class="btn btn-danger">
                         Cerrar Sesión

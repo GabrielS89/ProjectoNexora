@@ -4,145 +4,189 @@ require_once(__DIR__ . '/../models/User.php');
 
 $user = new User($pdo);
 
-// Función para validar contraseña
-function validarPassword($password) {
-    $errores = [];
-    
-    if (strlen($password) < 8) {
-        $errores[] = "La contraseña debe tener al menos 8 caracteres";
-    }
-    if (!preg_match('/[A-Z]/', $password)) {
-        $errores[] = "La contraseña debe contener al menos una letra mayúscula";
-    }
-    if (!preg_match('/[a-z]/', $password)) {
-        $errores[] = "La contraseña debe contener al menos una letra minúscula";
-    }
-    if (!preg_match('/[0-9]/', $password)) {
-        $errores[] = "La contraseña debe contener al menos un número";
-    }
-    if (!preg_match('/[!@#$%^&*()_+\-=\[\]{};:\'",.<>?\\/]/', $password)) {
-        $errores[] = "La contraseña debe contener al menos un carácter especial (!@#$%^&*...)";
-    }
-    
-    return $errores;
+/**
+ * Funciones de validación reutilizables
+ */
+function validarPassword(string $password): array {
+    $errors = [];
+    if (strlen($password) < 8) $errors[] = 'La contraseña debe tener al menos 8 caracteres.';
+    if (!preg_match('/[A-Z]/', $password)) $errors[] = 'Debe contener al menos una letra mayúscula.';
+    if (!preg_match('/[a-z]/', $password)) $errors[] = 'Debe contener al menos una letra minúscula.';
+    if (!preg_match('/[0-9]/', $password)) $errors[] = 'Debe contener al menos un número.';
+    if (!preg_match('/[!@#$%^&*()_+\-=\[\]{};.:,<>?]/', $password)) $errors[] = 'Debe contener al menos un carácter especial.';
+    return $errors; 
 }
 
+function camposVacios(array $required, array $data): array {
+    $missing = [];
+    foreach ($required as $key) {
+        if (!isset($data[$key]) || trim((string)$data[$key]) === '') {
+            $missing[] = $key;
+        }
+    }
+    return $missing;
+}
+
+function verificarUnicidadEmpresa(PDO $pdo, array $datos): array {
+    $conflictos = [];
+
+    // Email
+    if (!empty($datos['email'])) {
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM usuario WHERE Email = ? AND Tipo_Persona = 'Empresa'");
+        $stmt->execute([$datos['email']]);
+        if ($stmt->fetchColumn() > 0) $conflictos[] = 'email';
+    }
+
+    // Teléfono
+    if (!empty($datos['telefono'])) {
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM usuario WHERE Telefono = ? AND Tipo_Persona = 'Empresa'");
+        $stmt->execute([$datos['telefono']]);
+        if ($stmt->fetchColumn() > 0) $conflictos[] = 'telefono';
+    }
+
+    // RUT
+    if (!empty($datos['rut'])) {
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM empresa WHERE RUT = ?");
+        $stmt->execute([$datos['rut']]);
+        if ($stmt->fetchColumn() > 0) $conflictos[] = 'rut';
+    }
+
+    // Nombre empresa
+    if (!empty($datos['nombre_empresa'])) {
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM empresa WHERE Nombre_Empresa = ?");
+        $stmt->execute([$datos['nombre_empresa']]);
+        if ($stmt->fetchColumn() > 0) $conflictos[] = 'nombre_empresa';
+    }
+
+    return $conflictos;
+}
+
+/**
+ * Manejo de solicitudes
+ */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-    
-    if ($_POST['action'] === 'login') {
-        // Manejo de login
-        $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-        $password = $_POST['password'];
-        
-        // Validación básica
+    $action = $_POST['action'];
+
+    if ($action === 'login') {
+        $email = filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL);
+        $password = $_POST['password'] ?? '';
+
         if (empty($email) || empty($password)) {
             header('Location: ' . PUBLIC_PATH . '/login.php?error=campos_vacios');
             exit();
         }
-        
-        // Validar formato de contraseña
-        $erroresPassword = validarPassword($password);
-        if (!empty($erroresPassword)) {
-            $mensajeError = urlencode(implode(". ", $erroresPassword));
-            header('Location: ' . PUBLIC_PATH . '/login.php?error=password_invalido&mensaje=' . $mensajeError);
+
+        $pwErr = validarPassword($password);
+        if (!empty($pwErr)) {
+            $mensaje = urlencode(implode(' ', $pwErr));
+            header('Location: ' . PUBLIC_PATH . '/login.php?error=password_invalido&mensaje=' . $mensaje);
             exit();
         }
-        
-        // Intentar login
+
         if ($user->login($email, $password)) {
             header('Location: ' . PUBLIC_PATH . '/../src/views/welcome.php');
             exit();
-        } else {
-            header('Location: ' . PUBLIC_PATH . '/login.php?error=credenciales_invalidas');
+        }
+
+        header('Location: ' . PUBLIC_PATH . '/login.php?error=credenciales_invalidas');
+        exit();
+    }
+
+    if ($action === 'register') {
+        $tipo_usuario = strtolower(trim($_POST['tipo_usuario'] ?? 'empresa'));
+
+        if ($tipo_usuario === 'persona') {
+            $datos = [
+                'email'    => filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL),
+                'nombre'   => htmlspecialchars($_POST['nombre'] ?? ''),
+                'password' => $_POST['password'] ?? '',
+                'telefono' => htmlspecialchars($_POST['telefono'] ?? '')
+            ];
+
+            // Validaciones
+            if (!empty(camposVacios(['email','nombre','password','telefono'], $datos))) {
+                header('Location: ' . PUBLIC_PATH . '/registro.php?error=campos_vacios');
+                exit();
+            }
+
+            $pwErr = validarPassword($datos['password']);
+            if (!empty($pwErr)) {
+                $mensaje = urlencode(implode(' ', $pwErr));
+                header('Location: ' . PUBLIC_PATH . '/registro.php?error=password_invalido&mensaje=' . $mensaje);
+                exit();
+            }
+
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM usuario WHERE Email = ?");
+            $stmt->execute([$datos['email']]);
+            if ($stmt->fetchColumn() > 0) {
+                header('Location: ' . PUBLIC_PATH . '/registro.php?error=email_usado');
+                exit();
+            }
+
+            if ($user->registerUnipersonal($datos)) {
+                header('Location: ' . PUBLIC_PATH . '/login.php?registro=exito');
+                exit();
+            }
+
+            $mensaje = urlencode($user->getLastError() ?: 'Error al registrar usuario personal.');
+            header('Location: ' . PUBLIC_PATH . '/registro.php?error=registro_fallido&mensaje=' . $mensaje);
             exit();
         }
-        
-    } elseif ($_POST['action'] === 'register') {
-    
-    $tipo_usuario = isset($_POST['tipo_usuario']) ? strtolower(trim($_POST['tipo_usuario'])) : 'empresa';
 
-    if ($tipo_usuario === 'persona') {
-        // Registro Persona
-        $datosRegistro = [
-            'email'    => filter_var($_POST['email'], FILTER_SANITIZE_EMAIL),
-            'nombre'   => htmlspecialchars($_POST['nombre']),
-            'password' => $_POST['password'],
-            'telefono' => htmlspecialchars($_POST['telefono']),
-            'tipo'     => 'Persona'
+        if ($tipo_usuario === 'empresa') {
+        $datos = [
+            'email'          => filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL),
+            'nombre_empresa' => htmlspecialchars($_POST['nombre_empresa'] ?? ''),
+            'password'       => $_POST['password'] ?? '',
+            'telefono'       => htmlspecialchars($_POST['telefono'] ?? ''),
+            'rut'            => htmlspecialchars($_POST['rut'] ?? ''),
+            'calle'      => htmlspecialchars($_POST['calle'] ?? ''),
+            'esquina'      => htmlspecialchars($_POST['esquina'] ?? ''),
+            'num-puerta'      => htmlspecialchars($_POST['num-puerta'] ?? ''),
+            'categoria'      => htmlspecialchars($_POST['categoria'] ?? ''),
+            'tamano'      => htmlspecialchars($_POST['tamano'] ?? ''),
+            'descripcion'    => htmlspecialchars($_POST['descripcion'] ?? ''),
+            'rep_nombre'     => htmlspecialchars($_POST['rep_nombre'] ?? ''),
+            'rep_cargo'      => htmlspecialchars($_POST['rep_cargo'] ?? ''),
+            'rep_email'      => filter_var($_POST['rep_email'] ?? '', FILTER_SANITIZE_EMAIL),
+            'rep_telefono'   => htmlspecialchars($_POST['rep_telefono'] ?? '')
         ];
 
-        // Validación básica
-        if (empty($datosRegistro['email']) || empty($datosRegistro['password']) || 
-            empty($datosRegistro['nombre']) || empty($datosRegistro['telefono'])) {
-            header('Location: ' . PUBLIC_PATH . '/registro.php?error=campos_vacios');
-            exit();
-        }
+            // Validaciones
+            if (!empty(camposVacios(
+                ['email','nombre_empresa','password','telefono','rut','calle', 'esquina', 'num-puerta','categoria', 'tamano','descripcion','rep_nombre','rep_cargo','rep_email','rep_telefono'],
+                $datos
+            ))) {
+                header('Location: ' . PUBLIC_PATH . '/registro.php?error=campos_vacios');
+                exit();
+            }
 
-        // Validar contraseña
-        $erroresPassword = validarPassword($datosRegistro['password']);
-        if (!empty($erroresPassword)) {
-            $mensajeError = urlencode(implode(". ", $erroresPassword));
-            header('Location: ' . PUBLIC_PATH . '/registro.php?error=password_invalido&mensaje=' . $mensajeError);
-            exit();
-        }
+            $pwErr = validarPassword($datos['password']);
+            if (!empty($pwErr)) {
+                $mensaje = urlencode(implode(' ', $pwErr));
+                header('Location: ' . PUBLIC_PATH . '/registro.php?error=password_invalido&mensaje=' . $mensaje);
+                exit();
+            }
 
-        // Intentar registro
-        if ($user->registerUnipersonal($datosRegistro)) {
-            header('Location: ' . PUBLIC_PATH . '/login.php?registro=exito');
-            exit();
-        } else {
-            header('Location: ' . PUBLIC_PATH . '/registro.php?error=registro_fallido');
-            exit();
-        }
+            $conflicts = verificarUnicidadEmpresa($pdo, $datos);
+            if (!empty($conflicts)) {
+                $mensaje = 'Conflictos en: ' . implode(', ', $conflicts);
+                header('Location: ' . PUBLIC_PATH . '/registro.php?error=registro_fallido&mensaje=' . urlencode($mensaje));
+                exit();
+            }
 
-    } elseif ($tipo_usuario === 'empresa') {
-        // Registro Empresa
-        $datosRegistro = [
-            'email'           => filter_var($_POST['email'], FILTER_SANITIZE_EMAIL),
-            'nombre_empresa'  => htmlspecialchars($_POST['nombre_empresa']),
-            'password'        => $_POST['password'],
-            'telefono'        => htmlspecialchars($_POST['telefono']),
-            'rut'             => htmlspecialchars($_POST['rut']),
-            'direccion'       => htmlspecialchars($_POST['direccion']),
-            'sector'          => htmlspecialchars($_POST['sector']),
-            'descripcion'     => htmlspecialchars($_POST['descripcion']),
-            'rep_nombre'      => htmlspecialchars($_POST['rep_nombre']),
-            'rep_cargo'       => htmlspecialchars($_POST['rep_cargo']),
-            'rep_email'       => filter_var($_POST['rep_email'], FILTER_SANITIZE_EMAIL),
-            'rep_telefono'    => htmlspecialchars($_POST['rep_telefono'])
-        ];
+            if ($user->registerEmpresa($datos)) {
+                header('Location: ' . PUBLIC_PATH . '/login.php?registro=exito');
+                exit();
+            }
 
-        // Validación básica
-        if (empty($datosRegistro['email']) || empty($datosRegistro['password']) || empty($datosRegistro['rut']) ||
-            empty($datosRegistro['nombre_empresa']) || empty($datosRegistro['telefono']) || empty($datosRegistro['direccion']) ||
-            empty($datosRegistro['sector']) || empty($datosRegistro['descripcion']) || empty($datosRegistro['rep_nombre']) ||
-            empty($datosRegistro['rep_cargo']) || empty($datosRegistro['rep_email']) || empty($datosRegistro['rep_telefono'])) {
-            header('Location: ' . PUBLIC_PATH . '/registro.php?error=campos_vacios');
-            exit();
-        }
-
-        // Validar contraseña
-        $erroresPassword = validarPassword($datosRegistro['password']);
-        if (!empty($erroresPassword)) {
-            $mensajeError = urlencode(implode(". ", $erroresPassword));
-            header('Location: ' . PUBLIC_PATH . '/registro.php?error=password_invalido&mensaje=' . $mensajeError);
-            exit();
-        }
-
-        // Intentar registro
-        if ($user->register($datosRegistro)) {
-            header('Location: ' . PUBLIC_PATH . '/login.php?registro=exito');
-            exit();
-        } else {
-            header('Location: ' . PUBLIC_PATH . '/registro.php?error=registro_fallido');
+            $mensaje = urlencode($user->getLastError() ?: 'Error al registrar la empresa.');
+            header('Location: ' . PUBLIC_PATH . '/registro.php?error=registro_fallido&mensaje=' . $mensaje);
             exit();
         }
     }
 }
 
-} else {
-    // Si se accede directamente sin POST
-    header('Location: ' . PUBLIC_PATH . '/login.php');
-    exit();
-}
-?>
+// Si acceden por GET u otro método
+header('Location: ' . PUBLIC_PATH . '/login.php');
+exit();

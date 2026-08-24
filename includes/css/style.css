@@ -141,7 +141,10 @@ nav {
     gap: 1rem;
     align-items: center;
 }
-
+/* animacion de foto de usuario */
+.user-avatar:hover {
+    scale: 1.1%;
+}
 /*  ========================================================
     CONTENIDO PRINCIPAL Y BOTONES
     ======================================================== */
