@@ -4,6 +4,15 @@ require_once(__DIR__ . '/../includes/config.php');
 require_once(INCLUDES_DIR . '/header.php');
 ?>
 
+<?php if (isset($_GET['error']) && $_GET['error'] === 'acceso_restringido'): ?>
+    <div class="alert" style="background: rgba(220, 53, 69, 0.12); color: #d32f2f; border: 1.5px solid rgba(220, 53, 69, 0.3); text-align: center; margin: 1.5rem auto; max-width: 700px; padding: 1.2rem; border-radius: 12px; backdrop-filter: blur(10px);">
+        <h3 style="color: #d32f2f; margin-bottom: 0.4rem;">⚠️ Acceso Restringido al Panel de Administración</h3>
+        <p style="margin-bottom: 0.8rem;">Se requieren permisos de <strong>Administrador (Rol 2)</strong> o <strong>Super Administrador (Rol 3)</strong> para ingresar.</p>
+        <p style="font-size: 0.9rem; margin-bottom: 0.4rem;">Inicia sesión con las credenciales de administrador:</p>
+        <p style="font-size: 0.9rem;"><strong>Email:</strong> <code>admin@nexora.com</code> &nbsp;|&nbsp; <strong>Clave:</strong> <code>Admin123!</code></p>
+    </div>
+<?php endif; ?>
+
 <!-- HERO SECTION -->
 <div class="hero-section">
     <span style="background: var(--light-green-tint); color: var(--primary-green); padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; margin-bottom: 1rem;">

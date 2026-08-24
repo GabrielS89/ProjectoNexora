@@ -1,7 +1,7 @@
 <?php
 // Script automático para crear e instalar la base de datos nexorabd con datos por defecto
-if (file_exists(__DIR__ . '/../includes/config.php')) {
-    require_once(__DIR__ . '/../includes/config.php');
+if (file_exists(__DIR__ . 'C:\xampp\htdocs\Proyecto3ro\database\instalar_bd.php')) {
+    require_once(__DIR__ . 'C:\xampp\htdocs\Proyecto3ro\database\instalar_bd.php');
 }
 
 $host = 'localhost';

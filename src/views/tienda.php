@@ -1,21 +1,22 @@
 <?php
-$require_login = true;
 $page_title = 'Tienda de Productos - Nexora';
 require_once(__DIR__ . '/../../includes/config.php');
 require_once(INCLUDES_DIR . '/header.php');
 
-// Obtener productos desde la base de datos si la conexión PDO está disponible
+// Obtener productos en tiempo real desde la base de datos MySQL
 $productos = [];
 try {
-    if (file_exists(BASE_DIR . '/database/database.php')) {
+    if (!isset($pdo)) {
         require_once(BASE_DIR . '/database/database.php');
-        if (isset($pdo)) {
-            $stmt = $pdo->query("SELECT p.*, pr.Nombre_Empresa as ProveedorNombre FROM producto p LEFT JOIN proveedor pr ON p.ID_Proveedor = pr.ID_Proveedor ORDER BY p.ID_Producto ASC");
-            $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        }
+    }
+    if (isset($pdo)) {
+        $stmt = $pdo->query("SELECT p.*, pr.Nombre_Empresa as ProveedorNombre 
+                             FROM producto p 
+                             LEFT JOIN proveedor pr ON p.ID_Proveedor = pr.ID_Proveedor 
+                             ORDER BY p.ID_Producto DESC");
+        $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 } catch (Exception $e) {
-    // Si no se puede conectar a la BD, mostramos catálogo estático de muestra
     $productos = [];
 }
 
@@ -87,14 +88,18 @@ if (empty($productos)) {
                     </strong>
                 </div>
 
-                <button type="button" class="btn btn-primary" onclick="alert('Producto agregado al carrito');">
-                    Comprar
-                </button>
+                <?php if ($isLoggedIn): ?>
+                    <button type="button" class="btn btn-primary" onclick="alert('¡Gracias por tu interés! El producto fue añadido a tu pedido.');">
+                        Comprar
+                    </button>
+                <?php else: ?>
+                    <a href="<?php echo PUBLIC_PATH; ?>/login.php" class="btn btn-primary" style="font-size: 0.85rem; padding: 0.6rem 1rem;">
+                        Iniciar Sesión
+                    </a>
+                <?php endif; ?>
             </div>
         </div>
     <?php endforeach; ?>
 </div>
-
-</body>
 
 <?php require_once(__DIR__ . '/../../includes/footer.php'); ?>

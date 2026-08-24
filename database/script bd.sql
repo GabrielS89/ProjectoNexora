@@ -206,10 +206,10 @@ ALTER TABLE `pedido` MODIFY `ID_Pedido` int(11) NOT NULL AUTO_INCREMENT;
 --
 
 INSERT INTO `usuario` (`ID_Usuario`, `Email`, `Contrasena`, `Nombre`, `Telefono`, `Tipo_Persona`, `ID_Rol`) VALUES
-(1, 'admin@nexora.com', '$2y$10$wE97711N4j4sU1Nl.lJ6vOqYmE5eL5fB0lKzO4L1gH1W2X3Y4Z5a6', 'Super Administrador Nexora', '099123456', 'Persona', 3),
-(2, 'admin2@nexora.com', '$2y$10$wE97711N4j4sU1Nl.lJ6vOqYmE5eL5fB0lKzO4L1gH1W2X3Y4Z5a6', 'Administrador Soporte', '099654321', 'Persona', 2),
-(3, 'usuario@nexora.com', '$2y$10$5s3W.J1J1N1N1N1N1N1N1uJ6vOqYmE5eL5fB0lKzO4L1gH1W2X3Y4', 'Juan Pérez', '098765432', 'Persona', 1),
-(4, 'empresa@nexora.com', '$2y$10$8k4X.K2K2O2O2O2O2O2O2vK7wPrZnF6fM6gC1mL0P5M2hI2X3Y4Z5', 'Tech Solutions S.A.', '099135086', 'Empresa', 1);
+(6, 'admin@nexora.com', '$2y$10$iZ3OOS8CwGSoj8tiNHwPQuTwO0i2Rxo0TWkZ.ByH5VZ5Uq0EXaDb.', 'martino pucella', '099641258', 'Persona', 3),
+(7, 'empresa@nexora.com', '$2y$10$xJnUGdTrA8jdZZIZEZ2YW.n19hyRY94KGEyhVn5MEiQdE0OsKJQuW', 'Pedro Juanitez', '098951295', 'Empresa', 1),
+(8, 'admin2@nexora.com', '$2y$10$mFVjpbyV90LUgzSaUl5sV.duMPhmU6C5Uoh4E./83JKklHefAOCaG', 'Luciana Perez', '097543103', 'Persona', 2),
+(9, 'usuario@nexora.com', '$2y$10$vKXj3Tb8yisDWS9Zr.hij.P5FboAoHuAW9i//dEqRCv/CWXLTNCD.', 'Gonzalo Nircof', '097654123', 'Persona', 1);
 
 --
 -- Volcado de datos para la tabla `persona`

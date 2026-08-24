@@ -38,6 +38,13 @@ require_once(INCLUDES_DIR . '/header.php');
         <button type="submit" class="btn btn-primary">Entrar</button>
     </form>
 
+    <div style="background: var(--light-green-tint); border: 1px solid var(--card-border); padding: 1rem 1.2rem; border-radius: 12px; margin-top: 1.5rem; text-align: left; font-size: 0.88rem;">
+        <p style="font-weight: 700; color: var(--primary-green); margin-bottom: 0.4rem;">🔑 Cuentas de Prueba Disponibles:</p>
+        <p style="margin-bottom: 0.2rem;"><strong>Super Admin:</strong> <code>admin@nexora.com</code> &nbsp;|&nbsp; <strong>Clave:</strong> <code>Admin123!</code></p>
+        <p style="margin-bottom: 0.2rem;"><strong>Admin Soporte:</strong> <code>admin2@nexora.com</code> &nbsp;|&nbsp; <strong>Clave:</strong> <code>Admin123!</code></p>
+        <p style="margin-bottom: 0.2rem;"><strong>Usuario Cliente:</strong> <code>usuario@nexora.com</code> &nbsp;|&nbsp; <strong>Clave:</strong> <code>User123!</code></p>
+    </div>
+
     <p style="color: var(--text-muted); margin-top: 1.5rem;">
         ¿No tienes cuenta? <a href="<?php echo PUBLIC_PATH; ?>/registro.php" style="font-weight: 600;">Regístrate aquí</a>
     </p>
