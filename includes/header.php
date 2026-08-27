@@ -1,7 +1,7 @@
 <?php
-// Header persistente con navbar. Este archivo debe incluirse al principio de cada página
+// Header persistente con navbar. Este archivo debe incluirse al principio de cada pagina
 
-// Incluir configuración y sesión
+// Incluir configuración y sesion
 require_once(INCLUDES_DIR . '/config.php');
 
 // Obtener información del usuario si está logueado
@@ -9,6 +9,7 @@ $isLoggedIn = isUserLoggedIn();
 $currentUser = getCurrentUser();
 
 // Verificación de autenticación requerida
+
 // Las páginas pueden definir $require_login = true antes de incluir este archivo
 if (isset($require_login) && $require_login && !$isLoggedIn) {
     header('Location: ' . PUBLIC_PATH . '/login.php');
@@ -61,7 +62,7 @@ if (isset($require_admin) && $require_admin) {
                         </a>
                     </li>
                     <li>
-                        <a href="<?php echo PUBLIC_PATH; ?>/index.php#planes">
+                        <a href="<?php echo VIEWS_PATH; ?>/planes.php">
                             Planes
                         </a>
                     </li>

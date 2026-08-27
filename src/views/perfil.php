@@ -27,7 +27,24 @@ $es_empresa = isset($_SESSION['tipo_usuario']) && $_SESSION['tipo_usuario'] === 
     </div>
 <br>
 
-    
+    <?php if ($es_empresa): 
+        $planModel = new Plan($pdo);
+        $userPlan = $planModel->getUserPlan((int)$_SESSION['user_id']);
+    ?>
+        <div style="background: var(--card-bg); border: 1px solid var(--card-border); padding: 1.5rem; border-radius: 8px; margin: 1rem 0;">
+            <h3>Infraestructura y Plan</h3>
+            <p><strong>Plan actual:</strong> <?php echo htmlspecialchars($userPlan['Nombre_Plan']); ?></p>
+            <p style="color: var(--text-muted); font-size: 0.9rem;"><?php echo htmlspecialchars($userPlan['Descripcion'] ?? ''); ?></p>
+            <?php if (!empty($userPlan['Fecha_Contratacion'])): ?>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.4rem;">
+                    <strong>Contratado el:</strong> <?php echo date('d/m/Y H:i', strtotime($userPlan['Fecha_Contratacion'])); ?> hs
+                </p>
+            <?php endif; ?>
+            <div style="margin-top: 1rem;">
+                <a href="<?php echo VIEWS_PATH; ?>/planes.php" class="btn btn-outline btn-sm">Gestionar o Cambiar Plan</a>
+            </div>
+        </div>
+    <?php endif; ?>
 
     
 

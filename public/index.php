@@ -30,7 +30,8 @@ require_once(INCLUDES_DIR . '/header.php');
 
 
 
-    <?php // Incluir modal de planes dentro de index (se renderiza condicionalmente)
+    <?php 
+    $is_embedded = true;
     require_once(__DIR__ . '/../src/views/planes.php');
 
     require_once(INCLUDES_DIR . '/footer.php'); ?>
