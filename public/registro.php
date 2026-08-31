@@ -90,7 +90,7 @@ if ($alert !== '') echo $alert;
         <label>Esquina:</label><br>
         <input type="text" name="esquina" required><br><br>
         <label>Número de Puerta:</label><br>
-        <input type="text" name="num-puerta" required><br><br>
+        <input type="text" name="numpuerta" required><br><br>
 
         <label>Sector o Industria:</label><br>
         <select name="categoria" required>

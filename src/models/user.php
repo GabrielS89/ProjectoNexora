@@ -44,7 +44,7 @@ class User {
             $data['nombre_empresa'],
             $data['calle'],
             $data['esquina'],
-            $data['num-puerta'],
+            $data['numpuerta'],
             $data['descripcion'],
             $data['categoria'],
             $data['tamano']

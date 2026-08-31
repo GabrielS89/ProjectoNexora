@@ -27,8 +27,10 @@ $error_message = '';
 // Campos Empresa
 $nombre_empresa_editar = '';
 $rut_editar = '';
-$direccion_editar = '';
-$sector_editar = '';
+$calle_editar = '';
+$esquina_editar = '';
+$numpuerta_editar = '';
+
 $descripcion_editar = '';
 $rep_nombre_editar = '';
 $rep_cargo_editar = '';
@@ -48,8 +50,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Campos empresa
     $nombre_empresa = trim($_POST['nombre_empresa'] ?? '');
     $rut = trim($_POST['rut'] ?? '');
-    $direccion = trim($_POST['direccion'] ?? '');
-    $sector = trim($_POST['sector'] ?? '');
+    $calle = trim($_POST['calle'] ?? '');
+    $esquina = trim($_POST['esquina'] ?? '');
+    $numpuerta = trim($_POST['numpuerta'] ?? '');
+
     $descripcion = trim($_POST['descripcion'] ?? '');
     $rep_nombre = trim($_POST['rep_nombre'] ?? '');
     $rep_cargo = trim($_POST['rep_cargo'] ?? '');
@@ -61,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $campos_requeridos[] = $password;
     }
     if ($tipo_persona === 'Empresa') {
-        $campos_requeridos = array_merge($campos_requeridos, [$nombre_empresa, $rut, $direccion, $sector, $descripcion, $rep_nombre, $rep_cargo, $rep_email, $rep_telefono]);
+        $campos_requeridos = array_merge($campos_requeridos, [$nombre_empresa, $rut,$calle,$esquina,$numpuerta, $descripcion, $rep_nombre, $rep_cargo, $rep_email, $rep_telefono]);
     }
 
     $falta_campo = false;
@@ -76,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error_message = 'Todos los campos visibles deben completarse antes de guardar.';
     } else {
         if ($tipo_persona === 'Empresa') {
-            $campos_validos = !empty($nombre_empresa) && !empty($rut) && !empty($direccion) && !empty($sector) && !empty($descripcion) && !empty($rep_nombre) && !empty($rep_cargo) && !empty($rep_email) && !empty($rep_telefono);
+            $campos_validos = !empty($nombre_empresa) && !empty($rut) && !empty($calle) && !empty($esquina) && !empty($numpuerta) && !empty($descripcion) && !empty($rep_nombre) && !empty($rep_cargo) && !empty($rep_email) && !empty($rep_telefono);
         } else {
             $campos_validos = true;
         }
@@ -97,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt = $pdo->prepare("DELETE FROM persona WHERE ID_Usuario=?");
                     $stmt->execute([$id]);
 
-                    $stmtRep = $pdo->prepare("SELECT ID_Representante FROM representante WHERE ID_Empresa=?");
+                    $stmtRep = $pdo->prepare("SELECT ID_Representante FROM empresa WHERE ID_USUARIO=?");
                     $stmtRep->execute([$id]);
                     $rep = $stmtRep->fetch();
                     if ($rep) {
@@ -105,26 +109,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $stmt->execute([$rep_nombre, $rep_cargo, $rep_email, $rep_telefono, $rep['ID_Representante']]);
                         $representante_id = $rep['ID_Representante'];
                     } else {
-                        $stmt = $pdo->prepare("INSERT INTO representante (Nombre_Completo, Cargo, Email_Contacto, Telefono_Contacto, ID_Empresa) VALUES (?, ?, ?, ?, ?)");
-                        $stmt->execute([$rep_nombre, $rep_cargo, $rep_email, $rep_telefono, $id]);
+                        $stmt = $pdo->prepare("INSERT INTO representante (Nombre_Completo, Cargo, Email_Contacto, Telefono_Contacto) VALUES (?, ?, ?, ?)");
+                        $stmt->execute([$rep_nombre, $rep_cargo, $rep_email, $rep_telefono]);
                         $representante_id = $pdo->lastInsertId();
                     }
 
-                    $stmtEmp = $pdo->prepare("SELECT ID_Empresa FROM empresa WHERE ID_Usuario=?");
+                    $stmtEmp = $pdo->prepare("SELECT ID_Empresa FROM empresa WHERE ID_USUARIO=?");
                     $stmtEmp->execute([$id]);
                     $empresa = $stmtEmp->fetch();
                     if ($empresa) {
-                        $stmt = $pdo->prepare("UPDATE empresa SET ID_Usuario=?, RUT=?, Nombre_Empresa=?, Direccion=?, Descripcion=?, Categoria_Empresarial=?, ID_Representante=? WHERE ID_Empresa=?");
-                        $stmt->execute([$id, $rut, $nombre_empresa, $direccion, $descripcion, $sector, $representante_id, $empresa['ID_Empresa']]);
+                        $stmt = $pdo->prepare("UPDATE empresa SET ID_USUARIO=?, RUT=?, Nombre_Empresa=?, Calle=?, Esquina=?, Numero_Puerta=?, Descripcion=?, Categoria_Empresarial=?, ID_Representante=? WHERE ID_Empresa=?");
+                        $stmt->execute([$id, $rut, $nombre_empresa, $calle, $esquina, $numpuerta, $descripcion, $descripcion, $representante_id, $empresa['ID_Empresa']]);
                     } else {
-                        $stmt = $pdo->prepare("INSERT INTO empresa (ID_Usuario, RUT, Nombre_Empresa, Direccion, Descripcion, Categoria_Empresarial, ID_Representante) VALUES (?, ?, ?, ?, ?, ?, ?)");
-                        $stmt->execute([$id, $rut, $nombre_empresa, $direccion, $descripcion, $sector, $representante_id]);
+                        $stmt = $pdo->prepare("INSERT INTO empresa (ID_USUARIO, RUT, Nombre_Empresa, Calle, Esquina, Numero_Puerta, Descripcion, Categoria_Empresarial, ID_Representante) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                        $stmt->execute([$id, $rut, $nombre_empresa, $calle, $esquina, $numpuerta, $descripcion, $descripcion, $representante_id]);
                     }
                 } else {
-                    $stmt = $pdo->prepare("DELETE FROM empresa WHERE ID_Usuario=?");
+                    $stmtGetRep = $pdo->prepare("SELECT ID_Representante FROM empresa WHERE ID_USUARIO=?");
+                    $stmtGetRep->execute([$id]);
+                    $repToDelete = $stmtGetRep->fetch();
+                    $stmt = $pdo->prepare("DELETE FROM empresa WHERE ID_USUARIO=?");
                     $stmt->execute([$id]);
-                    $stmt = $pdo->prepare("DELETE FROM representante WHERE ID_Empresa=?");
-                    $stmt->execute([$id]);
+                    if ($repToDelete && $repToDelete['ID_Representante']) {
+                        $stmt = $pdo->prepare("DELETE FROM representante WHERE ID_Representante=?");
+                        $stmt->execute([$repToDelete['ID_Representante']]);
+                    }
 
                     $stmt = $pdo->prepare("SELECT ID_Usuario FROM persona WHERE ID_Usuario=?");
                     $stmt->execute([$id]);
@@ -144,12 +153,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $newUserId = $pdo->lastInsertId();
 
                     if ($tipo_persona === 'Empresa') {
-                        $stmt = $pdo->prepare("INSERT INTO representante (Nombre_Completo, Cargo, Email_Contacto, Telefono_Contacto, ID_Empresa) VALUES (?, ?, ?, ?, ?)");
-                        $stmt->execute([$rep_nombre, $rep_cargo, $rep_email, $rep_telefono, $newUserId]);
+                        $stmt = $pdo->prepare("INSERT INTO representante (Nombre_Completo, Cargo, Email_Contacto, Telefono_Contacto) VALUES (?, ?, ?, ?)");
+                        $stmt->execute([$rep_nombre, $rep_cargo, $rep_email, $rep_telefono]);
                         $representante_id = $pdo->lastInsertId();
 
-                        $stmt = $pdo->prepare("INSERT INTO empresa (ID_Usuario, RUT, Nombre_Empresa, Direccion, Descripcion, Categoria_Empresarial, ID_Representante) VALUES (?, ?, ?, ?, ?, ?, ?)");
-                        $stmt->execute([$newUserId, $rut, $nombre_empresa, $direccion, $descripcion, $sector, $representante_id]);
+                        $stmt = $pdo->prepare("INSERT INTO empresa (ID_USUARIO, RUT, Nombre_Empresa, Calle, Esquina, Numero_Puerta, Descripcion, Categoria_Empresarial, ID_Representante) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                        $stmt->execute([$newUserId, $rut, $nombre_empresa, $calle, $esquina, $numpuerta, $descripcion, $descripcion, $representante_id]);
                     } else {
                         $stmt = $pdo->prepare("INSERT INTO persona (ID_Usuario) VALUES (?)");
                         $stmt->execute([$newUserId]);
@@ -195,15 +204,16 @@ if (isset($_GET['action'])) {
             $modo_edicion = true;
 
             if ($tipo_persona_editar === 'Empresa') {
-                $stmtEmpresa = $pdo->prepare("SELECT e.ID_Empresa, e.RUT, e.Nombre_Empresa, e.Direccion, e.Descripcion, e.Categoria_Empresarial, r.Nombre_Completo, r.Cargo, r.Email_Contacto, r.Telefono_Contacto FROM empresa e LEFT JOIN representante r ON r.ID_Empresa = e.ID_Usuario WHERE e.ID_Usuario = ?");
+                $stmtEmpresa = $pdo->prepare("SELECT e.ID_Empresa, e.RUT, e.Nombre_Empresa, e.Calle, e.Esquina, e.Numero_Puerta, e.Descripcion, e.Categoria_Empresarial, r.Nombre_Completo, r.Cargo, r.Email_Contacto, r.Telefono_Contacto FROM empresa e LEFT JOIN representante r ON r.ID_Representante = e.ID_Representante WHERE e.ID_USUARIO = ?");
                 $stmtEmpresa->execute([$id]);
                 $empresaData = $stmtEmpresa->fetch();
 
                 if ($empresaData) {
                     $nombre_empresa_editar = $empresaData['Nombre_Empresa'] ?? '';
                     $rut_editar = $empresaData['RUT'] ?? '';
-                    $direccion_editar = $empresaData['Direccion'] ?? '';
-                    $sector_editar = $empresaData['Categoria_Empresarial'] ?? '';
+                    $calle_editar = $empresaData['Calle'] ?? '';
+                    $esquina_editar = $empresaData['Esquina'] ?? '';
+                    $numpuerta_editar = $empresaData['Numero_Puerta'] ?? '';
                     $descripcion_editar = $empresaData['Descripcion'] ?? '';
                     $rep_nombre_editar = $empresaData['Nombre_Completo'] ?? '';
                     $rep_cargo_editar = $empresaData['Cargo'] ?? '';
@@ -264,8 +274,9 @@ $usuarios = $stmt->fetchAll();
             <h3>Datos Empresa</h3>
             <label>Nombre de la Empresa:</label><input type="text" name="nombre_empresa" value="<?php echo htmlspecialchars($nombre_empresa_editar); ?>"><br>
             <label>RUT:</label><input type="text" name="rut" value="<?php echo htmlspecialchars($rut_editar); ?>"><br>
-            <label>Dirección:</label><input type="text" name="direccion" value="<?php echo htmlspecialchars($direccion_editar); ?>"><br>
-            <label>Sector:</label><input type="text" name="sector" value="<?php echo htmlspecialchars($sector_editar); ?>"><br>
+            <label>Calle:</label><input type="text" name="calle" value="<?php echo htmlspecialchars($calle_editar); ?>"><br>
+            <label>Esquina:</label><input type="text" name="esquina" value="<?php echo htmlspecialchars($esquina_editar); ?>"><br>
+            <label>Numero de Puerta:</label><input type="text" name="numpuerta" value="<?php echo htmlspecialchars($numpuerta_editar); ?>"><br>
             <label>Descripción:</label><textarea name="descripcion"><?php echo htmlspecialchars($descripcion_editar); ?></textarea><br>
             <h4>Datos del Representante</h4>
             <label>Nombre Representante:</label><input type="text" name="rep_nombre" value="<?php echo htmlspecialchars($rep_nombre_editar); ?>"><br>

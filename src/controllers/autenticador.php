@@ -142,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             'rut'            => htmlspecialchars($_POST['rut'] ?? ''),
             'calle'      => htmlspecialchars($_POST['calle'] ?? ''),
             'esquina'      => htmlspecialchars($_POST['esquina'] ?? ''),
-            'num-puerta'      => htmlspecialchars($_POST['num-puerta'] ?? ''),
+            'numpuerta'      => htmlspecialchars($_POST['numpuerta'] ?? ''),
             'categoria'      => htmlspecialchars($_POST['categoria'] ?? ''),
             'tamano'      => htmlspecialchars($_POST['tamano'] ?? ''),
             'descripcion'    => htmlspecialchars($_POST['descripcion'] ?? ''),
@@ -154,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
             // Validaciones
             if (!empty(camposVacios(
-                ['email','nombre_empresa','password','telefono','rut','calle', 'esquina', 'num-puerta','categoria', 'tamano','descripcion','rep_nombre','rep_cargo','rep_email','rep_telefono'],
+                ['email','nombre_empresa','password','telefono','rut','calle', 'esquina', 'numpuerta','categoria', 'tamano','descripcion','rep_nombre','rep_cargo','rep_email','rep_telefono'],
                 $datos
             ))) {
                 header('Location: ' . PUBLIC_PATH . '/registro.php?error=campos_vacios');
