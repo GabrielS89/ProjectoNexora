@@ -30,28 +30,36 @@ if (isset($require_admin) && $require_admin) {
 <html lang="es">
 
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Fuentes Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <!-- Conexión CSS -->
     <link rel="stylesheet" href="<?php echo INCLUDES_PATH; ?>/css/style.css">
+    
+    <!-- Script temprano para evitar parpadeo de tema -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
     <title><?php echo $page_title ?? 'Proyecto 3ro'; ?></title>
-
 </head>
-<!-- Abrir Body en Header-->
 
 <body>
 
-<!-- Navbar -->
-<nav>
-
-            <div class="navbar-container">
+    <!-- Navbar -->
+    <nav>
+        <div class="navbar-container">
             <a href="<?php echo PUBLIC_PATH; ?>/index.php" class="navbar-brand"> Nexora </a>
+            
             <ul class="navbar-menu">
 
 <?php if ($isLoggedIn): ?>
@@ -81,38 +89,40 @@ if (isset($require_admin) && $require_admin) {
 
                     <?php else: ?>
                     <!-- Menú para usuarios no logueados -->
-
                     <li>
-                        <a href="<?php echo PUBLIC_PATH; ?>/index.php">
-                            Inicio
-                        </a>
+                        <a href="<?php echo PUBLIC_PATH; ?>/index.php">Inicio</a>
                     </li>
                     <li>
-                        <a href="<?php echo PUBLIC_PATH; ?>/index.php#acercaDe">
-                            Acerca de
-                        </a>
+                        <a href="<?php echo VIEWS_PATH; ?>/tienda.php">Tienda</a>
                     </li>
                     <li>
-                        <a href="<?php echo PUBLIC_PATH; ?>/contacto.php">
-                            Contacto
-                        </a>
+                        <a href="<?php echo PUBLIC_PATH; ?>/index.php#acercaDe">Acerca de</a>
+                    </li>
+                    <li>
+                        <a href="<?php echo PUBLIC_PATH; ?>/contacto.php">Contacto</a>
                     </li>
                 <?php endif; ?>
             </ul>
+
             <div class="auth-buttons">
+                <!-- SWITCH CAMBIO DE TEMA CLARO / OSCURO -->
+                <div class="theme-switch-wrapper" title="Modo Claro / Oscuro">
+                    <label class="theme-switch" for="theme-toggle">
+                        <input type="checkbox" id="theme-toggle" onchange="toggleTheme(this)">
+                        <span class="theme-slider"></span>
+                    </label>
+                </div>
 
-<?php if ($isLoggedIn): ?>
-<!-- Usuario logueado -->
-
+                <?php if ($isLoggedIn): ?>
+                    <!-- Usuario logueado -->
                     <div class="user-info">
-                    <a href="<?php echo VIEWS_PATH; ?>/perfil.php" style="color:inherit; text-decoration:none;">    <strong><?php echo htmlspecialchars($currentUser['email']); ?></strong> </a>
+                    <a href="<?php echo VIEWS_PATH; ?>/perfil.php" class="user-profile-link">    <strong><?php echo htmlspecialchars($currentUser['email']); ?></strong> </a>
                     </div>
                     <div class="user-avatar">
                     <a href="<?php echo VIEWS_PATH; ?>/perfil.php">  <img
                                 src="<?php echo htmlspecialchars($currentUser['avatar'] ?? VIEWS_PATH . '/uploads/default-avatar.png'); ?>"
                                 alt="Avatar"
-                                class="avatar-img"
-                                style="width: 40px; height: 40px; border-radius: 50%;"
+                                class="avatar-img avatar-img-sm"
                             >
                     </a>
                     
@@ -120,34 +130,42 @@ if (isset($require_admin) && $require_admin) {
                     <a href="<?php echo PUBLIC_PATH; ?>/logout.php" class="btn btn-danger">
                         Cerrar Sesión
                     </a>
-
-
-
-<?php else: ?>
-<!-- Usuario no logueado -->
-
-                        <div class="user-avatar">
-                            <img
-                                src="<?php echo VIEWS_PATH; ?>/uploads/default-avatar.png"
-                                alt="Avatar predeterminado"
-                                class="avatar-img"
-                                style="width: 40px; height: 40px; border-radius: 50%;"
-                            >
-                        </div>
-                        <a href="<?php echo PUBLIC_PATH; ?>/login.php" class="btn btn-primary">
-                            Iniciar Sesión
-                        </a>
-                        <a href="<?php echo PUBLIC_PATH; ?>/registro.php" class="btn btn-primary">
-                            Registro
-                        </a>
-<?php endif; ?>
-
-
+                <?php else: ?>
+                    <!-- Usuario no logueado -->
+                    <div class="user-avatar">
+                        <img
+                            src="<?php echo VIEWS_PATH; ?>/uploads/default-avatar.png"
+                            alt="Avatar predeterminado"
+                            class="avatar-img avatar-img-sm"
+                        >
+                    </div>
+                    <a href="<?php echo PUBLIC_PATH; ?>/login.php" class="btn btn-primary">
+                        Iniciar Sesión
+                    </a>
+                    <a href="<?php echo PUBLIC_PATH; ?>/registro.php" class="btn btn-primary">
+                        Registro
+                    </a>
+                <?php endif; ?>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
+    <!-- SCRIPT GESTOR DE TEMA CLARO / OSCURO -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            const toggleCheckbox = document.getElementById('theme-toggle');
+            if (toggleCheckbox) {
+                toggleCheckbox.checked = (currentTheme === 'dark');
+            }
+        });
 
+        function toggleTheme(checkbox) {
+            const theme = checkbox.checked ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+        }
+    </script>
 
     <div class="page-wrapper">
-    <div class="main-content">
+        <div class="main-content">

@@ -1,55 +1,72 @@
 <?php
-$require_login = true;
-$page_title = 'Panel de Control - Proyecto 3ro';
+$page_title = 'Tienda de Productos - Nexora';
 require_once(__DIR__ . '/../../includes/config.php');
 require_once(INCLUDES_DIR . '/header.php');
 
-// Definir si el usuario tiene permisos de administrador (Rol 2 o 3)
-$es_admin = isset($_SESSION['usuario_rol']) && in_array($_SESSION['usuario_rol'], [2, 3]);
-
-// Conexión a la base de datos
-require_once(__DIR__ . '/../../database/database.php');
-
-// Consulta de productos con JOIN a proveedores
-$stmt = $pdo->query("
-    SELECT p.ID_Producto, p.Nombre, p.Descripcion, p.Precio_Base, p.Stock_Actual, pr.Nombre_Empresa
-    FROM producto p
-    LEFT JOIN proveedor pr ON p.ID_Proveedor = pr.ID_Proveedor
-    ORDER BY p.ID_Producto DESC
-");
-$productos = $stmt->fetchAll();
+// Obtener productos en tiempo real desde la base de datos MySQL
+$productos = [];
+try {
+    if (!isset($pdo)) {
+        require_once(BASE_URL . '/database/database.php');
+    }
+    if (isset($pdo)) {
+        $stmt = $pdo->query("SELECT p.*, pr.Nombre_Empresa as ProveedorNombre
+                            FROM producto p
+                            LEFT JOIN proveedor pr ON p.ID_Proveedor = pr.ID_Proveedor
+                            ORDER BY p.ID_Producto DESC");
+        $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+} catch (Exception $e) {
+    $productos = [];
+}
 ?>
 
-<head></head>
-
-<body>
-
-<section class="contaierTienda">
-
-<div>
-    <h1>Bienvenido a la Tienda</h1>
-    <p>Explora nuestros productos y ofertas exclusivas.</p>
+<div class="tienda-header">
+    <h1 class="tienda-title">Tienda de Equipamiento & Software</h1>
+    <p class="tienda-subtitle">Explora componentes de red, servidores y hardware certificado para potenciar la infraestructura de tu empresa.</p>
 </div>
 
-<section class="productos">
-    <h2>Productos Destacados</h2>
-    <div class="producto-lista">
-        <?php if (count($productos) > 0): ?>
-            <?php foreach ($productos as $p): ?>
-                <div class="producto-item">
-                    <h3><?= htmlspecialchars($p['Nombre']); ?></h3>
-                    <p><?= htmlspecialchars($p['Descripcion']); ?></p>
-                    <p><strong>Precio:</strong> $<?= number_format($p['Precio_Base'], 2); ?></p>
-                    <p><strong>Stock:</strong> <?= $p['Stock_Actual']; ?></p>
-                    <p><strong>Proveedor:</strong> <?= htmlspecialchars($p['Nombre_Empresa']); ?></p>
-                </div>
-            <?php endforeach; ?>
-        <?php else: ?>
-            <p>No hay productos disponibles en este momento.</p>
-        <?php endif; ?>
-    </div>
-</section>
+<!-- GRILLA DE PRODUCTOS -->
+<div class="planes-grid tienda-grid">
+    <?php foreach ($productos as $prod): ?>
+        <div class="plan-card tienda-card">
+            <div class="tienda-card-header">
+                <span class="product-tag">
+                    <?php echo htmlspecialchars($prod['Categoria'] ?? 'General'); ?>
+                </span>
+                <span class="product-stock">
+                    Stock: <strong><?php echo (int)($prod['Stock_Actual'] ?? 0); ?></strong> u.
+                </span>
+            </div>
 
-</body>
+            <h3 class="product-title">
+                <?php echo htmlspecialchars($prod['Nombre']); ?>
+            </h3>
+
+            <p class="product-desc">
+                <?php echo htmlspecialchars($prod['Descripcion']); ?>
+            </p>
+
+            <div class="product-footer">
+                <div>
+                    <span class="product-price-label">Precio USD</span>
+                    <strong class="product-price-amount">
+                        $<?php echo number_format((float)$prod['Precio_Base'], 2); ?>
+                    </strong>
+                </div>
+
+                <?php if ($isLoggedIn): ?>
+                    <button type="button" class="btn btn-primary" onclick="alert('¡Gracias por tu interés! El producto fue añadido a tu pedido.');">
+                        Comprar
+                    </button>
+                <?php else: ?>
+                    <a href="<?php echo PUBLIC_PATH; ?>/login.php" class="btn btn-primary btn-sm-login">
+                        Iniciar Sesión
+                    </a>
+                <?php endif; ?>
+            </div>
+        </div>
+    <?php endforeach; ?>
+</div>
 
 <?php require_once(__DIR__ . '/../../includes/footer.php'); ?>

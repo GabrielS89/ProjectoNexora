@@ -63,104 +63,13 @@ $solicitudes = $pdo->query("
 ")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
-<style>
-.cot-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem; }
-.cot-filter-bar { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.5rem; }
-.cot-filter-bar a {
-    padding:0.4rem 1rem; border-radius:20px; font-size:0.85rem; font-weight:600;
-    text-decoration:none; border:1px solid var(--card-border); color:var(--text-muted); transition:all 0.2s;
-}
-.cot-filter-bar a.active, .cot-filter-bar a:hover {
-    border-color:var(--primary-green); color:#fff; background:rgba(17,138,94,0.2);
-}
-.cot-table { width:100%; border-collapse:collapse; font-size:0.9rem; }
-.cot-table th {
-    background:rgba(17,138,94,0.15); color:var(--primary-green-hover);
-    padding:0.75rem 1rem; text-align:left; font-size:0.82rem;
-    text-transform:uppercase; letter-spacing:0.5px; border-bottom:1px solid var(--card-border);
-}
-.cot-table td { padding:0.75rem 1rem; border-bottom:1px solid rgba(255,255,255,0.05); vertical-align:top; color:var(--text-main); }
-.cot-table tr:hover td { background:rgba(17,138,94,0.05); }
-.badge-estado { padding:0.2rem 0.65rem; border-radius:12px; font-size:0.78rem; font-weight:700; }
-.badge-pendiente { background:rgba(234,179,8,0.18);  color:#facc15; border:1px solid rgba(234,179,8,0.4); }
-.badge-aprobada  { background:rgba(17,138,94,0.18);  color:#4ade80; border:1px solid rgba(17,138,94,0.4); }
-.badge-rechazada { background:rgba(220,53,69,0.18);  color:#f87171; border:1px solid rgba(220,53,69,0.4); }
-
-/* Desglose de componentes en la solicitud */
-.desglose-grid {
-    display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr));
-    gap:0.6rem; margin-bottom:1.5rem;
-}
-.desglose-item {
-    background:rgba(13,25,19,0.7); border:1px solid var(--card-border);
-    border-radius:8px; padding:0.65rem 1rem;
-}
-.desglose-item .d-label { font-size:0.78rem; color:var(--text-muted); display:block; margin-bottom:0.2rem; }
-.desglose-item .d-value { font-size:1rem; font-weight:700; color:var(--text-main); }
-.desglose-item .d-sub   { font-size:0.78rem; color:var(--primary-green-hover); margin-top:0.1rem; }
-
-.info-empresa-card {
-    background:rgba(13,25,19,0.6); border:1px solid var(--card-border);
-    border-left:3px solid var(--primary-green); border-radius:8px;
-    padding:0.9rem 1.2rem; margin-bottom:1.5rem; font-size:0.88rem;
-    display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:0.5rem 1.5rem;
-}
-.info-empresa-card .campo { color:var(--text-muted); }
-.info-empresa-card .valor { color:var(--text-main); font-weight:600; }
-
-.form-custom-plan {
-    background:var(--card-bg); border:1px solid var(--card-border);
-    border-radius:12px; padding:2rem; max-width:720px; margin:0;
-}
-.form-group { display:flex; flex-direction:column; gap:0.3rem; margin-bottom:1rem; }
-.form-group label { font-size:0.88rem; font-weight:600; color:var(--text-main); }
-.form-group input,
-.form-group textarea {
-    background:rgba(0,0,0,0.5); border:1px solid var(--card-border);
-    border-radius:6px; color:var(--text-main); padding:0.6rem 0.85rem;
-    font-family:inherit; font-size:0.92rem; transition:border-color 0.25s;
-    width:100%; box-sizing:border-box;
-}
-.form-group input:focus, .form-group textarea:focus {
-    outline:none; border-color:var(--primary-green); box-shadow:0 0 8px rgba(17,138,94,0.35);
-}
-.comp-grid-empleado {
-    display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr));
-    gap:0.75rem; margin-bottom:1.25rem;
-}
-.comp-row {
-    background:rgba(13,25,19,0.7); border:1px solid var(--card-border);
-    border-radius:8px; padding:0.75rem 1rem;
-    display:flex; flex-direction:column; gap:0.3rem;
-}
-.comp-label  { font-size:0.82rem; font-weight:600; color:var(--text-main); }
-.comp-precio { font-size:0.75rem; color:var(--primary-green-hover); }
-.comp-input-wrap { display:flex; align-items:center; gap:0.4rem; margin-top:0.2rem; }
-.comp-input-wrap input[type="number"] { width:70px; padding:0.4rem 0.5rem; text-align:center; margin-bottom:0; }
-.total-preview {
-    background:linear-gradient(135deg, rgba(17,138,94,0.2), rgba(7,11,9,0.8));
-    border:1px solid var(--primary-green-hover); border-radius:10px;
-    padding:1rem 1.4rem; display:flex; justify-content:space-between;
-    align-items:center; margin-bottom:1.5rem;
-}
-.total-preview .lbl { font-size:0.95rem; font-weight:600; }
-.total-preview .amt { font-size:1.5rem; font-weight:800; color:#20e39b; }
-.plan-form-actions { display:flex; gap:0.75rem; justify-content:flex-end; margin-top:0.5rem; }
-.empty-state { text-align:center; padding:3rem 1rem; color:var(--text-muted); }
-.empty-state p { margin-top:0.5rem; font-size:0.92rem; }
-.sec-title {
-    font-size:0.82rem; font-weight:700; text-transform:uppercase;
-    letter-spacing:0.5px; color:var(--primary-green-hover); margin-bottom:0.65rem; margin-top:0.25rem;
-}
-</style>
-
 <?php if (!empty($success_msg)): ?>
-    <div class="alert-box alert-success" style="margin-bottom:1.5rem;">
+    <div class="alert-box alert-success mb-15rem">
         <span class="alert-tag">OK</span><div><?php echo $success_msg; ?></div>
     </div>
 <?php endif; ?>
 <?php if (!empty($error_msg)): ?>
-    <div class="alert-box alert-danger" style="margin-bottom:1.5rem;">
+    <div class="alert-box alert-danger mb-15rem">
         <span class="alert-tag">ERROR</span><div><?php echo htmlspecialchars($error_msg); ?></div>
     </div>
 <?php endif; ?>
@@ -179,7 +88,7 @@ $solicitudes = $pdo->query("
     <div class="cot-header">
         <div>
             <h2>Crear Plan Custom</h2>
-            <p style="color:var(--text-muted);font-size:0.9rem;margin-top:0.25rem;">
+            <p class="text-muted-custom font-09rem mt-04rem">
                 Solicitud #<?php echo $s['ID_Solicitud']; ?> —
                 <?php echo htmlspecialchars($s['Razon_Social'] ?? $s['Nombre_Usuario']); ?>
             </p>
@@ -206,8 +115,8 @@ $solicitudes = $pdo->query("
 
     <!-- Lo que pidió el cliente -->
     <p class="sec-title">Solicitud del cliente</p>
-    <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:0.75rem;">
-        <strong style="color:var(--text-main);">Descripción:</strong>
+    <p class="font-088rem text-muted-custom mb-08rem">
+        <strong class="font-weight-600">Descripción:</strong>
         <?php echo htmlspecialchars($s['Descripcion']); ?>
     </p>
 
@@ -230,15 +139,15 @@ $solicitudes = $pdo->query("
             </span>
         </div>
         <?php endforeach; ?>
-        <div class="desglose-item" style="border-color:var(--primary-green-hover);">
+        <div class="desglose-item desglose-item-highlight">
             <span class="d-label">Presupuesto estimado cliente</span>
-            <span class="d-value" style="color:#20e39b;">$<?php echo number_format($total_estimado_cliente, 2); ?> USD</span>
+            <span class="d-value text-mint-value">$<?php echo number_format($total_estimado_cliente, 2); ?> USD</span>
         </div>
     </div>
 
     <?php if (!empty($s['Notas_Extra'])): ?>
     <p class="sec-title">Notas del cliente</p>
-    <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:1.5rem;white-space:pre-wrap;"><?php echo htmlspecialchars($s['Notas_Extra']); ?></p>
+    <p class="font-088rem text-muted-custom mb-15rem error-pre"><?php echo htmlspecialchars($s['Notas_Extra']); ?></p>
     <?php endif; ?>
 
     <!-- Formulario empleado -->
@@ -251,18 +160,18 @@ $solicitudes = $pdo->query("
         <input type="hidden" name="empresa_usuario_id" value="<?php echo $s['ID_Usuario']; ?>">
 
         <div class="form-group">
-            <label for="nombre_plan">Nombre del Plan <span style="color:#ef4444">*</span></label>
+            <label for="nombre_plan">Nombre del Plan <span class="text-danger-star">*</span></label>
             <input type="text" id="nombre_plan" name="nombre_plan" required
                    value="Plan Custom — <?php echo htmlspecialchars($s['Razon_Social'] ?? $s['Nombre_Usuario']); ?>">
         </div>
         <div class="form-group">
-            <label for="descripcion_plan">Descripción del Plan <span style="color:#ef4444">*</span></label>
+            <label for="descripcion_plan">Descripción del Plan <span class="text-danger-star">*</span></label>
             <textarea id="descripcion_plan" name="descripcion_plan" rows="3" required
                       placeholder="Alcance, plazos, condiciones especiales..."></textarea>
         </div>
 
         <!-- Componentes: el empleado ajusta cantidades y precios finales -->
-        <p class="sec-title" style="margin-top:0.25rem;">Componentes y precios finales acordados</p>
+        <p class="sec-title">Componentes y precios finales acordados</p>
         <div class="comp-grid-empleado">
 
             <div class="comp-row">
@@ -271,9 +180,9 @@ $solicitudes = $pdo->query("
                 <div class="comp-input-wrap">
                     <input type="number" name="cant_pc" id="cant_pc" min="0" max="999"
                            value="<?php echo $s['Cant_PC']; ?>" oninput="recalcTotal()">
-                    <span style="font-size:0.8rem;color:var(--text-muted)">×</span>
+                    <span class="badge-no-plan">×</span>
                     <input type="number" name="precio_pc" id="precio_pc" min="0" step="0.01"
-                           value="800.00" oninput="recalcTotal()" style="width:85px;">
+                           value="800.00" oninput="recalcTotal()" class="comp-input-sm">
                 </div>
             </div>
 
@@ -283,9 +192,9 @@ $solicitudes = $pdo->query("
                 <div class="comp-input-wrap">
                     <input type="number" name="cant_impresoras" id="cant_impresoras" min="0" max="999"
                            value="<?php echo $s['Cant_Impresoras']; ?>" oninput="recalcTotal()">
-                    <span style="font-size:0.8rem;color:var(--text-muted)">×</span>
+                    <span class="badge-no-plan">×</span>
                     <input type="number" name="precio_impresoras" id="precio_impresoras" min="0" step="0.01"
-                           value="400.00" oninput="recalcTotal()" style="width:85px;">
+                           value="400.00" oninput="recalcTotal()" class="comp-input-sm">
                 </div>
             </div>
 
@@ -295,9 +204,9 @@ $solicitudes = $pdo->query("
                 <div class="comp-input-wrap">
                     <input type="number" name="cant_puntos_red" id="cant_puntos_red" min="0" max="999"
                            value="<?php echo $s['Cant_Puntos_Red']; ?>" oninput="recalcTotal()">
-                    <span style="font-size:0.8rem;color:var(--text-muted)">×</span>
+                    <span class="badge-no-plan">×</span>
                     <input type="number" name="precio_puntos_red" id="precio_puntos_red" min="0" step="0.01"
-                           value="150.00" oninput="recalcTotal()" style="width:85px;">
+                           value="150.00" oninput="recalcTotal()" class="comp-input-sm">
                 </div>
             </div>
 
@@ -307,9 +216,9 @@ $solicitudes = $pdo->query("
                 <div class="comp-input-wrap">
                     <input type="number" name="cant_servidores" id="cant_servidores" min="0" max="999"
                            value="<?php echo $s['Cant_Servidores']; ?>" oninput="recalcTotal()">
-                    <span style="font-size:0.8rem;color:var(--text-muted)">×</span>
+                    <span class="badge-no-plan">×</span>
                     <input type="number" name="precio_servidores" id="precio_servidores" min="0" step="0.01"
-                           value="1200.00" oninput="recalcTotal()" style="width:85px;">
+                           value="1200.00" oninput="recalcTotal()" class="comp-input-sm">
                 </div>
             </div>
 
@@ -319,9 +228,9 @@ $solicitudes = $pdo->query("
                 <div class="comp-input-wrap">
                     <input type="number" name="cant_wifi" id="cant_wifi" min="0" max="999"
                            value="<?php echo $s['Cant_Wifi']; ?>" oninput="recalcTotal()">
-                    <span style="font-size:0.8rem;color:var(--text-muted)">×</span>
+                    <span class="badge-no-plan">×</span>
                     <input type="number" name="precio_wifi" id="precio_wifi" min="0" step="0.01"
-                           value="250.00" oninput="recalcTotal()" style="width:85px;">
+                           value="250.00" oninput="recalcTotal()" class="comp-input-sm">
                 </div>
             </div>
 
@@ -387,7 +296,7 @@ $solicitudes = $pdo->query("
 
     <?php if (empty($solicitudes)): ?>
         <div class="empty-state">
-            <p style="font-size:1.1rem;font-weight:600;">No hay solicitudes<?php echo $filtro_estado !== 'todas' ? ' ' . strtolower($filtro_estado) . 's' : ''; ?>.</p>
+            <p class="font-weight-600 font-09rem">No hay solicitudes<?php echo $filtro_estado !== 'todas' ? ' ' . strtolower($filtro_estado) . 's' : ''; ?>.</p>
             <p>Las solicitudes enviadas por las empresas desde el cotizador aparecerán aquí.</p>
         </div>
     <?php else: ?>
@@ -431,23 +340,23 @@ $solicitudes = $pdo->query("
                     <td><strong>#<?php echo $sol['ID_Solicitud']; ?></strong></td>
                     <td>
                         <?php echo date('d/m/Y', strtotime($sol['Fecha_Solicitud'])); ?><br>
-                        <span style="font-size:0.78rem;color:var(--text-muted);"><?php echo date('H:i', strtotime($sol['Fecha_Solicitud'])); ?></span>
+                        <span class="cell-time-muted"><?php echo date('H:i', strtotime($sol['Fecha_Solicitud'])); ?></span>
                     </td>
                     <td><?php echo htmlspecialchars($sol['Razon_Social'] ?? $sol['Nombre_Usuario']); ?></td>
                     <td><?php echo htmlspecialchars($sol['RUT'] ?? '—'); ?></td>
-                    <td style="max-width:180px;font-size:0.84rem;color:var(--text-muted);">
+                    <td class="cell-max-180">
                         <?php echo htmlspecialchars(mb_strimwidth($sol['Descripcion'], 0, 60, '…')); ?>
                     </td>
-                    <td style="font-size:0.82rem;color:var(--text-muted);">
+                    <td class="cell-font-082">
                         <?php echo empty($resumen) ? '—' : implode(', ', $resumen); ?>
                     </td>
-                    <td style="font-weight:700;color:var(--primary-green-hover);font-size:0.85rem;">
+                    <td class="cell-price-green">
                         $<?php echo number_format($total_cli, 2); ?>
                     </td>
                     <td><span class="badge-estado <?php echo $badge_class; ?>"><?php echo $sol['Estado']; ?></span></td>
                     <td>
                         <?php if ($sol['Estado'] === 'Pendiente'): ?>
-                            <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+                            <div class="cot-actions-flex">
                                 <a class="btn btn-primary btn-sm partial-link"
                                    href="cotizaciones_panel.php?vista=crear&sol_id=<?php echo $sol['ID_Solicitud']; ?>&partial=<?php echo $is_partial ? '1' : '0'; ?>">
                                     Crear Plan
@@ -459,9 +368,9 @@ $solicitudes = $pdo->query("
                                 </a>
                             </div>
                         <?php elseif ($sol['Estado'] === 'Aprobada'): ?>
-                            <span style="font-size:0.8rem;color:#4ade80;">✓ Plan asignado</span>
+                            <span class="badge-plan-assigned">✓ Plan asignado</span>
                         <?php else: ?>
-                            <span style="font-size:0.8rem;color:var(--text-muted);">—</span>
+                            <span class="badge-no-plan">—</span>
                         <?php endif; ?>
                     </td>
                 </tr>

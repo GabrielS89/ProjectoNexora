@@ -233,7 +233,7 @@ $usuarios = $stmt->fetchAll();
 <?php endif; ?>
     <h2><?php echo $modo_edicion ? "Editar Usuario" : "Agregar Nuevo Usuario"; ?></h2>
     <?php if (!empty($error_message)): ?>
-        <p style="color: red;"><strong><?php echo htmlspecialchars($error_message); ?></strong></p>
+        <p class="text-danger"><strong><?php echo htmlspecialchars($error_message); ?></strong></p>
     <?php endif; ?>
     <form action="usuariospanel.php?partial=1" method="POST" id="usuarioForm">
         <input type="hidden" name="id" value="<?php echo $id_editar; ?>">
@@ -255,12 +255,12 @@ $usuarios = $stmt->fetchAll();
             <?php endforeach; ?>
         </select><br>
 
-        <div id="personaFields" style="display: none;">
+        <div id="personaFields" class="d-none">
             <h3>Datos Persona</h3>
             <p>Este usuario no requiere datos empresariales. Solo complete los datos básicos.</p>
         </div>
 
-        <div id="empresaFields" style="display: none;">
+        <div id="empresaFields" class="d-none">
             <h3>Datos Empresa</h3>
             <label>Nombre de la Empresa:</label><input type="text" name="nombre_empresa" value="<?php echo htmlspecialchars($nombre_empresa_editar); ?>"><br>
             <label>RUT:</label><input type="text" name="rut" value="<?php echo htmlspecialchars($rut_editar); ?>"><br>

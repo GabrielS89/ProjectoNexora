@@ -115,7 +115,7 @@ $proveedores = $stmtProv->fetchAll();
 <?php endif; ?>
     <h2><?php echo $modo_edicion ? "Editar Producto" : "Agregar Nuevo Producto"; ?></h2>
     <?php if (!empty($error_message)): ?>
-        <p style="color: red;"><strong><?php echo htmlspecialchars($error_message); ?></strong></p>
+        <p class="text-danger"><strong><?php echo htmlspecialchars($error_message); ?></strong></p>
     <?php endif; ?>
     <form action="adminpanelTienda.php?partial=1" method="POST">
         <input type="hidden" name="id" value="<?php echo $id_editar; ?>">

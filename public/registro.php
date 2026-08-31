@@ -13,37 +13,37 @@ $msg = isset($_GET['mensaje']) ? urldecode($_GET['mensaje']) : '';
 if ($err !== null) {
     switch ($err) {
         case 'campos_vacios':
-            $alert = '<p style="color:darkred;"><strong>Error:</strong> Por favor, rellena todos los campos obligatorios.</p>';
+            $alert = '<p class="alert-error-text"><strong>Error:</strong> Por favor, rellena todos los campos obligatorios.</p>';
             break;
         case 'password_invalido':
-            $alert = '<p style="color:darkred;"><strong>Contraseña inválida:</strong><br>' . htmlspecialchars($msg) . '</p>';
+            $alert = '<p class="alert-error-text"><strong>Contraseña inválida:</strong><br>' . htmlspecialchars($msg) . '</p>';
             break;
         case 'email_usado':
-            $alert = '<p style="color:darkred;"><strong>Error:</strong> El email ya está registrado.</p>';
+            $alert = '<p class="alert-error-text"><strong>Error:</strong> El email ya está registrado.</p>';
             break;
         case 'telefono_usado':
-            $alert = '<p style="color:darkred;"><strong>Error:</strong> El teléfono ya está registrado.</p>';
+            $alert = '<p class="alert-error-text"><strong>Error:</strong> El teléfono ya está registrado.</p>';
             break;
         case 'rut_usado':
-            $alert = '<p style="color:darkred;"><strong>Error:</strong> El RUT ya está registrado.</p>';
+            $alert = '<p class="alert-error-text"><strong>Error:</strong> El RUT ya está registrado.</p>';
             break;
         case 'nombre_empresa_usado':
-            $alert = '<p style="color:darkred;"><strong>Error:</strong> El nombre de la empresa ya está registrado.</p>';
+            $alert = '<p class="alert-error-text"><strong>Error:</strong> El nombre de la empresa ya está registrado.</p>';
             break;
         default:
             // Mensaje genérico: si hay detalle lo mostramos, si no mostramos la clave de error
-            $alert = '<p style="color:darkred;"><strong>Error:</strong> ' . htmlspecialchars($msg ?: $err) . '</p>';
+            $alert = '<p class="alert-error-text"><strong>Error:</strong> ' . htmlspecialchars($msg ?: $err) . '</p>';
     }
 }
 
 if (isset($_GET['registro']) && $_GET['registro'] == 'exito') {
-    $alert = '<p style="color:green;"><strong>Registro exitoso:</strong> Ahora puedes iniciar sesión.</p>';
+    $alert = '<p class="alert-success-text"><strong>Registro exitoso:</strong> Ahora puedes iniciar sesión.</p>';
 }
 
 // Mostrar excepción interna si el autenticador la pasó en 'e'
 if (isset($_GET['e']) && $_GET['e'] !== '') {
     $exc = urldecode($_GET['e']);
-    $alert .= '<pre style="color:darkred; white-space:pre-wrap;"><strong>Excepción:</strong> ' . htmlspecialchars($exc) . '</pre>';
+    $alert .= '<pre class="error-pre"><strong>Excepción:</strong> ' . htmlspecialchars($exc) . '</pre>';
 }
 
 if ($alert !== '') echo $alert;
@@ -134,20 +134,20 @@ if ($alert !== '') echo $alert;
         <input type="hidden" name="action" value="register">
         <input type="hidden" name="tipo_usuario" value="persona">
 
-        <label>Nombre:</label><br>
-        <input type="text" name="nombre" required><br><br>
+        <label for="nombre_p">Nombre Completo:</label>
+        <input type="text" id="nombre_p" name="nombre" placeholder="Ej. Juan Pérez" required>
 
-        <label>Email:</label><br>
-        <input type="email" name="email" required><br><br>
+        <label for="email_p">Correo Electrónico:</label>
+        <input type="email" id="email_p" name="email" placeholder="ejemplo@correo.com" required>
 
-        <label>Contraseña:</label><br>
-        <small>Mínimo 8 caracteres, mayúscula, minúscula, número y carácter especial (!@#$%^&*)</small><br>
-        <input type="password" name="password" required><br><br>
+        <label for="pass_p">Contraseña:</label>
+        <small>Mínimo 8 caracteres, al menos una mayúscula, una minúscula, un número y un símbolo (!@#$%^&*)</small>
+        <input type="password" id="pass_p" name="password" placeholder="••••••••" required>
 
-        <label>Número de teléfono:</label><br>
-        <input type="text" name="telefono" required><br><br>
+        <label for="tel_p">Número de Teléfono:</label>
+        <input type="text" id="tel_p" name="telefono" placeholder="+598 99 123 456" required>
 
-        <button type="submit">Crear cuenta personal</button>
+        <button type="submit" class="btn btn-primary">Crear Cuenta Personal</button>
     </form>
 
     <script src="https://apis.google.com/js/platform.js" async defer></script>
@@ -156,23 +156,92 @@ if ($alert !== '') echo $alert;
 
 </div>
 
-<a href="<?php echo PUBLIC_PATH; ?>/login.php">Volver al login</a>
+<!-- FORMULARIO EMPRESA -->
+<div id="formEmpresa" class="d-none">
+    <form action="../src/controllers/autenticador.php" method="POST" class="text-left">
+        <h2 class="section-heading-lg-green">Registro Corporativo / Empresa</h2>
+        <input type="hidden" name="action" value="register">
+        <input type="hidden" name="tipo_usuario" value="empresa">
+
+        <label for="nombre_emp">Nombre de la Empresa:</label>
+        <input type="text" id="nombre_emp" name="nombre_empresa" placeholder="Ej. Tech Solutions S.A." required>
+
+        <label for="email_emp">Email Corporativo:</label>
+        <input type="email" id="email_emp" name="email" placeholder="contacto@empresa.com" required>
+
+        <label for="pass_emp">Contraseña:</label>
+        <small>Mínimo 8 caracteres, al menos una mayúscula, minúscula, número y carácter especial</small>
+        <input type="password" id="pass_emp" name="password" placeholder="••••••••" required>
+
+        <label for="tel_emp">Teléfono de Contacto:</label>
+        <input type="text" id="tel_emp" name="telefono" placeholder="+598 2900 0000" required>
+
+        <label for="rut_emp">RUT / Identificación Fiscal:</label>
+        <input type="text" id="rut_emp" name="rut" placeholder="219998880011" required>
+
+        <label for="dir_emp">Dirección Fiscal:</label>
+        <input type="text" id="dir_emp" name="direccion" placeholder="Av. 18 de Julio 1234" required>
+
+        <label for="sector_emp">Sector o Industria:</label>
+        <select id="sector_emp" name="sector" required>
+            <option value="">-- Selecciona un sector --</option>
+            <option value="tecnologia">Tecnología e Informática</option>
+            <option value="comercio">Comercio y Retail</option>
+            <option value="industria">Industria y Logística</option>
+            <option value="servicios">Servicios Profesionales</option>
+        </select>
+
+        <label for="tamano_emp">Tamaño de la Empresa:</label>
+        <select id="tamano_emp" name="tamano">
+            <option value="pequena">1 a 5 empleados (Pequeña)</option>
+            <option value="mediana">6 a 20 empleados (Mediana)</option>
+            <option value="grande">Más de 20 empleados (Grande)</option>
+        </select>
+
+        <label for="desc_emp">Descripción Breve / Objetivos:</label>
+        <textarea id="desc_emp" name="descripcion" rows="3" maxlength="200" placeholder="Describe brevemente las necesidades de tu empresa..." required></textarea>
+
+        <div class="divider-dashed">
+            <h3 class="section-heading-green">Datos del Representante Legal / Contacto</h3>
+
+            <label for="rep_nom">Nombre Completo del Responsable:</label>
+            <input type="text" id="rep_nom" name="rep_nombre" placeholder="Ej. Carlos Rodríguez" required>
+
+            <label for="rep_car">Cargo:</label>
+            <input type="text" id="rep_car" name="rep_cargo" placeholder="Ej. Gerente de TI" required>
+
+            <label for="rep_em">Email Directo:</label>
+            <input type="email" id="rep_em" name="rep_email" placeholder="carlos@empresa.com" required>
+
+            <label for="rep_tel">Teléfono Directo:</label>
+            <input type="text" id="rep_tel" name="rep_telefono" placeholder="+598 99 888 777" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Registrar Empresa</button>
+    </form>
+</div>
+
+<div class="text-center mt-15rem">
+    <p class="text-muted-custom">¿Ya tienes una cuenta? <a href="<?php echo PUBLIC_PATH; ?>/login.php" class="font-weight-600">Iniciar Sesión</a></p>
+</div>
 
 <script>
 function mostrarFormulario(tipo) {
-    document.getElementById("formEmpresa").style.display = (tipo === "empresa") ? "block" : "none";
-    document.getElementById("formPersona").style.display = (tipo === "persona") ? "block" : "none";
-    
-    // Cambiar estilo de los botones
-    var btnEmpresa = document.getElementById("btnEmpresa");
-    var btnPersona = document.getElementById("btnPersona");
+    const formPersona = document.getElementById("formPersona");
+    const formEmpresa = document.getElementById("formEmpresa");
+    const btnPersona = document.getElementById("btnPersona");
+    const btnEmpresa = document.getElementById("btnEmpresa");
     
     if (tipo === "empresa") {
-        btnEmpresa.style.opacity = "1";
-        btnPersona.style.opacity = "0.5";
-    } else if (tipo === "persona") {
-        btnPersona.style.opacity = "1";
-        btnEmpresa.style.opacity = "0.5";
+        formEmpresa.style.display = "block";
+        formPersona.style.display = "none";
+        btnEmpresa.className = "btn btn-primary";
+        btnPersona.className = "btn btn-outline";
+    } else {
+        formPersona.style.display = "block";
+        formEmpresa.style.display = "none";
+        btnPersona.className = "btn btn-primary";
+        btnEmpresa.className = "btn btn-outline";
     }
 }
 </script>
