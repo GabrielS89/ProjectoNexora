@@ -38,6 +38,17 @@ if (isset($require_admin) && $require_admin) {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     
+    <!-- Script Anti-FOUC para Cargar Tema Inicial -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light' || savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
     <!-- Conexión CSS -->
     <link rel="stylesheet" href="<?php echo INCLUDES_PATH; ?>/css/style.css">
     <title><?php echo $page_title ?? 'Proyecto 3ro'; ?></title>
@@ -101,6 +112,11 @@ if (isset($require_admin) && $require_admin) {
             </ul>
             <div class="auth-buttons">
 
+                <!-- Switch Modo Claro / Oscuro (Estilo Píldora Minimalista) -->
+                <button id="theme-toggle" class="theme-switch" type="button" aria-label="Cambiar modo claro / oscuro" title="Cambiar modo de tema">
+                    <span class="theme-switch-thumb"></span>
+                </button>
+
 <?php if ($isLoggedIn): ?>
 <!-- Usuario logueado -->
 
@@ -147,7 +163,19 @@ if (isset($require_admin) && $require_admin) {
     </div>
 </nav>
 
-
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleBtn = document.getElementById('theme-toggle');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', function() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+    }
+});
+</script>
 
     <div class="page-wrapper">
     <div class="main-content">

@@ -3,6 +3,7 @@
     ======================================================== */
 :root {
     --bg-color: #070b09;
+    --body-bg: #040806;
     --primary-green: #118a5e;
     --primary-green-hover: #17b379;
     --secondary-green: #0d4a35;
@@ -11,10 +12,33 @@
     --card-bg: rgba(13, 25, 19, 0.6);
     --card-border: rgba(17, 138, 94, 0.3);
     --glass-bg: rgba(7, 11, 9, 0.85);
+    --heading-color: #ffffff;
+    --input-bg: rgba(0, 0, 0, 0.5);
+    --modal-bg: #09120d;
+    --bg-overlay-opacity: 0.55;
+    --shadow-color: rgba(0, 0, 0, 0.4);
 
     user-select: none;
     outline: none;
     cursor: default;
+}
+
+[data-theme="light"] {
+    --bg-color: #f8fafc;
+    --body-bg: #f1f5f9;
+    --primary-green: #0d7a52;
+    --primary-green-hover: #118a5e;
+    --secondary-green: #d1fae5;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --card-bg: #ffffff;
+    --card-border: rgba(17, 138, 94, 0.25);
+    --glass-bg: rgba(255, 255, 255, 0.88);
+    --heading-color: #0f172a;
+    --input-bg: #ffffff;
+    --modal-bg: #ffffff;
+    --bg-overlay-opacity: 0.75;
+    --shadow-color: rgba(0, 0, 0, 0.08);
 }
 
 /*  ========================================================
@@ -27,7 +51,7 @@
 }
 
 body {
-    background-color: #040806;
+    background-color: var(--body-bg);
     color: var(--text-main);
     font-family: 'Inter', sans-serif;
     display: flex;
@@ -35,21 +59,26 @@ body {
     min-height: 100vh;
     position: relative;
     z-index: 1;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 body::before {
     content: '';
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background-image: url('fondo-verde.png');
-    background-size: cover;
+    top: -30%; left: -30%;
+    width: 160%; height: 160%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='66.35' height='114.9' viewBox='0 0 66.35 114.9'%3E%3Cg fill='none' stroke='%23118a5e' stroke-width='1.2' stroke-opacity='0.45'%3E%3Cpath d='M33.18 -7.3 L64.36 10.7 L64.36 46.7 L33.18 64.7 L2 46.7 L2 10.7 Z'/%3E%3Cpath d='M66.35 50.2 L97.53 68.2 L97.53 104.2 L66.35 122.2 L35.17 104.2 L35.17 68.2 Z'/%3E%3Cpath d='M0 50.2 L31.18 68.2 L31.18 104.2 L0 122.2 L-31.18 104.2 L-31.18 68.2 Z'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 66.35px 114.9px;
     background-position: center;
-    background-repeat: no-repeat;
-    opacity: 0.15;
+    background-repeat: repeat;
+    opacity: var(--bg-overlay-opacity);
     z-index: -1;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    transform: rotate(-18deg);
 }
 
-h1, h2, h3 { color: #ffffff; }
+h1, h2, h3 { color: var(--heading-color); transition: color 0.3s ease; }
 
 /*  ========================================================
     NAVBAR
@@ -457,7 +486,7 @@ form textarea {
     width: 100%;
     padding: 0.75rem 0.9rem;
     margin-bottom: 1.25rem;
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--input-bg);
     border: 1px solid var(--card-border);
     border-radius: 6px;
     color: var(--text-main);
@@ -659,7 +688,7 @@ footer p { color: var(--text-muted); margin-top: 0.8rem; font-size: 0.88rem; }
 
 .status-plan-name {
     font-size: 1.5rem;
-    color: #fff;
+    color: var(--heading-color);
     margin-bottom: 0.25rem;
 }
 
@@ -743,15 +772,16 @@ footer p { color: var(--text-muted); margin-top: 0.8rem; font-size: 0.88rem; }
 }
 
 .custom-modal-content {
-    background: #09120d;
+    background: var(--modal-bg);
     border: 1px solid var(--primary-green);
     border-radius: 14px;
     padding: 2rem;
     max-width: 660px;
     width: 100%;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(17, 138, 94, 0.25);
+    box-shadow: 0 25px 60px var(--shadow-color), 0 0 30px rgba(17, 138, 94, 0.25);
     max-height: 90vh;
     overflow-y: auto;
+    color: var(--text-main);
 }
 
 .modal-header {
@@ -765,7 +795,7 @@ footer p { color: var(--text-muted); margin-top: 0.8rem; font-size: 0.88rem; }
 
 .modal-header h3 {
     font-size: 1.4rem;
-    color: #fff;
+    color: var(--heading-color);
 }
 
 .modal-close-btn {
@@ -778,7 +808,7 @@ footer p { color: var(--text-muted); margin-top: 0.8rem; font-size: 0.88rem; }
     transition: color 0.2s;
 }
 
-.modal-close-btn:hover { color: #fff; }
+.modal-close-btn:hover { color: var(--heading-color); }
 
 .modal-subtitle {
     color: var(--text-muted);
@@ -900,8 +930,8 @@ footer p { color: var(--text-muted); margin-top: 0.8rem; font-size: 0.88rem; }
     font-size: 0.92rem !important;
     border: 1px solid rgba(17, 138, 94, 0.3) !important;
     border-radius: 4px !important;
-    background: #040806 !important;
-    color: #fff !important;
+    background: var(--body-bg) !important;
+    color: var(--text-main) !important;
     line-height: 28px !important;
     -moz-appearance: textfield;
     box-sizing: border-box !important;
@@ -964,4 +994,56 @@ footer p { color: var(--text-muted); margin-top: 0.8rem; font-size: 0.88rem; }
 @keyframes fadeIn {
     from { opacity: 0; transform: scale(0.98); }
     to { opacity: 1; transform: scale(1); }
+}
+
+/*  ========================================================
+    SWITCH DE MODO CLARO / OSCURO (Hexagonal Simétrico Compacto)
+    ======================================================== */
+.theme-switch {
+    width: 48px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid var(--card-border);
+    border-radius: 30px;
+    padding: 3px 4px;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    outline: none;
+    transition: all 0.35s ease;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    margin-right: 8px;
+}
+
+.theme-switch:hover {
+    transform: scale(1.06);
+    border-color: var(--primary-green-hover);
+}
+
+.theme-switch-thumb {
+    width: 14px;
+    height: 16px;
+    background-color: #ffffff;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.4));
+    transition: transform 0.4s cubic-bezier(0.34, 1.4, 0.64, 1), background-color 0.3s ease;
+    transform: translateX(0) rotate(0deg);
+}
+
+/* Estado Modo Oscuro (Por defecto): Hexágono a la izquierda */
+:root:not([data-theme="light"]) .theme-switch-thumb {
+    transform: translateX(0) rotate(0deg);
+}
+
+/* Estado Modo Claro: Hexágono a la derecha con animación de desplazamiento y giro */
+[data-theme="light"] .theme-switch {
+    background: var(--primary-green);
+    border-color: var(--primary-green-hover);
+    box-shadow: 0 0 12px rgba(17, 138, 94, 0.45);
+}
+
+[data-theme="light"] .theme-switch-thumb {
+    transform: translateX(25px) rotate(360deg);
+    background-color: #ffffff;
 }
