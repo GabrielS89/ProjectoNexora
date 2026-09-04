@@ -76,15 +76,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             exit();
         }
 
-        $pwErr = validarPassword($password);
-        if (!empty($pwErr)) {
-            $mensaje = urlencode(implode(' ', $pwErr));
-            header('Location: ' . PUBLIC_PATH . '/login.php?error=password_invalido&mensaje=' . $mensaje);
-            exit();
-        }
-
         if ($user->login($email, $password)) {
-            header('Location: ' . PUBLIC_PATH . '/../src/views/welcome.php');
+            header('Location: ' . VIEWS_PATH . '/welcome.php');
             exit();
         }
 

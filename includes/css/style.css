@@ -226,6 +226,28 @@ nav {
     border-radius: 5px;
 }
 
+.btn-info-plan {
+    width: 100%;
+    margin-bottom: 0.5rem;
+    color: var(--text-muted);
+    border-color: var(--card-border);
+    font-size: 0.82rem !important;
+    letter-spacing: 0.3px;
+    gap: 5px;
+}
+
+.btn-info-plan::before {
+    content: 'ℹ';
+    font-style: normal;
+    font-size: 0.9rem;
+}
+
+.btn-info-plan:hover {
+    color: var(--primary-green-hover);
+    border-color: var(--primary-green);
+    background: rgba(17, 138, 94, 0.08);
+}
+
 .btn-block {
     width: 100% !important;
     display: flex !important;
@@ -532,13 +554,108 @@ footer p { color: var(--text-muted); margin-top: 0.8rem; font-size: 0.88rem; }
     TIENDA ECOMMERCE
     ======================================================== */
 .containerTienda {
-    margin-top: 80px;
-    padding: 3rem 5%;
-    flex-grow: 1;
-    max-width: 1200px;
-    margin-left: auto;
-    margin-right: auto;
     width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-bottom: 3rem;
+}
+
+.productos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.8rem;
+    margin-top: 2rem;
+}
+
+.producto-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1.6rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.3s ease;
+    position: relative;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px var(--shadow-color);
+}
+
+.producto-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-green);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), 0 0 15px rgba(17, 138, 94, 0.2);
+}
+
+.producto-header {
+    margin-bottom: 0.8rem;
+}
+
+.producto-categoria-tag {
+    display: inline-block;
+    background: rgba(17, 138, 94, 0.15);
+    color: var(--primary-green-hover);
+    border: 1px solid rgba(17, 138, 94, 0.3);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.producto-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: var(--heading-color);
+}
+
+.producto-descripcion {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.45;
+    margin-bottom: 1.2rem;
+    flex-grow: 1;
+}
+
+.producto-meta {
+    border-top: 1px solid var(--card-border);
+    padding-top: 0.8rem;
+    margin-bottom: 0.6rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.producto-precio {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #4ade80;
+}
+
+.producto-stock {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.producto-stock.in-stock {
+    color: var(--primary-green-hover);
+}
+
+.producto-stock.out-of-stock {
+    color: #ef4444;
+}
+
+.producto-proveedor {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 1.1rem;
+}
+
+.producto-actions {
+    margin-top: auto;
 }
 
 /*  ========================================================
@@ -1046,4 +1163,249 @@ footer p { color: var(--text-muted); margin-top: 0.8rem; font-size: 0.88rem; }
 [data-theme="light"] .theme-switch-thumb {
     transform: translateX(25px) rotate(360deg);
     background-color: #ffffff;
+}
+
+/*  ========================================================
+    MODAL DE INFORMACION DE PLANES CON VISTA 3D
+    ======================================================== */
+.modal-info-layout {
+    max-width: 960px !important;
+    width: 95% !important;
+}
+
+.modal-info-body {
+    display: grid;
+    grid-template-columns: 1.1fr 1.3fr;
+    gap: 2rem;
+    margin-top: 1rem;
+    align-items: center;
+}
+
+@media (max-width: 820px) {
+    .modal-info-body {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
+.modal-info-left {
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-features-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.25rem 0;
+}
+
+.modal-features-list li {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-main);
+    font-size: 0.93rem;
+    line-height: 1.45;
+}
+
+.modal-features-list li::before {
+    content: '✔';
+    position: absolute;
+    left: 0;
+    color: var(--primary-green-hover);
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.modal-info-note {
+    background: rgba(17, 138, 94, 0.1);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+}
+
+.modal-image-wrapper {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--card-border);
+    background: rgba(0, 0, 0, 0.6);
+    box-shadow: 0 10px 30px var(--shadow-color), 0 0 25px rgba(17, 138, 94, 0.2);
+}
+
+.modal-plan-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.modal-plan-img:hover {
+    transform: scale(1.03);
+}
+
+.modal-image-badge {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: rgba(7, 11, 9, 0.88);
+    border: 1px solid var(--primary-green);
+    color: #4ade80;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    backdrop-filter: blur(8px);
+    letter-spacing: 0.5px;
+}
+
+/*  ========================================================
+    PANEL ADMINISTRATIVO MODERNO Y CRUD TABS
+    ======================================================== */
+.admin-container {
+    width: 100%;
+    max-width: 1250px;
+    margin: 0 auto;
+    padding-bottom: 3rem;
+}
+
+.admin-header-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    box-shadow: 0 4px 20px var(--shadow-color);
+}
+
+.admin-badge-role {
+    display: inline-block;
+    background: rgba(17, 138, 94, 0.18);
+    border: 1px solid var(--primary-green);
+    color: #4ade80;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.admin-tabs {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--card-border);
+    padding-bottom: 0.75rem;
+    overflow-x: auto;
+}
+
+.admin-tab-btn {
+    background: rgba(17, 138, 94, 0.08);
+    color: var(--text-muted);
+    border: 1px solid var(--card-border);
+    padding: 0.7rem 1.4rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.92rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+.admin-tab-btn:hover {
+    color: var(--text-main);
+    border-color: var(--primary-green);
+    background: rgba(17, 138, 94, 0.15);
+}
+
+.admin-tab-btn.active {
+    background: var(--primary-green);
+    color: #ffffff;
+    border-color: var(--primary-green-hover);
+    box-shadow: 0 0 15px rgba(17, 138, 94, 0.35);
+}
+
+.admin-content-box {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 6px 25px var(--shadow-color);
+    backdrop-filter: blur(10px);
+}
+
+/* Tablas CRUD dentro del admin */
+.admin-content-box table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.5rem;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.admin-content-box th {
+    background: rgba(17, 138, 94, 0.15);
+    color: var(--primary-green-hover);
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.85rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--card-border);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.admin-content-box td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--card-border);
+    color: var(--text-main);
+    font-size: 0.9rem;
+    vertical-align: middle;
+}
+
+.admin-content-box tr:hover td {
+    background: rgba(17, 138, 94, 0.05);
+}
+
+.admin-content-box .partial-link {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    margin-right: 0.3rem;
+}
+
+.admin-content-box .partial-link:first-child {
+    background: rgba(17, 138, 94, 0.15);
+    color: var(--primary-green-hover);
+    border: 1px solid rgba(17, 138, 94, 0.3);
+}
+
+.admin-content-box .partial-link:first-child:hover {
+    background: var(--primary-green);
+    color: #fff;
+}
+
+.admin-content-box .partial-link:last-child {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.admin-content-box .partial-link:last-child:hover {
+    background: #ef4444;
+    color: #fff;
 }

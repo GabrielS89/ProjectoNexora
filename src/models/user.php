@@ -91,36 +91,40 @@ class User {
     // Login
 
     public function login($email, $password) {
-    try {
-    
-        $sql = "SELECT ID_Usuario, Email, Contrasena, Tipo_Persona, ID_Rol FROM USUARIO WHERE Email = ?";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$email]);
-        
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        // Verificar la contraseña
-        if ($user && password_verify($password, $user['Contrasena'])) {
+        try {
+            $sql = "SELECT ID_Usuario, Email, Nombre, Contrasena, Tipo_Persona, ID_Rol FROM USUARIO WHERE Email = ?";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$email]);
             
-            if (session_status() === PHP_SESSION_NONE) {
-                session_start();
-            }
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            // Verificar la contraseña
+            if ($user && password_verify($password, $user['Contrasena'])) {
+                if (session_status() === PHP_SESSION_NONE) {
+                    session_start();
+                }
 
-            
-            $_SESSION['user_id'] = $user['ID_Usuario'];
-            $_SESSION['email'] = $user['Email'];
-            $_SESSION['tipo_usuario'] = $user['Tipo_Persona'];
-            
-            // Definir Tipo de Usuario (Admin o User)
-            $_SESSION['usuario_rol'] = $user['ID_Rol'];
-            
-            return true;
+                $_SESSION['user_id'] = $user['ID_Usuario'];
+                $_SESSION['email'] = $user['Email'];
+                $_SESSION['nombre'] = $user['Nombre'] ?? '';
+                $_SESSION['tipo_usuario'] = $user['Tipo_Persona'];
+                $_SESSION['usuario_rol'] = (int)$user['ID_Rol'];
+                $_SESSION['user'] = [
+                    'id' => $user['ID_Usuario'],
+                    'email' => $user['Email'],
+                    'nombre' => $user['Nombre'] ?? '',
+                    'tipo_usuario' => $user['Tipo_Persona'],
+                    'rol' => (int)$user['ID_Rol']
+                ];
+                
+                return true;
+            }
+            return false;
+        } catch (Exception $e) {
+            $this->lastError = $e->getMessage();
+            return false;
         }
-        return false;
-    } catch (Exception $e) {
-        return false;
     }
-}
 
     // Insertar en la tabla USUARIO
 

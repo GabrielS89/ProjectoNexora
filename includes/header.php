@@ -88,6 +88,13 @@ if (isset($require_admin) && $require_admin) {
                             Tienda
                         </a>
                     </li>
+                    <?php if (isset($_SESSION['usuario_rol']) && in_array($_SESSION['usuario_rol'], [2, 3])): ?>
+                    <li>
+                        <a href="<?php echo VIEWS_PATH; ?>/adminpanel.php" style="color: #4ade80; font-weight: 700;">
+                            ⚙ Panel Admin
+                        </a>
+                    </li>
+                    <?php endif; ?>
                     
 
                     <?php else: ?>
@@ -96,6 +103,16 @@ if (isset($require_admin) && $require_admin) {
                     <li>
                         <a href="<?php echo PUBLIC_PATH; ?>/index.php">
                             Inicio
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?php echo VIEWS_PATH; ?>/planes.php">
+                            Planes
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?php echo VIEWS_PATH; ?>/tienda.php">
+                            Tienda
                         </a>
                     </li>
                     <li>

@@ -184,6 +184,11 @@ unset($_SESSION['success_message'], $_SESSION['error_message']);
                 </ul>
 
                 <div class="plan-card-actions">
+                    <!-- Botón Más Información Plan Start-Up -->
+                    <button type="button" class="btn btn-outline btn-sm btn-info-plan" onclick="openPlanInfoModal('startup')">
+                        Más Información
+                    </button>
+
                     <?php if ($isEmpresa): ?>
                         <?php if ($solicitudPendiente): ?>
                             <button class="btn btn-disabled" disabled>Bloqueado (Solicitud en Revision)</button>
@@ -230,6 +235,11 @@ unset($_SESSION['success_message'], $_SESSION['error_message']);
                 </ul>
 
                 <div class="plan-card-actions">
+                    <!-- Botón Más Información Plan Business -->
+                    <button type="button" class="btn btn-outline btn-sm btn-info-plan" onclick="openPlanInfoModal('business')">
+                        Más Información
+                    </button>
+
                     <?php if ($isEmpresa): ?>
                         <?php if ($solicitudPendiente): ?>
                             <button class="btn btn-disabled" disabled>Bloqueado (Solicitud en Revision)</button>
@@ -278,6 +288,11 @@ unset($_SESSION['success_message'], $_SESSION['error_message']);
                 </ul>
 
                 <div class="plan-card-actions">
+                    <!-- Botón Más Información (próximamente) -->
+                    <button type="button" class="btn btn-outline btn-sm btn-info-plan" onclick="return false;">
+                        Más Información
+                    </button>
+
                     <?php if ($isEmpresa): ?>
                         <?php if ($solicitudPendiente): ?>
                             <button class="btn btn-active-plan" disabled style="background: rgba(234, 179, 8, 0.15) !important; color: #facc15 !important; border-color: rgba(234, 179, 8, 0.4) !important;">Solicitud en Revision</button>
@@ -296,6 +311,120 @@ unset($_SESSION['success_message'], $_SESSION['error_message']);
 
         </div>
     </section>
+</div>
+
+<!-- Modal Informativo con Vista Isométrica 3D: Plan Start-Up -->
+<div id="modalInfoStartup" class="custom-modal-overlay" style="display:none;" onclick="closePlanInfoOnBackdrop(event, 'modalInfoStartup')">
+    <div class="custom-modal-content modal-info-layout">
+        <div class="modal-header">
+            <div style="display:flex; align-items:center; gap:0.6rem;">
+                <h3 style="margin:0;">Plan Start-Up</h3>
+                <span class="badge" style="position:static; transform:none; display:inline-block; padding:3px 10px; border-radius:4px; font-size:0.75rem;">Popular</span>
+            </div>
+            <button type="button" class="modal-close-btn" onclick="closePlanInfoModal('modalInfoStartup')">&times;</button>
+        </div>
+        
+        <div class="modal-info-body">
+            <!-- Columna Izquierda: Información Detallada del Plan -->
+            <div class="modal-info-left">
+                <p class="plan-subtitle" style="font-size:1.15rem; margin-bottom:0.35rem; color:var(--primary-green);">4 Estaciones de Trabajo</p>
+                <p class="price-desc" style="margin-bottom:1.2rem; font-size:0.9rem;">Ideal para equipos en crecimiento inicial</p>
+                
+                <h4 style="color:var(--primary-green-hover); font-size:0.9rem; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.75rem;">Detalle del Paquete:</h4>
+                <ul class="modal-features-list">
+                    <li>Suministro de 4 computadoras completas de escritorio.</li>
+                    <li>Instalacion y cableado estructurado Cat 6.</li>
+                    <li>Red Wi-Fi corporativa de alta velocidad y switch base.</li>
+                    <li>Configuracion de entorno de trabajo e impresoras.</li>
+                    <li>Soporte tecnico estandar y mantenimiento preventivo.</li>
+                </ul>
+
+                <div class="modal-info-note">
+                    <small style="color:var(--text-main); line-height:1.4; display:block;">
+                        💡 <strong>Distribución Técnica:</strong> Configuración en isla de 4 puestos de trabajo conectados directamente a switch de red y punto de acceso Wi-Fi corporativo.
+                    </small>
+                </div>
+            </div>
+
+            <!-- Columna Derecha: Render Isométrico 3D -->
+            <div class="modal-info-right">
+                <div class="modal-image-wrapper">
+                    <img src="<?php echo VIEWS_PATH; ?>/uploads/plan_startup_isometric.jpg" alt="Distribución 3D Isométrica Plan Start-Up" class="modal-plan-img">
+                    <span class="modal-image-badge">Distribución Isométrica 3D</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-actions" style="margin-top: 1.5rem; border-top: 1px solid var(--card-border); padding-top: 1rem;">
+            <button type="button" class="btn btn-outline" onclick="closePlanInfoModal('modalInfoStartup')">Cerrar</button>
+            <?php if ($isEmpresa && $currentPlanId !== 1 && !$solicitudPendiente): ?>
+                <form action="<?php echo VIEWS_PATH; ?>/contratar_plan.php" method="POST" style="margin:0; padding:0; background:transparent; border:none; box-shadow:none;">
+                    <input type="hidden" name="action" value="contract">
+                    <input type="hidden" name="plan_id" value="1">
+                    <button type="submit" class="btn btn-primary">
+                        <?php echo ($currentPlanId > 0) ? 'Cambiar a este Plan' : 'Contratar Plan'; ?>
+                    </button>
+                </form>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Informativo con Vista Isométrica 3D: Plan Business -->
+<div id="modalInfoBusiness" class="custom-modal-overlay" style="display:none;" onclick="closePlanInfoOnBackdrop(event, 'modalInfoBusiness')">
+    <div class="custom-modal-content modal-info-layout">
+        <div class="modal-header">
+            <div style="display:flex; align-items:center; gap:0.6rem;">
+                <h3 style="margin:0;">Plan Business</h3>
+                <span class="badge" style="position:static; transform:none; display:inline-block; padding:3px 10px; border-radius:4px; font-size:0.75rem; background:linear-gradient(135deg, #10b981, #059669);">Recomendado</span>
+            </div>
+            <button type="button" class="modal-close-btn" onclick="closePlanInfoModal('modalInfoBusiness')">&times;</button>
+        </div>
+        
+        <div class="modal-info-body">
+            <!-- Columna Izquierda: Información Detallada del Plan -->
+            <div class="modal-info-left">
+                <p class="plan-subtitle" style="font-size:1.15rem; margin-bottom:0.35rem; color:var(--primary-green);">8 Estaciones + Sala de Juntas</p>
+                <p class="price-desc" style="margin-bottom:1.2rem; font-size:0.9rem;">Diseñado para pymes y oficinas consolidadas</p>
+                
+                <h4 style="color:var(--primary-green-hover); font-size:0.9rem; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.75rem;">Detalle del Paquete:</h4>
+                <ul class="modal-features-list">
+                    <li><strong>8 Computadoras de alto rendimiento</strong> para el área operativa.</li>
+                    <li><strong>Sala de Juntas multimedia:</strong> equipada con proyector HD, pantalla blanca retráctil y <strong>1 computadora dedicada</strong> exclusiva para operar presentaciones.</li>
+                    <li><strong>Red troncal Gigabit:</strong> switch administrable de alta capacidad y sistema Wi-Fi Mesh de máxima cobertura.</li>
+                    <li><strong>Servidor local y políticas de red:</strong> control de acceso, seguridad y almacenamiento compartido.</li>
+                    <li><strong>Soporte prioritario 24/7</strong> con asistencia técnica remota y presencial directa.</li>
+                </ul>
+
+                <div class="modal-info-note">
+                    <small style="color:var(--text-main); line-height:1.4; display:block;">
+                        💡 <strong>Distribución Técnica:</strong> Zona operativa con 8 puestos en red Gigabit + Sala de conferencias independiente con sistema audiovisual autónomo (proyector + pantalla + PC de control).
+                    </small>
+                </div>
+            </div>
+
+            <!-- Columna Derecha: Render Isométrico 3D -->
+            <div class="modal-info-right">
+                <div class="modal-image-wrapper">
+                    <img src="<?php echo VIEWS_PATH; ?>/uploads/plan_business_isometric.jpg" alt="Distribución 3D Isométrica Plan Business" class="modal-plan-img">
+                    <span class="modal-image-badge">Distribución Isométrica 3D</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-actions" style="margin-top: 1.5rem; border-top: 1px solid var(--card-border); padding-top: 1rem;">
+            <button type="button" class="btn btn-outline" onclick="closePlanInfoModal('modalInfoBusiness')">Cerrar</button>
+            <?php if ($isEmpresa && $currentPlanId !== 2 && !$solicitudPendiente): ?>
+                <form action="<?php echo VIEWS_PATH; ?>/contratar_plan.php" method="POST" style="margin:0; padding:0; background:transparent; border:none; box-shadow:none;">
+                    <input type="hidden" name="action" value="contract">
+                    <input type="hidden" name="plan_id" value="2">
+                    <button type="submit" class="btn btn-primary">
+                        <?php echo ($currentPlanId > 0) ? 'Cambiar a este Plan' : 'Contratar Plan'; ?>
+                    </button>
+                </form>
+            <?php endif; ?>
+        </div>
+    </div>
 </div>
 
 <!-- Modal Interactivo para Cotizacion Personalizada (Plan Custom) -->
@@ -644,6 +773,41 @@ function confirmarYEnviarCotizacion() {
 }
 </script>
 <?php endif; ?>
+
+<script>
+function openPlanInfoModal(planKey) {
+    if (planKey === 'startup') {
+        const modal = document.getElementById('modalInfoStartup');
+        if (modal) modal.style.display = 'flex';
+    } else if (planKey === 'business') {
+        const modal = document.getElementById('modalInfoBusiness');
+        if (modal) modal.style.display = 'flex';
+    }
+}
+
+function closePlanInfoModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) modal.style.display = 'none';
+}
+
+function closePlanInfoOnBackdrop(event, modalId) {
+    if (event.target.id === modalId) {
+        closePlanInfoModal(modalId);
+    }
+}
+
+// Cerrar con tecla Escape
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        ['modalInfoStartup', 'modalInfoBusiness'].forEach(function(id) {
+            const m = document.getElementById(id);
+            if (m && m.style.display === 'flex') {
+                closePlanInfoModal(id);
+            }
+        });
+    }
+});
+</script>
 
 <?php
 if ($is_standalone) {

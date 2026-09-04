@@ -71,15 +71,6 @@ $es_empresa = isset($_SESSION['tipo_usuario']) && $_SESSION['tipo_usuario'] === 
         <br>
 
         
-        <br>
-
-        <div>
-            <h3>Configuración</h3>
-            <p>Ajusta tus preferencias de privacidad y notificaciones del sistema.</p>
-            <a href="<?php echo VIEWS_PATH; ?>/settings.php">Ir a Configuración</a>
-        </div>
-        
-        <br>
 
         <div>
             <h3>Soporte</h3>
