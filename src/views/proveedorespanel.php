@@ -51,13 +51,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error_message = 'Todos los campos deben completarse antes de guardar.';
     } else {
         if (!empty($id)) {
-            $stmt = $pdo->prepare("UPDATE proveedor 
+            $stmt = $pdo->prepare("UPDATE proveedor
                 SET Nombre_Empresa=?, Email_Contacto=?, Telefono=?, Calle=?, Esquina=?, Numero_Puerta=?, URL_Sitio_web=?, Metodo_Pago=? 
                 WHERE ID_Proveedor=?");
             $stmt->execute([$nombre, $email, $telefono, $calle, $esquina, $numero, $url, $metodo, $id]);
         } else {
-            $stmt = $pdo->prepare("INSERT INTO proveedor 
-                (Nombre_Empresa, Email_Contacto, Telefono, Calle, Esquina, Numero_Puerta, URL_Sitio_web, Metodo_Pago) 
+            $stmt = $pdo->prepare("INSERT INTO proveedor
+                (Nombre_Empresa, Email_Contacto, Telefono, Calle, Esquina, Numero_Puerta, URL_Sitio_web, Metodo_Pago)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
             $stmt->execute([$nombre, $email, $telefono, $calle, $esquina, $numero, $url, $metodo]);
         }

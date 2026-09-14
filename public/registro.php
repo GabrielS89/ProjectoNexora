@@ -3,18 +3,47 @@ $page_title = 'Registro - Proyecto 3ro';
 require_once(__DIR__ . '/../includes/config.php');
 require_once(INCLUDES_DIR . '/header.php');
 
-// Mensajes de error
-if (isset($_GET['error'])) {
-    if ($_GET['error'] == 'campos_vacios') {
-        echo '<p>Por favor, rellena todos los campos obligatorios.</p>';
-    } elseif ($_GET['error'] == 'password_invalido') {
-        echo '<p><strong>Contraseña inválida:</strong><br>' . htmlspecialchars($_GET['mensaje']) . '</p>';
-    } elseif ($_GET['error'] == 'registro_fallido') {
-        echo '<p>Error al registrar: El Email o el RUT ya podrían estar en uso.</p>';
+
+
+// Mensajes de estado/errores devueltos por el autenticador
+$alert = '';
+$err = isset($_GET['error']) ? $_GET['error'] : null;
+$msg = isset($_GET['mensaje']) ? urldecode($_GET['mensaje']) : '';
+
+if ($err !== null) {
+    switch ($err) {
+        case 'campos_vacios':
+            $alert = '<div class="alert-box alert-danger"><span class="alert-tag">ERROR</span><span>Por favor, rellena todos los campos obligatorios.</span></div>';
+            break;
+        case 'password_invalido':
+            $alert = '<div class="alert-box alert-danger"><span class="alert-tag">ERROR</span><span><strong>Contraseña inválida:</strong><br>' . htmlspecialchars($msg) . '</span></div>';
+            break;
+        case 'email_usado':
+            $alert = '<div class="alert-box alert-danger"><span class="alert-tag">ERROR</span><span>El email ya está registrado.</span></div>';
+            break;
+        case 'telefono_usado':
+            $alert = '<div class="alert-box alert-danger"><span class="alert-tag">ERROR</span><span>El teléfono ya está registrado.</span></div>';
+            break;
+        case 'rut_usado':
+            $alert = '<div class="alert-box alert-danger"><span class="alert-tag">ERROR</span><span>El RUT ya está registrado.</span></div>';
+            break;
+        case 'nombre_empresa_usado':
+            $alert = '<div class="alert-box alert-danger"><span class="alert-tag">ERROR</span><span>El nombre de la empresa ya está registrado.</span></div>';
+            break;
+        default:
+            // Mensaje genérico: si hay detalle lo mostramos, si no mostramos la clave de error
+            $alert = '<div class="alert-box alert-danger"><span class="alert-tag">ERROR</span><span>' . htmlspecialchars($msg ?: $err) . '</span></div>';
     }
 }
+
 if (isset($_GET['registro']) && $_GET['registro'] == 'exito') {
-    echo '<p>¡Registro exitoso! Ahora puedes iniciar sesión.</p>';
+    $alert = '<div class="alert-box alert-success"><span class="alert-tag">ÉXITO</span><span>Registro exitoso. Ahora puedes iniciar sesión.</span></div>';
+}
+
+// Mostrar excepción interna si el autenticador la pasó en 'e'
+if (isset($_GET['e']) && $_GET['e'] !== '') {
+    $exc = urldecode($_GET['e']);
+    $alert .= '<div class="alert-box alert-danger"><span class="alert-tag">ERROR</span><span><strong>Excepción:</strong> ' . htmlspecialchars($exc) . '</span></div>';
 }
 ?>
 
@@ -45,7 +74,6 @@ if (isset($_GET['registro']) && $_GET['registro'] == 'exito') {
         <button type="button" id="btnPersona" class="btn btn-primary" onclick="mostrarFormulario('persona')">Cliente Personal</button>
         <button type="button" id="btnEmpresa" class="btn btn-outline" onclick="mostrarFormulario('empresa')">Empresa / Corporativo</button>
     </div>
-</div>
 
 <!-- FORMULARIO PERSONA (Por defecto activo) -->
 <div id="formPersona" style="display: block;">
@@ -134,6 +162,7 @@ if (isset($_GET['registro']) && $_GET['registro'] == 'exito') {
 
         <button type="submit" class="btn btn-primary">Registrar Empresa</button>
     </form>
+
 </div>
 
 <div style="text-align: center; margin-top: 1.5rem;">

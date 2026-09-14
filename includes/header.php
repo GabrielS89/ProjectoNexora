@@ -1,7 +1,7 @@
 <?php
-// Header persistente con navbar. Este archivo debe incluirse al principio de cada página
+// Header persistente con navbar. Este archivo debe incluirse al principio de cada pagina
 
-// Incluir configuración y sesión
+// Incluir configuración y sesion
 require_once(INCLUDES_DIR . '/config.php');
 
 // Obtener información del usuario si está logueado
@@ -9,6 +9,7 @@ $isLoggedIn = isUserLoggedIn();
 $currentUser = getCurrentUser();
 
 // Verificación de autenticación requerida
+
 // Las páginas pueden definir $require_login = true antes de incluir este archivo
 if (isset($require_login) && $require_login && !$isLoggedIn) {
     header('Location: ' . PUBLIC_PATH . '/login.php');
@@ -37,6 +38,17 @@ if (isset($require_admin) && $require_admin) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     
+    <!-- Script Anti-FOUC para Cargar Tema Inicial -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light' || savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
     <!-- Conexión CSS -->
     <link rel="stylesheet" href="<?php echo INCLUDES_PATH; ?>/css/style.css">
     
@@ -68,9 +80,11 @@ if (isset($require_admin) && $require_admin) {
                     <li>
                         <a href="<?php echo PUBLIC_PATH; ?>/index.php">Inicio</a>
                     </li>
+
                     <li>
                         <a href="<?php echo VIEWS_PATH; ?>/tienda.php">Tienda</a>
                     </li>
+                    <?php if (isset($_SESSION['usuario_rol']) && in_array($_SESSION['usuario_rol'], [2, 3])): ?>
                     <li>
                         <a href="<?php echo PUBLIC_PATH; ?>/index.php#planes">Planes</a>
                     </li>
@@ -103,7 +117,7 @@ if (isset($require_admin) && $require_admin) {
                 <?php if ($isLoggedIn): ?>
                     <!-- Usuario logueado -->
                     <div class="user-info">
-                        <strong><?php echo htmlspecialchars($currentUser['email']); ?></strong>
+                    <a href="<?php echo VIEWS_PATH; ?>/perfil.php" style="color:inherit; text-decoration:none;">    <strong><?php echo htmlspecialchars($currentUser['email']); ?></strong> </a>
                     </div>
                     <div class="user-avatar">
                         <img
