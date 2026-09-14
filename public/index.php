@@ -30,7 +30,7 @@ require_once(INCLUDES_DIR . '/header.php');
 
 
 
-    <?php 
+    <?php
     $is_embedded = true;
     require_once(__DIR__ . '/../src/views/planes.php');
 
