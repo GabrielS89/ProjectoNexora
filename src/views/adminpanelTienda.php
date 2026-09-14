@@ -128,7 +128,7 @@ $proveedores = $stmtProv->fetchAll();
 ?>
 
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--card-border); padding-bottom: 0.8rem;">
-        <h2 style="margin: 0; font-size: 1.3rem;"><?php echo $modo_edicion ? "✏ Editar Artículo de Tienda" : "➕ Agregar Nuevo Artículo a la Tienda"; ?></h2>
+        <h2 style="margin: 0; font-size: 1.3rem;"><?php echo $modo_edicion ? "✏ Editar Artículo de Tienda" : "Agregar Nuevo Artículo a la Tienda"; ?></h2>
         <?php if ($modo_edicion): ?>
             <a href="adminpanelTienda.php?partial=1" class="partial-link btn btn-outline btn-sm">Cancelar Edición</a>
         <?php endif; ?>
@@ -187,7 +187,7 @@ $proveedores = $stmtProv->fetchAll();
     </form>
 
     <div style="margin-top: 2rem;">
-        <h2 style="font-size: 1.3rem; margin-bottom: 1rem;">📦 Catálogo Actual de Productos</h2>
+        <h2 style="font-size: 1.3rem; margin-bottom: 1rem;"> Catálogo Actual de Productos</h2>
         <div style="overflow-x: auto;">
             <table>
                 <thead>
@@ -219,7 +219,7 @@ $proveedores = $stmtProv->fetchAll();
                                 <td><?= htmlspecialchars($p['Nombre_Empresa']); ?></td>
                                 <td>
                                     <a class="partial-link" href="adminpanelTienda.php?action=edit&id=<?= $p['ID_Producto']; ?>&partial=1">✏ Editar</a>
-                                    <a class="partial-link" href="adminpanelTienda.php?action=delete&id=<?= $p['ID_Producto']; ?>&partial=1" data-confirm="¿Seguro que deseas eliminar este producto?">🗑 Borrar</a>
+                                    <a class="partial-link" href="adminpanelTienda.php?action=delete&id=<?= $p['ID_Producto']; ?>&partial=1" data-confirm="¿Seguro que deseas eliminar este producto?"> Borrar</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

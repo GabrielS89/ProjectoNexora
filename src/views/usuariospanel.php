@@ -445,7 +445,7 @@ $usuarios = $stmt->fetchAll();
                                 <td><?= htmlspecialchars($user['Telefono'] ?: 'N/A'); ?></td>
                                 <td>
                                     <span style="font-size: 0.8rem; font-weight: 600; color: <?= ($user['Tipo_Persona'] === 'Empresa') ? '#38bdf8' : 'var(--text-muted)'; ?>;">
-                                        <?= ($user['Tipo_Persona'] === 'Empresa') ? '🏢 Empresa' : '👤 Persona'; ?>
+                                        <?= ($user['Tipo_Persona'] === 'Empresa') ? 'Empresa' : 'Persona'; ?>
                                     </span>
                                 </td>
                                 <td>

@@ -7,49 +7,42 @@ require_once(INCLUDES_DIR . '/header.php');
 $es_admin = isset($_SESSION['usuario_rol']) && in_array($_SESSION['usuario_rol'], [2, 3]);
 ?>
 
-<div>
-    <h1>Panel de Control</h1>
-    <a href="<?php echo PUBLIC_PATH; ?>/logout.php">Cerrar Sesión</a>
-</div>
-
-<div>
-    
-    <div>
-        
-        <h2>¡Bienvenido, <?php echo htmlspecialchars($_SESSION['email'] ?? 'Usuario'); ?>!</h2>
-        <p>Este es tu panel de control personal donde puedes gestionar tu cuenta y acceder a las herramientas disponibles.</p>
-        
+<div class="pagina-panel">
+    <div class="encabezado-pagina">
         <div>
+            <p class="texto-previo">Espacio de trabajo</p>
+            <h1>Panel de Control</h1>
+            <p class="descripcion-pagina">Gestiona tu cuenta y accede rápidamente a las herramientas disponibles.</p>
+        </div>
+        <a class="btn btn-danger" href="<?php echo PUBLIC_PATH; ?>/logout.php">Cerrar Sesión</a>
+    </div>
+
+    <section class="feature-card bienvenida-panel">
+        <h2>¡Bienvenido, <?php echo htmlspecialchars($_SESSION['email'] ?? 'Usuario'); ?>!</h2>
+        <p class="texto-bienvenida">Este es tu panel de control personal. Desde aquí puedes consultar tu información y continuar con tus tareas.</p>
+        <div class="datos-cuenta">
             <p><strong>ID de Usuario:</strong> #<?php echo $_SESSION['user_id'] ?? 'N/A'; ?></p>
             <p><strong>Email:</strong> <?php echo htmlspecialchars($_SESSION['email'] ?? 'N/A'); ?></p>
             <p><strong>Tipo de Usuario:</strong> <?php echo ucfirst($_SESSION['tipo_usuario'] ?? 'N/A'); ?></p>
         </div>
-    </div>
-    
-        <br>
-    
-    <div>
-        
+    </section>
+
+    <div class="rejilla-panel">
 <?php if ($es_admin): ?>
-
-    <div>
-        <h3>Panel Administrativo</h3>
-        <p>Tienes acceso a herramientas de gestión de usuarios y sistema.</p>
-        <a href="<?php echo VIEWS_PATH; ?>/adminpanel.php">Acceder al Panel de Admin</a>
-    </div>
-
+        <section class="feature-card tarjeta-panel tarjeta-admin">
+            <p class="texto-previo">Administración</p>
+            <h3>Panel Administrativo</h3>
+            <p>Tienes acceso a herramientas de gestión de usuarios y sistema.</p>
+            <a class="btn btn-primary" href="<?php echo VIEWS_PATH; ?>/adminpanel.php">Acceder al Panel de Admin</a>
+        </section>
 <?php endif; ?>
 
-        <br>
-
-    <div>
-        <h3>Mi Perfil</h3>
-        <p>Ver y editar la información de tu perfil así como tus preferencias de cuenta.</p>
-        <a href="<?php echo VIEWS_PATH; ?>/perfil.php">Ver Perfil</a>
-    </div>
-        
-        <br>
-
+        <section class="feature-card tarjeta-panel">
+            <p class="texto-previo">Cuenta</p>
+            <h3>Mi Perfil</h3>
+            <p>Consulta y edita la información de tu perfil y tus preferencias de cuenta.</p>
+            <a class="btn btn-outline" href="<?php echo VIEWS_PATH; ?>/perfil.php">Ver Perfil</a>
+        </section>
     </div>
 </div>
 

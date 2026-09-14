@@ -36,16 +36,16 @@ if (!in_array($initial_tab, $valid_tabs)) {
     <!-- Barra de Pestañas de Navegación CRUD -->
     <div class="admin-tabs" id="adminTabs">
         <button type="button" class="admin-tab-btn <?php echo ($initial_tab === 'usuariospanel') ? 'active' : ''; ?>" onclick="switchAdminTab(this, 'usuariospanel')">
-            👥 Usuarios
+            Usuarios
         </button>
         <button type="button" class="admin-tab-btn <?php echo ($initial_tab === 'adminpanelTienda') ? 'active' : ''; ?>" onclick="switchAdminTab(this, 'adminpanelTienda')">
-            📦 Artículos de Tienda
+            Artículos de Tienda
         </button>
         <button type="button" class="admin-tab-btn <?php echo ($initial_tab === 'proveedorespanel') ? 'active' : ''; ?>" onclick="switchAdminTab(this, 'proveedorespanel')">
-            🏢 Proveedores
+            Proveedores
         </button>
         <button type="button" class="admin-tab-btn <?php echo ($initial_tab === 'cotizaciones_panel') ? 'active' : ''; ?>" onclick="switchAdminTab(this, 'cotizaciones_panel')">
-            📑 Cotizaciones & Planes
+            Cotizaciones & Planes
         </button>
     </div>
 

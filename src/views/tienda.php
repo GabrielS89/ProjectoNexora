@@ -27,7 +27,7 @@ try {
         
         <?php if ($es_admin): ?>
             <div style="margin-top: 1rem;">
-                <a href="<?php echo VIEWS_PATH; ?>/adminpanelTienda.php" class="btn btn-outline btn-sm">
+                <a href="<?php echo VIEWS_PATH; ?>/adminpanel.php" class="btn btn-outline btn-sm">
                     ⚙ Gestionar Productos (Panel Admin)
                 </a>
             </div>
@@ -63,7 +63,7 @@ try {
 
                             <?php if (!empty($p['Nombre_Empresa'])): ?>
                                 <div class="producto-proveedor">
-                                    🏢 Proveedor: <strong><?= htmlspecialchars($p['Nombre_Empresa']); ?></strong>
+                                    Proveedor: <strong><?= htmlspecialchars($p['Nombre_Empresa']); ?></strong>
                                 </div>
                             <?php endif; ?>
 

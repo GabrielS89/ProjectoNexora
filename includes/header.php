@@ -50,7 +50,7 @@ if (isset($require_admin) && $require_admin) {
         })();
     </script>
     <!-- Conexión CSS -->
-    <link rel="stylesheet" href="<?php echo INCLUDES_PATH; ?>/css/style.css">
+    <link rel="stylesheet" href="<?php echo INCLUDES_PATH; ?>/css/style.css?v=<?php echo filemtime(INCLUDES_DIR . '/css/style.css'); ?>">
     <title><?php echo $page_title ?? 'Proyecto 3ro'; ?></title>
 
 </head>
@@ -91,7 +91,7 @@ if (isset($require_admin) && $require_admin) {
                     <?php if (isset($_SESSION['usuario_rol']) && in_array($_SESSION['usuario_rol'], [2, 3])): ?>
                     <li>
                         <a href="<?php echo VIEWS_PATH; ?>/adminpanel.php" style="color: #4ade80; font-weight: 700;">
-                            ⚙ Panel Admin
+                            Panel Admin
                         </a>
                     </li>
                     <?php endif; ?>

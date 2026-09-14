@@ -13,55 +13,90 @@ $msg = isset($_GET['mensaje']) ? urldecode($_GET['mensaje']) : '';
 if ($err !== null) {
     switch ($err) {
         case 'campos_vacios':
-            $alert = '<p style="color:darkred;"><strong>Error:</strong> Por favor, rellena todos los campos obligatorios.</p>';
+            $alert = '<div class="alert-box alert-danger"><span class="alert-tag">ERROR</span><span>Por favor, rellena todos los campos obligatorios.</span></div>';
             break;
         case 'password_invalido':
-            $alert = '<p style="color:darkred;"><strong>Contraseña inválida:</strong><br>' . htmlspecialchars($msg) . '</p>';
+            $alert = '<div class="alert-box alert-danger"><span class="alert-tag">ERROR</span><span><strong>Contraseña inválida:</strong><br>' . htmlspecialchars($msg) . '</span></div>';
             break;
         case 'email_usado':
-            $alert = '<p style="color:darkred;"><strong>Error:</strong> El email ya está registrado.</p>';
+            $alert = '<div class="alert-box alert-danger"><span class="alert-tag">ERROR</span><span>El email ya está registrado.</span></div>';
             break;
         case 'telefono_usado':
-            $alert = '<p style="color:darkred;"><strong>Error:</strong> El teléfono ya está registrado.</p>';
+            $alert = '<div class="alert-box alert-danger"><span class="alert-tag">ERROR</span><span>El teléfono ya está registrado.</span></div>';
             break;
         case 'rut_usado':
-            $alert = '<p style="color:darkred;"><strong>Error:</strong> El RUT ya está registrado.</p>';
+            $alert = '<div class="alert-box alert-danger"><span class="alert-tag">ERROR</span><span>El RUT ya está registrado.</span></div>';
             break;
         case 'nombre_empresa_usado':
-            $alert = '<p style="color:darkred;"><strong>Error:</strong> El nombre de la empresa ya está registrado.</p>';
+            $alert = '<div class="alert-box alert-danger"><span class="alert-tag">ERROR</span><span>El nombre de la empresa ya está registrado.</span></div>';
             break;
         default:
             // Mensaje genérico: si hay detalle lo mostramos, si no mostramos la clave de error
-            $alert = '<p style="color:darkred;"><strong>Error:</strong> ' . htmlspecialchars($msg ?: $err) . '</p>';
+            $alert = '<div class="alert-box alert-danger"><span class="alert-tag">ERROR</span><span>' . htmlspecialchars($msg ?: $err) . '</span></div>';
     }
 }
 
 if (isset($_GET['registro']) && $_GET['registro'] == 'exito') {
-    $alert = '<p style="color:green;"><strong>Registro exitoso:</strong> Ahora puedes iniciar sesión.</p>';
+    $alert = '<div class="alert-box alert-success"><span class="alert-tag">ÉXITO</span><span>Registro exitoso. Ahora puedes iniciar sesión.</span></div>';
 }
 
 // Mostrar excepción interna si el autenticador la pasó en 'e'
 if (isset($_GET['e']) && $_GET['e'] !== '') {
     $exc = urldecode($_GET['e']);
-    $alert .= '<pre style="color:darkred; white-space:pre-wrap;"><strong>Excepción:</strong> ' . htmlspecialchars($exc) . '</pre>';
+    $alert .= '<div class="alert-box alert-danger"><span class="alert-tag">ERROR</span><span><strong>Excepción:</strong> ' . htmlspecialchars($exc) . '</span></div>';
 }
-
-if ($alert !== '') echo $alert;
 ?>
 
-<div>
-
-    <h1>Registro de Usuario</h1>
-    <p>Selecciona el tipo de usuario:</p>
-    <div class="hero-buttons">
-        <button type="button" id="btnEmpresa" class="btn btn-primary" onclick="mostrarFormulario('empresa')">Registrarse como Empresa</button>
-        <button type="button" id="btnPersona" class="btn btn-primary" onclick="mostrarFormulario('persona')">Registrarse como Persona</button>
-        <div class="g-signin2" data-onsuccess="onSignIn"></div>
+<main class="registro-page">
+    <div class="encabezado-pagina registro-header">
+        <div>
+            <p class="texto-previo">Crear una cuenta</p>
+            <h1>Registro de Usuario</h1>
+            <p class="descripcion-pagina">Elige el perfil que mejor representa tu forma de usar Nexora.</p>
+        </div>
+        <a class="btn btn-outline" href="<?php echo PUBLIC_PATH; ?>/login.php">Ya tengo una cuenta</a>
     </div>
-</div>
 
-<!-- FORMULARIO EMPRESA -->
-<div id="formEmpresa">
+<?php if ($alert !== '') echo $alert; ?>
+
+    <section class="registro-tipos">
+        <div class="registro-tipos-heading">
+            <div>
+                <p class="texto-previo">Tipos de usuario</p>
+                <h2>¿Cómo quieres participar?</h2>
+            </div>
+            <p>Podrás completar los datos específicos según el perfil que elijas.</p>
+        </div>
+
+        <div class="registro-tipos-grid">
+            <article class="registro-tipo-card">
+                <span class="registro-tipo-icon">EMP</span>
+                <h3>Empresa</h3>
+                <p>Para organizaciones que buscan mostrar su actividad, sector y necesidades.</p>
+                <ul>
+                    <li>Perfil corporativo</li>
+                    <li>Datos de contacto y ubicación</li>
+                    <li>Información del representante</li>
+                </ul>
+                <button type="button" id="btnEmpresa" class="btn btn-primary" data-registro-tipo="empresa">Registrarme como Empresa</button>
+            </article>
+
+            <article class="registro-tipo-card">
+                <span class="registro-tipo-icon">PER</span>
+                <h3>Persona</h3>
+                <p>Para clientes que desean acceder a sus herramientas y gestionar su cuenta.</p>
+                <ul>
+                    <li>Cuenta personal</li>
+                    <li>Registro rápido</li>
+                    <li>Acceso a planes y servicios</li>
+                </ul>
+                <button type="button" id="btnPersona" class="btn btn-outline" data-registro-tipo="persona">Registrarme como Persona</button>
+            </article>
+        </div>
+    </section>
+
+    <!-- FORMULARIO EMPRESA -->
+<div id="formEmpresa" class="registro-form-panel">
     <h2>Registro para Empresas</h2>
     <form action="../src/controllers/autenticador.php" method="POST">
         <input type="hidden" name="action" value="register">
@@ -123,12 +158,12 @@ if ($alert !== '') echo $alert;
         <label>Teléfono directo:</label><br>
         <input type="text" name="rep_telefono" required><br><br>
 
-        <button type="submit">Registrar Empresa</button>
+        <button type="submit" class="btn btn-primary btn-block">Registrar Empresa</button>
     </form>
 </div>
 
-<!-- FORMULARIO PERSONA -->
-<div id="formPersona">
+    <!-- FORMULARIO PERSONA -->
+<div id="formPersona" class="registro-form-panel">
     <h2>Registro para Clientes Regulares</h2>
     <form action="../src/controllers/autenticador.php" method="POST">
         <input type="hidden" name="action" value="register">
@@ -147,34 +182,33 @@ if ($alert !== '') echo $alert;
         <label>Número de teléfono:</label><br>
         <input type="text" name="telefono" required><br><br>
 
-        <button type="submit">Crear cuenta personal</button>
+        <button type="submit" class="btn btn-primary btn-block">Crear cuenta personal</button>
     </form>
-
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
-
-    
 
 </div>
 
-<a href="<?php echo PUBLIC_PATH; ?>/login.php">Volver al login</a>
+    <a class="registro-back-link" href="<?php echo PUBLIC_PATH; ?>/login.php">Volver al login</a>
+</main>
 
 <script>
-function mostrarFormulario(tipo) {
-    document.getElementById("formEmpresa").style.display = (tipo === "empresa") ? "block" : "none";
-    document.getElementById("formPersona").style.display = (tipo === "persona") ? "block" : "none";
-    
-    // Cambiar estilo de los botones
-    var btnEmpresa = document.getElementById("btnEmpresa");
-    var btnPersona = document.getElementById("btnPersona");
-    
-    if (tipo === "empresa") {
-        btnEmpresa.style.opacity = "1";
-        btnPersona.style.opacity = "0.5";
-    } else if (tipo === "persona") {
-        btnPersona.style.opacity = "1";
-        btnEmpresa.style.opacity = "0.5";
-    }
-}
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('[data-registro-tipo]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            var tipo = button.getAttribute('data-registro-tipo');
+            var formularioActivo = document.getElementById(tipo === 'empresa' ? 'formEmpresa' : 'formPersona');
+
+            document.querySelectorAll('.registro-form-panel').forEach(function (panel) {
+                panel.classList.toggle('registro-form-visible', panel === formularioActivo);
+            });
+
+            document.querySelectorAll('[data-registro-tipo]').forEach(function (option) {
+                option.classList.toggle('registro-tipo-activo', option === button);
+            });
+
+            formularioActivo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+});
 </script>
 
 <?php require_once(INCLUDES_DIR . '/footer.php'); ?>
