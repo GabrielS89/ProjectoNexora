@@ -7,42 +7,54 @@ require_once(INCLUDES_DIR . '/header.php');
 $es_admin = isset($_SESSION['usuario_rol']) && in_array($_SESSION['usuario_rol'], [2, 3]);
 ?>
 
-<div class="pagina-panel">
-    <div class="encabezado-pagina">
-        <div>
-            <p class="texto-previo">Espacio de trabajo</p>
-            <h1>Panel de Control</h1>
-            <p class="descripcion-pagina">Gestiona tu cuenta y accede rápidamente a las herramientas disponibles.</p>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+        <h1 style="font-size: 2.2rem;">Panel de Control</h1>
+        <p style="color: var(--text-muted);">Gestiona tu información y servicios desde un solo lugar.</p>
+    </div>
+    <a href="<?php echo PUBLIC_PATH; ?>/logout.php" class="btn btn-danger">Cerrar Sesión</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2rem;">
+    <!-- Tarjeta de Bienvenida y Datos -->
+    <div class="feature-card" style="background: var(--card-bg);">
+        <h2 style="color: var(--primary-green); margin-bottom: 0.5rem;">¡Bienvenido, <?php echo htmlspecialchars($_SESSION['email'] ?? 'Usuario'); ?>!</h2>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Este es tu panel de control personal en Nexora.</p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; background: var(--bg-color); padding: 1.2rem; border-radius: 12px; border: 1px solid var(--card-border);">
+            <p><strong>ID de Usuario:</strong> <span style="color: var(--primary-green);">#<?php echo $_SESSION['user_id'] ?? 'N/A'; ?></span></p>
+            <p><strong>Email:</strong> <?php echo htmlspecialchars($_SESSION['email'] ?? 'N/A'); ?></p>
+            <p><strong>Tipo de Usuario:</strong> <span style="font-weight: 600;"><?php echo ucfirst($_SESSION['tipo_usuario'] ?? 'N/A'); ?></span></p>
         </div>
-        <a class="btn btn-danger" href="<?php echo PUBLIC_PATH; ?>/logout.php">Cerrar Sesión</a>
     </div>
 
-    <section class="feature-card bienvenida-panel">
-        <h2>¡Bienvenido, <?php echo htmlspecialchars($_SESSION['email'] ?? 'Usuario'); ?>!</h2>
-        <p class="texto-bienvenida">Este es tu panel de control personal. Desde aquí puedes consultar tu información y continuar con tus tareas.</p>
-        <div class="datos-cuenta">
-            <p><strong>ID de Usuario:</strong> #<?php echo $_SESSION['user_id'] ?? 'N/A'; ?></p>
-            <p><strong>Email:</strong> <?php echo htmlspecialchars($_SESSION['email'] ?? 'N/A'); ?></p>
-            <p><strong>Tipo de Usuario:</strong> <?php echo ucfirst($_SESSION['tipo_usuario'] ?? 'N/A'); ?></p>
-        </div>
-    </section>
-
-    <div class="rejilla-panel">
-<?php if ($es_admin): ?>
-        <section class="feature-card tarjeta-panel tarjeta-admin">
-            <p class="texto-previo">Administración</p>
+    <!-- Grilla de Acciones Rápidas -->
+    <div class="features-grid" style="margin-top: 0; margin-bottom: 1rem;">
+        <?php if ($es_admin): ?>
+        <div class="feature-card">
             <h3>Panel Administrativo</h3>
-            <p>Tienes acceso a herramientas de gestión de usuarios y sistema.</p>
-            <a class="btn btn-primary" href="<?php echo VIEWS_PATH; ?>/adminpanel.php">Acceder al Panel de Admin</a>
-        </section>
-<?php endif; ?>
+            <p style="margin-bottom: 1.2rem;">Acceso completo a la gestión de usuarios, roles y configuración global del sistema.</p>
+            <a href="<?php echo VIEWS_PATH; ?>/adminpanel.php" class="btn btn-primary">Acceder al Panel Admin</a>
+        </div>
+        <?php endif; ?>
 
-        <section class="feature-card tarjeta-panel">
-            <p class="texto-previo">Cuenta</p>
+        <div class="feature-card">
             <h3>Mi Perfil</h3>
-            <p>Consulta y edita la información de tu perfil y tus preferencias de cuenta.</p>
-            <a class="btn btn-outline" href="<?php echo VIEWS_PATH; ?>/perfil.php">Ver Perfil</a>
-        </section>
+            <p style="margin-bottom: 1.2rem;">Ver y editar la información de tu cuenta, avatar y datos personales.</p>
+            <a href="<?php echo VIEWS_PATH; ?>/dashboard.php" class="btn btn-outline">Ver Perfil</a>
+        </div>
+
+        <div class="feature-card">
+            <h3>Configuración</h3>
+            <p style="margin-bottom: 1.2rem;">Ajusta tus preferencias de privacidad y notificaciones de tu espacio de trabajo.</p>
+            <a href="<?php echo VIEWS_PATH; ?>/settings.php" class="btn btn-outline">Ir a Configuración</a>
+        </div>
+        
+        <div class="feature-card">
+            <h3>Soporte Técnico</h3>
+            <p style="margin-bottom: 1.2rem;">Si necesitas asistencia o resolver dudas, nuestro equipo está disponible.</p>
+            <a href="<?php echo PUBLIC_PATH; ?>/contacto.php" class="btn btn-outline">Contactar Soporte</a>
+        </div>
     </div>
 </div>
 
