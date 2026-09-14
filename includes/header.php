@@ -88,6 +88,7 @@ if (isset($require_admin) && $require_admin) {
                     <li>
                         <a href="<?php echo PUBLIC_PATH; ?>/index.php#planes">Planes</a>
                     </li>
+                    <?php endif; ?>
                 <?php else: ?>
                     <!-- Menú para usuarios no logueados -->
                     <li>
