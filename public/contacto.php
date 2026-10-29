@@ -4,11 +4,11 @@ require_once(__DIR__ . '/../includes/config.php');
 require_once(INCLUDES_DIR . '/header.php');
 ?>
 
-<div style="text-align: center; max-width: 600px; margin: 0 auto;">
-    <h1 style="margin-bottom: 0.5rem;">Contacto</h1>
-    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">¿Tienes alguna pregunta o consulta? Déjanos un mensaje y te responderemos a la brevedad.</p>
+<div class="registro-shell contacto-shell">
+    <h1 class="titulo-admin contacto-title">Contacto</h1>
+    <p class="texto-sutil contacto-subtitle">¿Tienes alguna pregunta o consulta? Déjanos un mensaje y te responderemos a la brevedad.</p>
 
-    <form action="#" method="POST" style="text-align: left;" onsubmit="event.preventDefault(); alert('¡Gracias por tu mensaje! Te contactaremos pronto.');">
+    <form action="#" method="POST" class="contacto-form" onsubmit="event.preventDefault(); alert('¡Gracias por tu mensaje! Te contactaremos pronto.');">
         <label for="nombre">Nombre completo:</label>
         <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
 

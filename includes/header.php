@@ -1,4 +1,5 @@
 <?php
+ob_start();
 // Header persistente con navbar. Este archivo debe incluirse al principio de cada pagina
 
 // Incluir configuración y sesion
@@ -19,7 +20,7 @@ if (isset($require_login) && $require_login && !$isLoggedIn) {
 // Verificación de permisos de administrador
 // Las páginas pueden definir $require_admin = true antes de incluir este archivo
 if (isset($require_admin) && $require_admin) {
-    if (!$isLoggedIn || !isset($_SESSION['usuario_rol']) || !in_array($_SESSION['usuario_rol'], [2, 3])) {
+    if (!$isLoggedIn || !isset($_SESSION['usuario_rol']) || !in_array($_SESSION['usuario_rol'], [2, 3, 4])) {
         header('Location: ' . PUBLIC_PATH . '/index.php?error=acceso_restringido');
         exit();
     }
@@ -118,27 +119,26 @@ if (isset($require_admin) && $require_admin) {
                 <?php if ($isLoggedIn): ?>
                     <!-- Usuario logueado -->
                     <div class="user-info">
-                    <a href="<?php echo VIEWS_PATH; ?>/perfil.php" style="color:inherit; text-decoration:none;">    <strong><?php echo htmlspecialchars($currentUser['email']); ?></strong> </a>
+                        <a href="<?php echo VIEWS_PATH; ?>/perfil.php"><strong><?php echo htmlspecialchars($currentUser['email']); ?></strong></a>
                     </div>
                     <div class="user-avatar">
                         <img
                             src="<?php echo htmlspecialchars($currentUser['avatar'] ?? VIEWS_PATH . '/uploads/default-avatar.png'); ?>"
                             alt="Avatar"
                             class="avatar-img"
-                            style="width: 40px; height: 40px; border-radius: 50%;"
                         >
                     </div>
                     <a href="<?php echo PUBLIC_PATH; ?>/logout.php" class="btn btn-danger">
                         Cerrar Sesión
                     </a>
                 <?php else: ?>
+                
                     <!-- Usuario no logueado -->
                     <div class="user-avatar">
                         <img
                             src="<?php echo VIEWS_PATH; ?>/uploads/default-avatar.png"
                             alt="Avatar predeterminado"
                             class="avatar-img"
-                            style="width: 40px; height: 40px; border-radius: 50%;"
                         >
                     </div>
                     <a href="<?php echo PUBLIC_PATH; ?>/login.php" class="btn btn-primary">

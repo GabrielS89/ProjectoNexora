@@ -27,7 +27,7 @@ if ($isEmpresa && isset($currentUser['id'])) {
     // Verificar si tiene una solicitud de cotización custom pendiente de aprobación
     $stmtSol = $pdo->prepare("
         SELECT ID_Solicitud, Fecha_Solicitud,
-               Cant_PC, Cant_Impresoras, Cant_Puntos_Red, Cant_Servidores, Cant_Wifi
+                Cant_PC, Cant_Impresoras, Cant_Puntos_Red, Cant_Servidores, Cant_Wifi
         FROM solicitud_cotizacion
         WHERE ID_Usuario = ? AND Estado = 'Pendiente'
         ORDER BY Fecha_Solicitud DESC
@@ -47,21 +47,19 @@ unset($_SESSION['success_message'], $_SESSION['error_message']);
 
     <!-- Mensajes de feedback -->
     <?php if (!empty($success_msg)): ?>
-        <div class="alert-box alert-success">
-            <span class="alert-tag">EXITO</span>
-            <div><?php echo $success_msg; ?></div>
+        <div class="alerta alerta--exito">
+            <?php echo htmlspecialchars($success_msg); ?>
         </div>
     <?php endif; ?>
 
     <?php if (!empty($error_msg)): ?>
-        <div class="alert-box alert-danger">
-            <span class="alert-tag">ERROR</span>
-            <div><?php echo htmlspecialchars($error_msg); ?></div>
+        <div class="alerta alerta--error">
+            <?php echo htmlspecialchars($error_msg); ?>
         </div>
     <?php endif; ?>
 
     <?php if ($is_standalone): ?>
-    <div class="hero-section" style="padding-bottom: 1.5rem;">
+    <div class="hero-section">
         <h1>Planes de <span>Infraestructura</span></h1>
         <p class="hero-subtitle">Soluciones tecnologicas llave en mano adaptadas a la escala de tu empresa.</p>
     </div>
@@ -93,7 +91,7 @@ unset($_SESSION['success_message'], $_SESSION['error_message']);
                 </div>
                 <div class="status-actions">
                     <form action="<?php echo VIEWS_PATH; ?>/contratar_plan.php" method="POST"
-                          onsubmit="return confirm('¿Seguro que deseas cancelar tu solicitud de cotizacion?');">
+                            onsubmit="return confirm('¿Seguro que deseas cancelar tu solicitud de cotizacion?');">
                         <input type="hidden" name="action" value="cancel_solicitud">
                         <button type="submit" class="btn btn-danger btn-sm">Cancelar Solicitud</button>
                     </form>
@@ -124,7 +122,7 @@ unset($_SESSION['success_message'], $_SESSION['error_message']);
                 </div>
                 <div class="status-actions">
                     <form action="<?php echo VIEWS_PATH; ?>/contratar_plan.php" method="POST"
-                          onsubmit="return confirm('¿Seguro que deseas dar de baja tu plan actual?');">
+                            onsubmit="return confirm('¿Seguro que deseas dar de baja tu plan actual?');">
                         <input type="hidden" name="action" value="cancel">
                         <button type="submit" class="btn btn-danger btn-sm">Dar de baja plan</button>
                     </form>
@@ -195,22 +193,52 @@ unset($_SESSION['success_message'], $_SESSION['error_message']);
                         <?php elseif ($currentPlanId === 1): ?>
                             <button class="btn btn-active-plan" disabled>Plan Activo</button>
                         <?php elseif ($currentPlanId > 0): ?>
-                            <form action="<?php echo VIEWS_PATH; ?>/contratar_plan.php" method="POST" onsubmit="return confirm('¿Confirmas que deseas cambiar al Plan Start-Up?');">
-                                <input type="hidden" name="action" value="contract">
+                            <form action="<?php echo VIEWS_PATH; ?>/contratar_plan.php" method="POST" onsubmit="return confirm('¿Confirmas que deseas solicitar este paquete de infraestructura?');">
+                                <input type="hidden" name="action" value="cotizacion">
                                 <input type="hidden" name="plan_id" value="1">
-                                <button type="submit" class="btn btn-primary btn-block">Cambiar a este Plan</button>
+                                <div class="config-item-row compact">
+                                    <label>Tipo</label>
+                                    <select name="tipo_ordenador" class="custom-select" required>
+                                        <option value="Oficina">Oficina</option>
+                                        <option value="Desarrollo">Desarrollo</option>
+                                    </select>
+                                </div>
+                                <div class="config-item-row compact">
+                                    <label>Gama</label>
+                                    <select name="gama_equipo" class="custom-select" required>
+                                        <option value="Baja">Baja</option>
+                                        <option value="Media" selected>Media</option>
+                                        <option value="Alta">Alta</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block">Solicitar este paquete</button>
                             </form>
                         <?php else: ?>
-                            <form action="<?php echo VIEWS_PATH; ?>/contratar_plan.php" method="POST" onsubmit="return confirm('¿Confirmas que deseas contratar el Plan Start-Up?');">
-                                <input type="hidden" name="action" value="contract">
+                            <form action="<?php echo VIEWS_PATH; ?>/contratar_plan.php" method="POST" onsubmit="return confirm('¿Deseas enviar una solicitud para este paquete?');">
+                                <input type="hidden" name="action" value="cotizacion">
                                 <input type="hidden" name="plan_id" value="1">
-                                <button type="submit" class="btn btn-primary btn-block">Contratar Plan</button>
+                                <div class="config-item-row compact">
+                                    <label>Tipo</label>
+                                    <select name="tipo_ordenador" class="custom-select" required>
+                                        <option value="Oficina">Oficina</option>
+                                        <option value="Desarrollo">Desarrollo</option>
+                                    </select>
+                                </div>
+                                <div class="config-item-row compact">
+                                    <label>Gama</label>
+                                    <select name="gama_equipo" class="custom-select" required>
+                                        <option value="Baja">Baja</option>
+                                        <option value="Media" selected>Media</option>
+                                        <option value="Alta">Alta</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block">Solicitar compra</button>
                             </form>
                         <?php endif; ?>
                     <?php elseif ($isLoggedIn): ?>
                         <button class="btn btn-disabled" disabled>Exclusivo Empresas</button>
                     <?php else: ?>
-                        <a href="<?php echo PUBLIC_PATH; ?>/login.php" class="btn btn-primary btn-block">Iniciar Sesion para Contratar</a>
+                        <a href="<?php echo PUBLIC_PATH; ?>/login.php" class="btn btn-primary btn-block">Iniciar Sesion para Solicitar</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -246,22 +274,52 @@ unset($_SESSION['success_message'], $_SESSION['error_message']);
                         <?php elseif ($currentPlanId === 2): ?>
                             <button class="btn btn-active-plan" disabled>Plan Activo</button>
                         <?php elseif ($currentPlanId > 0): ?>
-                            <form action="<?php echo VIEWS_PATH; ?>/contratar_plan.php" method="POST" onsubmit="return confirm('¿Confirmas que deseas cambiar al Plan Business?');">
-                                <input type="hidden" name="action" value="contract">
+                            <form action="<?php echo VIEWS_PATH; ?>/contratar_plan.php" method="POST" onsubmit="return confirm('¿Confirmas que deseas solicitar este paquete de infraestructura?');">
+                                <input type="hidden" name="action" value="cotizacion">
                                 <input type="hidden" name="plan_id" value="2">
-                                <button type="submit" class="btn btn-primary btn-block">Cambiar a este Plan</button>
+                                <div class="config-item-row compact">
+                                    <label>Tipo</label>
+                                    <select name="tipo_ordenador" class="custom-select" required>
+                                        <option value="Oficina">Oficina</option>
+                                        <option value="Desarrollo">Desarrollo</option>
+                                    </select>
+                                </div>
+                                <div class="config-item-row compact">
+                                    <label>Gama</label>
+                                    <select name="gama_equipo" class="custom-select" required>
+                                        <option value="Baja">Baja</option>
+                                        <option value="Media" selected>Media</option>
+                                        <option value="Alta">Alta</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block">Solicitar este paquete</button>
                             </form>
                         <?php else: ?>
-                            <form action="<?php echo VIEWS_PATH; ?>/contratar_plan.php" method="POST" onsubmit="return confirm('¿Confirmas que deseas contratar el Plan Business?');">
-                                <input type="hidden" name="action" value="contract">
+                            <form action="<?php echo VIEWS_PATH; ?>/contratar_plan.php" method="POST" onsubmit="return confirm('¿Deseas enviar una solicitud para este paquete?');">
+                                <input type="hidden" name="action" value="cotizacion">
                                 <input type="hidden" name="plan_id" value="2">
-                                <button type="submit" class="btn btn-primary btn-block">Contratar Plan</button>
+                                <div class="config-item-row compact">
+                                    <label>Tipo</label>
+                                    <select name="tipo_ordenador" class="custom-select" required>
+                                        <option value="Oficina">Oficina</option>
+                                        <option value="Desarrollo">Desarrollo</option>
+                                    </select>
+                                </div>
+                                <div class="config-item-row compact">
+                                    <label>Gama</label>
+                                    <select name="gama_equipo" class="custom-select" required>
+                                        <option value="Baja">Baja</option>
+                                        <option value="Media" selected>Media</option>
+                                        <option value="Alta">Alta</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block">Solicitar compra</button>
                             </form>
                         <?php endif; ?>
                     <?php elseif ($isLoggedIn): ?>
                         <button class="btn btn-disabled" disabled>Exclusivo Empresas</button>
                     <?php else: ?>
-                        <a href="<?php echo PUBLIC_PATH; ?>/login.php" class="btn btn-outline btn-block">Iniciar Sesion para Contratar</a>
+                        <a href="<?php echo PUBLIC_PATH; ?>/login.php" class="btn btn-outline btn-block">Iniciar Sesion para Solicitar</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -269,9 +327,9 @@ unset($_SESSION['success_message'], $_SESSION['error_message']);
             <!-- PLAN CUSTOM / COTIZACION CON COTIZADOR -->
             <div class="plan-card <?php echo $solicitudPendiente ? 'is-current' : ''; ?>">
                 <?php if ($solicitudPendiente): ?>
-                    <div class="badge-current" style="background: linear-gradient(135deg, #d97706, #b45309);">En Revision</div>
+                    <div class="badge-current">En Revision</div>
                 <?php else: ?>
-                    <div class="badge" style="background: #2563eb;">Personalizado</div>
+                    <div class="badge">Personalizado</div>
                 <?php endif; ?>
 
                 <h3>Plan Custom</h3>
@@ -295,7 +353,7 @@ unset($_SESSION['success_message'], $_SESSION['error_message']);
 
                     <?php if ($isEmpresa): ?>
                         <?php if ($solicitudPendiente): ?>
-                            <button class="btn btn-active-plan" disabled style="background: rgba(234, 179, 8, 0.15) !important; color: #facc15 !important; border-color: rgba(234, 179, 8, 0.4) !important;">Solicitud en Revision</button>
+                            <button class="btn btn-active-plan" disabled>Solicitud en Revision</button>
                         <?php else: ?>
                             <button type="button" class="btn btn-primary btn-block" onclick="openCotizacionModal()">
                                 Configurar y Cotizar
@@ -314,23 +372,22 @@ unset($_SESSION['success_message'], $_SESSION['error_message']);
 </div>
 
 <!-- Modal Informativo con Vista Isométrica 3D: Plan Start-Up -->
-<div id="modalInfoStartup" class="custom-modal-overlay" style="display:none;" onclick="closePlanInfoOnBackdrop(event, 'modalInfoStartup')">
+<div id="modalInfoStartup" class="custom-modal-overlay" onclick="closePlanInfoOnBackdrop(event, 'modalInfoStartup')">
     <div class="custom-modal-content modal-info-layout">
         <div class="modal-header">
-            <div style="display:flex; align-items:center; gap:0.6rem;">
-                <h3 style="margin:0;">Plan Start-Up</h3>
-                <span class="badge" style="position:static; transform:none; display:inline-block; padding:3px 10px; border-radius:4px; font-size:0.75rem;">Popular</span>
+            <div class="modal-header-group">
+                <h3 class="modal-title">Plan Start-Up</h3>
+                <span class="badge">Popular</span>
             </div>
             <button type="button" class="modal-close-btn" onclick="closePlanInfoModal('modalInfoStartup')">&times;</button>
         </div>
         
         <div class="modal-info-body">
-            <!-- Columna Izquierda: Información Detallada del Plan -->
             <div class="modal-info-left">
-                <p class="plan-subtitle" style="font-size:1.15rem; margin-bottom:0.35rem; color:var(--primary-green);">4 Estaciones de Trabajo</p>
-                <p class="price-desc" style="margin-bottom:1.2rem; font-size:0.9rem;">Ideal para equipos en crecimiento inicial</p>
+                <p class="plan-subtitle">4 Estaciones de Trabajo</p>
+                <p class="price-desc">Ideal para equipos en crecimiento inicial</p>
                 
-                <h4 style="color:var(--primary-green-hover); font-size:0.9rem; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.75rem;">Detalle del Paquete:</h4>
+                <h4 class="modal-section-title">Detalle del Paquete:</h4>
                 <ul class="modal-features-list">
                     <li>Suministro de 4 computadoras completas de escritorio.</li>
                     <li>Instalacion y cableado estructurado Cat 6.</li>
@@ -340,13 +397,12 @@ unset($_SESSION['success_message'], $_SESSION['error_message']);
                 </ul>
 
                 <div class="modal-info-note">
-                    <small style="color:var(--text-main); line-height:1.4; display:block;">
-                        💡 <strong>Distribución Técnica:</strong> Configuración en isla de 4 puestos de trabajo conectados directamente a switch de red y punto de acceso Wi-Fi corporativo.
+                    <small>
+                        <strong>Distribución Técnica:</strong> Configuración en isla de 4 puestos de trabajo conectados directamente a switch de red y punto de acceso Wi-Fi corporativo.
                     </small>
                 </div>
             </div>
 
-            <!-- Columna Derecha: Render Isométrico 3D -->
             <div class="modal-info-right">
                 <div class="modal-image-wrapper">
                     <img src="<?php echo VIEWS_PATH; ?>/uploads/plan_startup_isometric.jpg" alt="Distribución 3D Isométrica Plan Start-Up" class="modal-plan-img">
@@ -355,10 +411,10 @@ unset($_SESSION['success_message'], $_SESSION['error_message']);
             </div>
         </div>
 
-        <div class="modal-actions" style="margin-top: 1.5rem; border-top: 1px solid var(--card-border); padding-top: 1rem;">
+        <div class="modal-actions">
             <button type="button" class="btn btn-outline" onclick="closePlanInfoModal('modalInfoStartup')">Cerrar</button>
             <?php if ($isEmpresa && $currentPlanId !== 1 && !$solicitudPendiente): ?>
-                <form action="<?php echo VIEWS_PATH; ?>/contratar_plan.php" method="POST" style="margin:0; padding:0; background:transparent; border:none; box-shadow:none;">
+                <form action="<?php echo VIEWS_PATH; ?>/contratar_plan.php" method="POST">
                     <input type="hidden" name="action" value="contract">
                     <input type="hidden" name="plan_id" value="1">
                     <button type="submit" class="btn btn-primary">
@@ -371,23 +427,22 @@ unset($_SESSION['success_message'], $_SESSION['error_message']);
 </div>
 
 <!-- Modal Informativo con Vista Isométrica 3D: Plan Business -->
-<div id="modalInfoBusiness" class="custom-modal-overlay" style="display:none;" onclick="closePlanInfoOnBackdrop(event, 'modalInfoBusiness')">
+<div id="modalInfoBusiness" class="custom-modal-overlay" onclick="closePlanInfoOnBackdrop(event, 'modalInfoBusiness')">
     <div class="custom-modal-content modal-info-layout">
         <div class="modal-header">
-            <div style="display:flex; align-items:center; gap:0.6rem;">
-                <h3 style="margin:0;">Plan Business</h3>
-                <span class="badge" style="position:static; transform:none; display:inline-block; padding:3px 10px; border-radius:4px; font-size:0.75rem; background:linear-gradient(135deg, #10b981, #059669);">Recomendado</span>
+            <div class="modal-header-group">
+                <h3 class="modal-title">Plan Business</h3>
+                <span class="badge">Recomendado</span>
             </div>
             <button type="button" class="modal-close-btn" onclick="closePlanInfoModal('modalInfoBusiness')">&times;</button>
         </div>
         
         <div class="modal-info-body">
-            <!-- Columna Izquierda: Información Detallada del Plan -->
             <div class="modal-info-left">
-                <p class="plan-subtitle" style="font-size:1.15rem; margin-bottom:0.35rem; color:var(--primary-green);">8 Estaciones + Sala de Juntas</p>
-                <p class="price-desc" style="margin-bottom:1.2rem; font-size:0.9rem;">Diseñado para pymes y oficinas consolidadas</p>
+                <p class="plan-subtitle">8 Estaciones + Sala de Juntas</p>
+                <p class="price-desc">Diseñado para pymes y oficinas consolidadas</p>
                 
-                <h4 style="color:var(--primary-green-hover); font-size:0.9rem; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.75rem;">Detalle del Paquete:</h4>
+                <h4 class="modal-section-title">Detalle del Paquete:</h4>
                 <ul class="modal-features-list">
                     <li><strong>8 Computadoras de alto rendimiento</strong> para el área operativa.</li>
                     <li><strong>Sala de Juntas multimedia:</strong> equipada con proyector HD, pantalla blanca retráctil y <strong>1 computadora dedicada</strong> exclusiva para operar presentaciones.</li>
@@ -397,13 +452,12 @@ unset($_SESSION['success_message'], $_SESSION['error_message']);
                 </ul>
 
                 <div class="modal-info-note">
-                    <small style="color:var(--text-main); line-height:1.4; display:block;">
-                        💡 <strong>Distribución Técnica:</strong> Zona operativa con 8 puestos en red Gigabit + Sala de conferencias independiente con sistema audiovisual autónomo (proyector + pantalla + PC de control).
+                    <small>
+                        <strong>Distribución Técnica:</strong> Zona operativa con 8 puestos en red Gigabit + Sala de conferencias independiente con sistema audiovisual autónomo (proyector + pantalla + PC de control).
                     </small>
                 </div>
             </div>
 
-            <!-- Columna Derecha: Render Isométrico 3D -->
             <div class="modal-info-right">
                 <div class="modal-image-wrapper">
                     <img src="<?php echo VIEWS_PATH; ?>/uploads/plan_business_isometric.jpg" alt="Distribución 3D Isométrica Plan Business" class="modal-plan-img">
@@ -412,10 +466,10 @@ unset($_SESSION['success_message'], $_SESSION['error_message']);
             </div>
         </div>
 
-        <div class="modal-actions" style="margin-top: 1.5rem; border-top: 1px solid var(--card-border); padding-top: 1rem;">
+        <div class="modal-actions">
             <button type="button" class="btn btn-outline" onclick="closePlanInfoModal('modalInfoBusiness')">Cerrar</button>
             <?php if ($isEmpresa && $currentPlanId !== 2 && !$solicitudPendiente): ?>
-                <form action="<?php echo VIEWS_PATH; ?>/contratar_plan.php" method="POST" style="margin:0; padding:0; background:transparent; border:none; box-shadow:none;">
+                <form action="<?php echo VIEWS_PATH; ?>/contratar_plan.php" method="POST">
                     <input type="hidden" name="action" value="contract">
                     <input type="hidden" name="plan_id" value="2">
                     <button type="submit" class="btn btn-primary">
@@ -427,128 +481,53 @@ unset($_SESSION['success_message'], $_SESSION['error_message']);
     </div>
 </div>
 
-<!-- Modal Interactivo para Cotizacion Personalizada (Plan Custom) -->
 <?php if ($isEmpresa): ?>
-<style>
-#cotizacionModal .config-item-row {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    background: rgba(13, 25, 19, 0.75) !important;
-    border: 1px solid var(--card-border) !important;
-    border-radius: 8px !important;
-    padding: 0.75rem 1.1rem !important;
-    margin-bottom: 0.65rem !important;
-}
-
-#cotizacionModal .item-info {
-    flex: 1 1 auto !important;
-    text-align: left !important;
-}
-
-#cotizacionModal .item-controls {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: flex-end !important;
-    gap: 1.2rem !important;
-    flex: 0 0 auto !important;
-}
-
-#cotizacionModal .qty-control-wrapper {
-    display: inline-flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    gap: 2px !important;
-    background: rgba(0, 0, 0, 0.6) !important;
-    padding: 2px !important;
-    border-radius: 6px !important;
-    border: 1px solid var(--card-border) !important;
-    width: auto !important;
-    height: auto !important;
-}
-
-#cotizacionModal .qty-btn {
-    width: 28px !important;
-    height: 28px !important;
-    min-width: 28px !important;
-    max-width: 28px !important;
-    min-height: 28px !important;
-    max-height: 28px !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    background: rgba(17, 138, 94, 0.3) !important;
-    border: 1px solid var(--primary-green) !important;
-    color: #fff !important;
-    border-radius: 4px !important;
-    font-size: 1.1rem !important;
-    font-weight: 700 !important;
-    cursor: pointer !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    line-height: 1 !important;
-    box-sizing: border-box !important;
-    flex: 0 0 28px !important;
-}
-
-#cotizacionModal .qty-btn:hover {
-    background: var(--primary-green) !important;
-}
-
-#cotizacionModal .qty-input {
-    width: 46px !important;
-    height: 28px !important;
-    min-width: 46px !important;
-    max-width: 46px !important;
-    min-height: 28px !important;
-    max-height: 28px !important;
-    padding: 0 2px !important;
-    text-align: center !important;
-    margin: 0 !important;
-    font-weight: 700 !important;
-    font-size: 0.95rem !important;
-    border: 1px solid rgba(17, 138, 94, 0.3) !important;
-    border-radius: 4px !important;
-    background: #040806 !important;
-    color: #fff !important;
-    line-height: 28px !important;
-    box-sizing: border-box !important;
-    display: inline-block !important;
-    flex: 0 0 46px !important;
-}
-
-#cotizacionModal .item-subtotal {
-    min-width: 95px !important;
-    text-align: right !important;
-    font-weight: 700 !important;
-    font-size: 0.95rem !important;
-    color: #4ade80 !important;
-    flex: 0 0 auto !important;
-}
-</style>
-<div id="cotizacionModal" class="custom-modal-overlay" style="display:none;" onclick="closeModalOnBackdrop(event)">
+<div id="cotizacionModal" class="custom-modal-overlay" onclick="closeModalOnBackdrop(event)">
     <div class="custom-modal-content">
         <div class="modal-header">
-            <h3>Cotizador de Plan Custom</h3>
+            <h3 class="modal-title">Cotizador de Plan Custom</h3>
             <button type="button" class="modal-close-btn" onclick="closeCotizacionModal()">&times;</button>
         </div>
         <p class="modal-subtitle">Selecciona los componentes para tu infraestructura tecnologica y obten un presupuesto estimado al instante.</p>
         
-        <form action="<?php echo VIEWS_PATH; ?>/contratar_plan.php" method="POST" style="margin: 0; padding: 0; background: transparent; border: none; box-shadow: none; max-width: 100%;">
+        <form action="<?php echo VIEWS_PATH; ?>/contratar_plan.php" method="POST" class="modal-form">
             <input type="hidden" name="action" value="cotizacion">
 
-            <!-- Campo Descripcion -->
-            <label for="custom_descripcion" style="margin-bottom: 0.3rem;"><strong>Descripcion del Proyecto:</strong> <span style="color:#ef4444;">*</span></label>
-            <input type="text" id="custom_descripcion" name="descripcion" placeholder="Ej: Nueva sucursal para 6 puestos operativos y sala tecnica" required style="margin-bottom: 1.25rem;">
+            <label for="custom_descripcion"><strong>Descripcion del Proyecto:</strong> <span class="required-mark">*</span></label>
+            <input type="text" id="custom_descripcion" name="descripcion" placeholder="Ej: Nueva sucursal para 6 puestos operativos y sala tecnica" required>
 
-            <!-- Opciones Predefinidas de Componentes -->
+            <div class="configurator-section-title">Tipo de equipos y nivel de gama</div>
+
+            <div class="config-item-row">
+                <div class="item-info">
+                    <span class="item-title">Tipo de ordenadores</span>
+                    <span class="item-unit-price">Oficina o desarrollo</span>
+                </div>
+                <div class="item-controls">
+                    <select name="tipo_ordenador" class="custom-select" required>
+                        <option value="Oficina">Oficina</option>
+                        <option value="Desarrollo">Desarrollo</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="config-item-row">
+                <div class="item-info">
+                    <span class="item-title">Gama de equipos</span>
+                    <span class="item-unit-price">Baja, media o alta</span>
+                </div>
+                <div class="item-controls">
+                    <select name="gama_equipo" class="custom-select" required>
+                        <option value="Baja">Baja</option>
+                        <option value="Media" selected>Media</option>
+                        <option value="Alta">Alta</option>
+                    </select>
+                </div>
+            </div>
+
             <div class="configurator-section-title">Componentes y Equipamiento</div>
 
             <div class="config-items-list">
-                
-                <!-- Opcion 1: PCs -->
                 <div class="config-item-row">
                     <div class="item-info">
                         <span class="item-title">Computadoras / Estaciones de Trabajo</span>
@@ -564,7 +543,6 @@ unset($_SESSION['success_message'], $_SESSION['error_message']);
                     </div>
                 </div>
 
-                <!-- Opcion 2: Impresoras -->
                 <div class="config-item-row">
                     <div class="item-info">
                         <span class="item-title">Impresoras Multifuncion de Red</span>
@@ -580,7 +558,6 @@ unset($_SESSION['success_message'], $_SESSION['error_message']);
                     </div>
                 </div>
 
-                <!-- Opcion 3: Puntos de Red y Cableado -->
                 <div class="config-item-row">
                     <div class="item-info">
                         <span class="item-title">Puntos de Red y Cableado Estructurado</span>
@@ -596,7 +573,6 @@ unset($_SESSION['success_message'], $_SESSION['error_message']);
                     </div>
                 </div>
 
-                <!-- Opcion 4: Servidores / Rack -->
                 <div class="config-item-row">
                     <div class="item-info">
                         <span class="item-title">Servidor Local / Rack de Comunicaciones</span>
@@ -612,7 +588,6 @@ unset($_SESSION['success_message'], $_SESSION['error_message']);
                     </div>
                 </div>
 
-                <!-- Opcion 5: Wi-Fi Mesh -->
                 <div class="config-item-row">
                     <div class="item-info">
                         <span class="item-title">Sistema Wi-Fi Mesh Empresarial</span>
@@ -627,18 +602,15 @@ unset($_SESSION['success_message'], $_SESSION['error_message']);
                         <span class="item-subtotal" id="subtotal_wifi">$0.00 USD</span>
                     </div>
                 </div>
-
             </div>
 
-            <!-- Resumen Total Estimado en Vivo -->
             <div class="custom-total-card">
                 <span class="total-label">Presupuesto Total Estimado:</span>
                 <span class="total-amount" id="precio_total_display">$800.00 USD</span>
             </div>
 
-            <!-- Campo Notaciones Extra -->
-            <label for="custom_notas" style="margin-bottom: 0.3rem;"><strong>Notaciones y requerimientos adicionales de la empresa:</strong></label>
-            <textarea id="custom_notas" name="notas_extra" rows="3" placeholder="Indica detalles particulares: marcas de preferencia, distribucion fisica, sistemas operativos, fechas tentativas de instalacion, etc." style="margin-bottom: 1.25rem;"></textarea>
+            <label for="custom_notas"><strong>Notaciones y requerimientos adicionales de la empresa:</strong></label>
+            <textarea id="custom_notas" name="notas_extra" rows="3" placeholder="Indica detalles particulares: marcas de preferencia, distribucion fisica, sistemas operativos, fechas tentativas de instalacion, etc."></textarea>
 
             <div class="modal-actions">
                 <button type="button" class="btn btn-outline" onclick="closeCotizacionModal()">Cancelar</button>
@@ -648,30 +620,30 @@ unset($_SESSION['success_message'], $_SESSION['error_message']);
     </div>
 </div>
 
-<!-- Popup de Confirmacion e Informacion antes de enviar la cotizacion -->
-<div id="popupConfirmacionCotizacion" class="custom-modal-overlay" style="display:none; z-index: 2500;" onclick="closePopupOnBackdrop(event)">
-    <div class="custom-modal-content" style="max-width: 520px; text-align: left; padding: 2rem;">
+<div id="popupConfirmacionCotizacion" class="custom-modal-overlay" onclick="closePopupOnBackdrop(event)">
+    <div class="custom-modal-content">
         <div class="modal-header">
-            <h3>Confirmacion de Solicitud</h3>
+            <h3 class="modal-title">Confirmacion de Solicitud</h3>
             <button type="button" class="modal-close-btn" onclick="cerrarPopupConfirmacion()">&times;</button>
         </div>
         
-        <div style="background: rgba(17, 138, 94, 0.1); border: 1px solid var(--primary-green); border-radius: 8px; padding: 1.1rem 1.25rem; margin: 1.2rem 0; font-size: 0.92rem; line-height: 1.5; color: var(--text-main);">
-            <strong style="color: var(--primary-green-hover); display: block; margin-bottom: 0.4rem;">Proceso de Evaluacion:</strong>
+        <div class="confirmacion-cotizacion-box">
+            <strong>Proceso de Evaluacion:</strong>
             El personal de Nexora revisara la solicitud detallada para crear tu Plan Custom. Nuestro equipo se pondra en comunicacion directa con la empresa en caso de requerir precisiones tecnicas o tener dudas sobre la infraestructura solicitada.
         </div>
 
-        <div style="background: rgba(0, 0, 0, 0.5); border: 1px solid var(--card-border); border-radius: 6px; padding: 0.9rem 1.1rem; margin-bottom: 1.4rem; font-size: 0.9rem;">
-            <div style="margin-bottom: 0.3rem;"><strong>Proyecto:</strong> <span id="popup_desc_preview" style="color: var(--text-muted);"></span></div>
-            <div><strong>Presupuesto estimado:</strong> <span id="popup_total_preview" style="color: #4ade80; font-weight: 700;"></span></div>
+        <div class="confirmacion-cotizacion-resumen">
+            <div><strong>Proyecto:</strong> <span id="popup_desc_preview"></span></div>
+            <div><strong>Presupuesto estimado:</strong> <span id="popup_total_preview"></span></div>
         </div>
 
-        <div class="modal-actions" style="margin-top: 1rem;">
+        <div class="modal-actions">
             <button type="button" class="btn btn-outline" onclick="cerrarPopupConfirmacion()">Modificar</button>
             <button type="button" class="btn btn-primary" onclick="confirmarYEnviarCotizacion()">Confirmar y Enviar</button>
         </div>
     </div>
 </div>
+<?php endif; ?>
 
 <script>
 const PRECIOS = {
@@ -739,9 +711,7 @@ function closeModalOnBackdrop(event) {
 }
 
 function mostrarConfirmacionCotizacion() {
-    const form = document.querySelector('#cotizacionModal form');
     const descInput = document.getElementById('custom_descripcion');
-    
     if (!descInput.value.trim()) {
         descInput.focus();
         descInput.reportValidity();
@@ -771,10 +741,7 @@ function confirmarYEnviarCotizacion() {
         form.submit();
     }
 }
-</script>
-<?php endif; ?>
 
-<script>
 function openPlanInfoModal(planKey) {
     if (planKey === 'startup') {
         const modal = document.getElementById('modalInfoStartup');
@@ -796,7 +763,6 @@ function closePlanInfoOnBackdrop(event, modalId) {
     }
 }
 
-// Cerrar con tecla Escape
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
         ['modalInfoStartup', 'modalInfoBusiness'].forEach(function(id) {

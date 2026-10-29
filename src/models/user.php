@@ -152,7 +152,7 @@ class User {
             return false;
             }
         }
-    }
+    
 
     // ==========================================
     // MÉTODOS CRUD ADMINISTRATIVOS (ADMIN & SUPER ADMIN)
@@ -190,6 +190,8 @@ class User {
     // Crear un usuario desde el panel de administración
     public function createUserByAdmin($data) {
         try {
+            $this->pdo->beginTransaction();
+
             $hash = password_hash($data['password'], PASSWORD_DEFAULT);
             $sqlUser = "INSERT INTO usuario (Email, Nombre, Telefono, Contrasena, ID_Rol, Tipo_Persona)
                         VALUES (?, ?, ?, ?, ?, ?)";
@@ -205,14 +207,41 @@ class User {
 
             $idUsuario = $this->pdo->lastInsertId();
 
-            if ($data['tipo_persona'] === 'Persona') {
+            if ($data['tipo_persona'] === 'Empresa') {
+                $stmtRep = $this->pdo->prepare("INSERT INTO representante (Nombre_Completo, Cargo, Email_Contacto, Telefono_Contacto) VALUES (?, ?, ?, ?)");
+                $stmtRep->execute([
+                    $data['rep_nombre'] ?? '',
+                    $data['rep_cargo'] ?? '',
+                    $data['rep_email'] ?? '',
+                    $data['rep_telefono'] ?? ''
+                ]);
+                $representanteId = $this->pdo->lastInsertId();
+
+                $stmtEmp = $this->pdo->prepare("INSERT INTO empresa (ID_Usuario, ID_Representante, ID_Plan, RUT, Nombre_Empresa, Calle, Esquina, Numero_Puerta, Descripcion, Categoria_Empresarial, Tamano) VALUES (?, ?, 0, ?, ?, ?, ?, ?, ?, ?, 'Mediana')");
+                $stmtEmp->execute([
+                    $idUsuario,
+                    $representanteId,
+                    $data['rut'] ?? '',
+                    $data['nombre_empresa'] ?? '',
+                    $data['calle'] ?? '',
+                    $data['esquina'] ?? '',
+                    $data['numpuerta'] ?? '',
+                    $data['descripcion'] ?? '',
+                    $data['categoria'] ?? ''
+                ]);
+            } else {
                 $sqlUni = "INSERT INTO persona (ID_Usuario) VALUES (?)";
                 $stmtUni = $this->pdo->prepare($sqlUni);
                 $stmtUni->execute([$idUsuario]);
             }
 
+            $this->pdo->commit();
             return true;
         } catch (Exception $e) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+            $this->lastError = $e->getMessage();
             return false;
         }
     }
@@ -220,8 +249,9 @@ class User {
     // Modificar / Actualizar un usuario existente
     public function updateUserByAdmin($id, $data) {
         try {
+            $this->pdo->beginTransaction();
+
             if (!empty($data['password'])) {
-                // Si proporcionó nueva contraseña, se actualiza también el hash
                 $hash = password_hash($data['password'], PASSWORD_DEFAULT);
                 $sql = "UPDATE usuario 
                         SET Email = ?, Nombre = ?, Telefono = ?, Tipo_Persona = ?, ID_Rol = ?, Contrasena = ? 
@@ -237,7 +267,6 @@ class User {
                     $id
                 ]);
             } else {
-                // Si la contraseña se dejó en blanco, se mantienen los datos sin cambiar la contraseña
                 $sql = "UPDATE usuario 
                         SET Email = ?, Nombre = ?, Telefono = ?, Tipo_Persona = ?, ID_Rol = ? 
                         WHERE ID_Usuario = ?";
@@ -252,20 +281,138 @@ class User {
                 ]);
             }
 
+            if ($data['tipo_persona'] === 'Empresa') {
+                $stmtPersona = $this->pdo->prepare("DELETE FROM persona WHERE ID_Usuario = ?");
+                $stmtPersona->execute([$id]);
+
+                $stmtEmpresa = $this->pdo->prepare("SELECT ID_Empresa, ID_Representante FROM empresa WHERE ID_Usuario = ?");
+                $stmtEmpresa->execute([$id]);
+                $empresa = $stmtEmpresa->fetch(PDO::FETCH_ASSOC);
+
+                if ($empresa && !empty($empresa['ID_Representante'])) {
+                    $stmtRep = $this->pdo->prepare("UPDATE representante SET Nombre_Completo = ?, Cargo = ?, Email_Contacto = ?, Telefono_Contacto = ? WHERE ID_Representante = ?");
+                    $stmtRep->execute([
+                        $data['rep_nombre'] ?? '',
+                        $data['rep_cargo'] ?? '',
+                        $data['rep_email'] ?? '',
+                        $data['rep_telefono'] ?? '',
+                        $empresa['ID_Representante']
+                    ]);
+                    $representanteId = $empresa['ID_Representante'];
+                } else {
+                    $stmtRep = $this->pdo->prepare("INSERT INTO representante (Nombre_Completo, Cargo, Email_Contacto, Telefono_Contacto) VALUES (?, ?, ?, ?)");
+                    $stmtRep->execute([
+                        $data['rep_nombre'] ?? '',
+                        $data['rep_cargo'] ?? '',
+                        $data['rep_email'] ?? '',
+                        $data['rep_telefono'] ?? ''
+                    ]);
+                    $representanteId = $this->pdo->lastInsertId();
+                }
+
+                if ($empresa) {
+                    $stmtUpdateEmp = $this->pdo->prepare("UPDATE empresa SET RUT = ?, Nombre_Empresa = ?, Calle = ?, Esquina = ?, Numero_Puerta = ?, Descripcion = ?, Categoria_Empresarial = ?, Tamano = 'Mediana', ID_Representante = ? WHERE ID_Empresa = ?");
+                    $stmtUpdateEmp->execute([
+                        $data['rut'] ?? '',
+                        $data['nombre_empresa'] ?? '',
+                        $data['calle'] ?? '',
+                        $data['esquina'] ?? '',
+                        $data['numpuerta'] ?? '',
+                        $data['descripcion'] ?? '',
+                        $data['categoria'] ?? '',
+                        $representanteId,
+                        $empresa['ID_Empresa']
+                    ]);
+                } else {
+                    $stmtInsertEmp = $this->pdo->prepare("INSERT INTO empresa (ID_Usuario, RUT, Nombre_Empresa, Calle, Esquina, Numero_Puerta, Descripcion, Categoria_Empresarial, Tamano, ID_Representante, ID_Plan) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Mediana', ?, 0)");
+                    $stmtInsertEmp->execute([
+                        $id,
+                        $data['rut'] ?? '',
+                        $data['nombre_empresa'] ?? '',
+                        $data['calle'] ?? '',
+                        $data['esquina'] ?? '',
+                        $data['numpuerta'] ?? '',
+                        $data['descripcion'] ?? '',
+                        $data['categoria'] ?? '',
+                        $representanteId
+                    ]);
+                }
+            } else {
+                $stmtGetRep = $this->pdo->prepare("SELECT ID_Representante FROM empresa WHERE ID_Usuario = ?");
+                $stmtGetRep->execute([$id]);
+                $rep = $stmtGetRep->fetch(PDO::FETCH_ASSOC);
+
+                $stmtDelEmp = $this->pdo->prepare("DELETE FROM empresa WHERE ID_Usuario = ?");
+                $stmtDelEmp->execute([$id]);
+
+                if ($rep && !empty($rep['ID_Representante'])) {
+                    $stmtDelRep = $this->pdo->prepare("DELETE FROM representante WHERE ID_Representante = ?");
+                    $stmtDelRep->execute([$rep['ID_Representante']]);
+                }
+
+                $stmtPersona = $this->pdo->prepare("SELECT ID_Usuario FROM persona WHERE ID_Usuario = ?");
+                $stmtPersona->execute([$id]);
+                if (!$stmtPersona->fetch()) {
+                    $stmtInsertPersona = $this->pdo->prepare("INSERT INTO persona (ID_Usuario) VALUES (?)");
+                    $stmtInsertPersona->execute([$id]);
+                }
+            }
+
+            $this->pdo->commit();
             return true;
         } catch (Exception $e) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+            $this->lastError = $e->getMessage();
             return false;
         }
     }
 
-    // Eliminar usuario por ID
     public function deleteUserByAdmin($id) {
         try {
-            $sql = "DELETE FROM usuario WHERE ID_Usuario = ?";
-            $stmt = $this->pdo->prepare($sql);
-            return $stmt->execute([$id]);
+            $this->pdo->beginTransaction();
+
+            $stmtPersona = $this->pdo->prepare("DELETE FROM persona WHERE ID_Usuario = ?");
+            $stmtPersona->execute([$id]);
+
+            $stmtEmpresa = $this->pdo->prepare("SELECT ID_Representante FROM empresa WHERE ID_Usuario = ?");
+            $stmtEmpresa->execute([$id]);
+            $rep = $stmtEmpresa->fetch(PDO::FETCH_ASSOC);
+
+            $stmtDeleteEmpresa = $this->pdo->prepare("DELETE FROM empresa WHERE ID_Usuario = ?");
+            $stmtDeleteEmpresa->execute([$id]);
+
+            if ($rep && !empty($rep['ID_Representante'])) {
+                $stmtDeleteRep = $this->pdo->prepare("DELETE FROM representante WHERE ID_Representante = ?");
+                $stmtDeleteRep->execute([$rep['ID_Representante']]);
+            }
+
+            $stmtDeleteUser = $this->pdo->prepare("DELETE FROM usuario WHERE ID_Usuario = ?");
+            $stmtDeleteUser->execute([$id]);
+
+            $this->pdo->commit();
+            return true;
         } catch (Exception $e) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+            $this->lastError = $e->getMessage();
             return false;
+        }
+    }
+
+    public function getCompanyByUserId($idUsuario) {
+        try {
+            $sql = "SELECT e.*, r.Nombre_Completo AS Rep_Nombre, r.Cargo AS Rep_Cargo, r.Email_Contacto AS Rep_Email, r.Telefono_Contacto AS Rep_Telefono
+                    FROM empresa e
+                    LEFT JOIN representante r ON r.ID_Representante = e.ID_Representante
+                    WHERE e.ID_Usuario = ?";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$idUsuario]);
+            return $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+        } catch (Exception $e) {
+            return [];
         }
     }
 }

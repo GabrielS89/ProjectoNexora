@@ -17,6 +17,11 @@ function validarPassword(string $password): array {
     return $errors; 
 }
 
+function validarRUT(string $rut): bool {
+    // El RUT debe tener exactamente 12 números
+    return preg_match('/^\d{12}$/', $rut) === 1;
+}
+
 function camposVacios(array $required, array $data): array {
     $missing = [];
     foreach ($required as $key) {
@@ -133,11 +138,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             'password'       => $_POST['password'] ?? '',
             'telefono'       => htmlspecialchars($_POST['telefono'] ?? ''),
             'rut'            => htmlspecialchars($_POST['rut'] ?? ''),
-            'calle'      => htmlspecialchars($_POST['calle'] ?? ''),
-            'esquina'      => htmlspecialchars($_POST['esquina'] ?? ''),
+            'calle'          => htmlspecialchars($_POST['calle'] ?? ''),
+            'esquina'        => htmlspecialchars($_POST['esquina'] ?? ''),
             'numpuerta'      => htmlspecialchars($_POST['numpuerta'] ?? ''),
-            'categoria'      => htmlspecialchars($_POST['categoria'] ?? ''),
-            'tamano'      => htmlspecialchars($_POST['tamano'] ?? ''),
+            'sector'      => htmlspecialchars($_POST['sector'] ?? ''),
+            'tamano'         => htmlspecialchars($_POST['tamano'] ?? ''),
             'descripcion'    => htmlspecialchars($_POST['descripcion'] ?? ''),
             'rep_nombre'     => htmlspecialchars($_POST['rep_nombre'] ?? ''),
             'rep_cargo'      => htmlspecialchars($_POST['rep_cargo'] ?? ''),
@@ -147,7 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
             // Validaciones
             if (!empty(camposVacios(
-                ['email','nombre_empresa','password','telefono','rut','calle', 'esquina', 'numpuerta','categoria', 'tamano','descripcion','rep_nombre','rep_cargo','rep_email','rep_telefono'],
+                ['email','nombre_empresa','password','telefono','rut','calle', 'esquina', 'numpuerta','sector', 'tamano','descripcion','rep_nombre','rep_cargo','rep_email','rep_telefono'],
                 $datos
             ))) {
                 header('Location: ' . PUBLIC_PATH . '/registro.php?error=campos_vacios');
@@ -158,6 +163,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             if (!empty($pwErr)) {
                 $mensaje = urlencode(implode(' ', $pwErr));
                 header('Location: ' . PUBLIC_PATH . '/registro.php?error=password_invalido&mensaje=' . $mensaje);
+                exit();
+            }
+
+            if (!validarRUT($datos['rut'])) {
+                header('Location: ' . PUBLIC_PATH . '/registro.php?error=rut_invalido');
                 exit();
             }
 
@@ -173,9 +183,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 exit();
             }
 
-            $mensaje = urlencode($user->getLastError() ?: 'Error al registrar la empresa.');
-            header('Location: ' . PUBLIC_PATH . '/registro.php?error=registro_fallido&mensaje=' . $mensaje);
+            // TESTING: Mostrar error SQL directamente
+            $error = $user->getLastError();
+            echo "<pre style='background: #f0f0f0; padding: 20px; border: 2px solid red; margin: 20px; border-radius: 5px;'>";
+            echo "<h2 style='color: red;'>🔴 SQL ERROR (TESTING):</h2>";
+            echo htmlspecialchars($error);
+            echo "</pre>";
             exit();
+            
+            // $mensaje = urlencode($user->getLastError() ?: 'Error al registrar la empresa.');
+            // header('Location: ' . PUBLIC_PATH . '/registro.php?error=registro_fallido&mensaje=' . $mensaje);
+            // exit();
         }
     }
 }

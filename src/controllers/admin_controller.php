@@ -15,11 +15,19 @@ if (!isset($_SESSION['usuario_rol']) || !in_array($_SESSION['usuario_rol'], [2, 
 
 // Inicializar conexión y modelo
 if (!isset($pdo)) {
-    require_once(BASE_DIR . '/database/database.php');
+    require_once(ROOT_DIR . '/database/database.php');
 }
 $userModel = new User($pdo);
 
 $redirectUrl = VIEWS_PATH . '/adminpanel.php';
+
+if (isset($_GET['action']) && $_GET['action'] === 'get_user_company' && isset($_GET['id'])) {
+    $id = (int)$_GET['id'];
+    $company = $userModel->getCompanyByUserId($id);
+    header('Content-Type: application/json');
+    echo json_encode($company ?: []);
+    exit();
+}
 
 // PROCESAR PETICIONES DE CREAR / EDITAR / ELIMINAR
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
@@ -35,18 +43,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $tipo_persona = $_POST['tipo_persona'] ?? 'Persona';
         $id_rol       = (int)($_POST['id_rol'] ?? 1);
 
+        $nombre_empresa = trim($_POST['nombre_empresa'] ?? '');
+        $rut            = trim($_POST['rut'] ?? '');
+        $calle          = trim($_POST['calle'] ?? '');
+        $esquina        = trim($_POST['esquina'] ?? '');
+        $numpuerta      = trim($_POST['numpuerta'] ?? '');
+        $descripcion    = trim($_POST['descripcion'] ?? '');
+        $categoria      = trim($_POST['categoria'] ?? '');
+        $tamano         = trim($_POST['tamano'] ?? '');
+        $rep_nombre     = trim($_POST['rep_nombre'] ?? '');
+        $rep_cargo      = trim($_POST['rep_cargo'] ?? '');
+        $rep_email      = trim($_POST['rep_email'] ?? '');
+        $rep_telefono   = trim($_POST['rep_telefono'] ?? '');
+
+        if ($tipo_persona === 'Empresa' && (empty($nombre_empresa) || empty($rut) || empty($rep_nombre) || empty($rep_email))) {
+            header('Location: ' . $redirectUrl . '?error=datos_empresa_incompletos');
+            exit();
+        }
+
         if (empty($nombre) || empty($email) || empty($password)) {
             header('Location: ' . $redirectUrl . '?error=campos_vacios');
             exit();
         }
 
         $datos = [
-            'nombre'       => $nombre,
-            'email'        => $email,
-            'telefono'     => $telefono,
-            'password'     => $password,
-            'tipo_persona' => $tipo_persona,
-            'id_rol'       => $id_rol
+            'nombre'        => $nombre,
+            'email'         => $email,
+            'telefono'      => $telefono,
+            'password'      => $password,
+            'tipo_persona'  => $tipo_persona,
+            'id_rol'        => $id_rol,
+            'nombre_empresa'=> $nombre_empresa,
+            'rut'           => $rut,
+            'calle'         => $calle,
+            'esquina'       => $esquina,
+            'numpuerta'     => $numpuerta,
+            'descripcion'   => $descripcion,
+            'categoria'     => $categoria,
+            'tamano'        => $tamano,
+            'rep_nombre'    => $rep_nombre,
+            'rep_cargo'     => $rep_cargo,
+            'rep_email'     => $rep_email,
+            'rep_telefono'  => $rep_telefono
         ];
 
         if ($userModel->createUserByAdmin($datos)) {
@@ -68,18 +106,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $tipo_persona = $_POST['tipo_persona'] ?? 'Persona';
         $id_rol       = (int)($_POST['id_rol'] ?? 1);
 
+        $nombre_empresa = trim($_POST['nombre_empresa'] ?? '');
+        $rut            = trim($_POST['rut'] ?? '');
+        $calle          = trim($_POST['calle'] ?? '');
+        $esquina        = trim($_POST['esquina'] ?? '');
+        $numpuerta      = trim($_POST['numpuerta'] ?? '');
+        $descripcion    = trim($_POST['descripcion'] ?? '');
+        $categoria      = trim($_POST['categoria'] ?? '');
+        $tamano         = trim($_POST['tamano'] ?? '');
+        $rep_nombre     = trim($_POST['rep_nombre'] ?? '');
+        $rep_cargo      = trim($_POST['rep_cargo'] ?? '');
+        $rep_email      = trim($_POST['rep_email'] ?? '');
+        $rep_telefono   = trim($_POST['rep_telefono'] ?? '');
+
+        if ($tipo_persona === 'Empresa' && (empty($nombre_empresa) || empty($rut) || empty($rep_nombre) || empty($rep_email))) {
+            header('Location: ' . $redirectUrl . '?error=datos_empresa_incompletos');
+            exit();
+        }
+
         if ($id_usuario <= 0 || empty($nombre) || empty($email)) {
             header('Location: ' . $redirectUrl . '?error=campos_vacios');
             exit();
         }
 
         $datos = [
-            'nombre'       => $nombre,
-            'email'        => $email,
-            'telefono'     => $telefono,
-            'password'     => $password,
-            'tipo_persona' => $tipo_persona,
-            'id_rol'       => $id_rol
+            'nombre'        => $nombre,
+            'email'         => $email,
+            'telefono'      => $telefono,
+            'password'      => $password,
+            'tipo_persona'  => $tipo_persona,
+            'id_rol'        => $id_rol,
+            'nombre_empresa'=> $nombre_empresa,
+            'rut'           => $rut,
+            'calle'         => $calle,
+            'esquina'       => $esquina,
+            'numpuerta'     => $numpuerta,
+            'descripcion'   => $descripcion,
+            'categoria'     => $categoria,
+            'tamano'        => $tamano,
+            'rep_nombre'    => $rep_nombre,
+            'rep_cargo'     => $rep_cargo,
+            'rep_email'     => $rep_email,
+            'rep_telefono'  => $rep_telefono
         ];
 
         if ($userModel->updateUserByAdmin($id_usuario, $datos)) {

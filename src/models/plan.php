@@ -216,17 +216,31 @@ class Plan {
         int     $cant_puntos_red,
         int     $cant_servidores,
         int     $cant_wifi,
-        ?string $notas_extra = null
+        ?string $notas_extra = null,
+        ?string $tipo_ordenador = 'Oficina',
+        ?string $gama_equipo = 'Media',
+        ?string $estado_instalacion = null,
+        ?float $monto_instalacion = null
     ): bool {
         $this->lastError = '';
+
         try {
-            $stmt = $this->pdo->prepare("
-                INSERT INTO solicitud_cotizacion
-                    (ID_Usuario, Descripcion, Cant_PC, Cant_Impresoras, Cant_Puntos_Red,
-                     Cant_Servidores, Cant_Wifi, Notas_Extra)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            ");
-            return $stmt->execute([
+            $hasTipoOrdenador = $this->columnExists('Tipo_Ordenador');
+            $hasGamaEquipo = $this->columnExists('Gama_Equipo');
+            $hasEstadoInstalacion = $this->columnExists('Estado_Instalacion');
+            $hasMontoInstalacion = $this->columnExists('Monto_Instalacion');
+
+            $columns = [
+                'ID_Usuario',
+                'Descripcion',
+                'Cant_PC',
+                'Cant_Impresoras',
+                'Cant_Puntos_Red',
+                'Cant_Servidores',
+                'Cant_Wifi',
+                'Notas_Extra'
+            ];
+            $values = [
                 $userId,
                 $descripcion,
                 $cant_pc,
@@ -234,10 +248,47 @@ class Plan {
                 $cant_puntos_red,
                 $cant_servidores,
                 $cant_wifi,
-                $notas_extra,
-            ]);
+                $notas_extra
+            ];
+
+            if ($hasTipoOrdenador) {
+                $columns[] = 'Tipo_Ordenador';
+                $values[] = in_array($tipo_ordenador, ['Oficina', 'Desarrollo'], true) ? $tipo_ordenador : 'Oficina';
+            }
+
+            if ($hasGamaEquipo) {
+                $columns[] = 'Gama_Equipo';
+                $values[] = in_array($gama_equipo, ['Baja', 'Media', 'Alta'], true) ? $gama_equipo : 'Media';
+            }
+
+            if ($hasEstadoInstalacion) {
+                $columns[] = 'Estado_Instalacion';
+                $values[] = in_array($estado_instalacion, ['Pendiente', 'Aprobada', 'Instalada', 'Rechazada'], true)
+                    ? $estado_instalacion
+                    : 'Pendiente';
+            }
+
+            if ($hasMontoInstalacion) {
+                $columns[] = 'Monto_Instalacion';
+                $values[] = is_numeric($monto_instalacion) ? (float)$monto_instalacion : 0.00;
+            }
+
+            $placeholders = implode(', ', array_fill(0, count($values), '?'));
+            $sql = 'INSERT INTO solicitud_cotizacion (' . implode(', ', $columns) . ') VALUES (' . $placeholders . ')';
+
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute($values);
         } catch (Exception $e) {
             $this->lastError = $e->getMessage();
+            return false;
+        }
+    }
+
+    private function columnExists(string $columnName): bool {
+        try {
+            $stmt = $this->pdo->query("SHOW COLUMNS FROM solicitud_cotizacion LIKE '" . str_replace("'", "\\'", $columnName) . "'");
+            return (bool) $stmt->fetch();
+        } catch (Exception $e) {
             return false;
         }
     }
@@ -321,5 +372,38 @@ class Plan {
             }
         }
         return $plan;
+    }
+
+    /**
+     * Asegurar que las columnas necesarias existan en la tabla solicitud_cotizacion
+     */
+    public function ensureSolicitudCotizacionColumns(): void {
+        try {
+            $columns = [];
+            $stmt = $this->pdo->query("SHOW COLUMNS FROM solicitud_cotizacion");
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $columns[] = $row['Field'];
+            }
+
+            if (!in_array('Tipo_Ordenador', $columns, true)) {
+                $this->pdo->exec("ALTER TABLE solicitud_cotizacion ADD COLUMN Tipo_Ordenador ENUM('Oficina','Desarrollo') NOT NULL DEFAULT 'Oficina' AFTER Cant_Wifi");
+            }
+
+            if (!in_array('Gama_Equipo', $columns, true)) {
+                $this->pdo->exec("ALTER TABLE solicitud_cotizacion ADD COLUMN Gama_Equipo ENUM('Baja','Media','Alta') NOT NULL DEFAULT 'Media' AFTER Tipo_Ordenador");
+            }
+
+            if (!in_array('Estado_Instalacion', $columns, true)) {
+                $this->pdo->exec("ALTER TABLE solicitud_cotizacion ADD COLUMN Estado_Instalacion ENUM('Pendiente','Aprobada','Rechazada','Instalada') NOT NULL DEFAULT 'Pendiente' AFTER Estado");
+            } else {
+                $this->pdo->exec("ALTER TABLE solicitud_cotizacion MODIFY Estado_Instalacion ENUM('Pendiente','Aprobada','Rechazada','Instalada') NOT NULL DEFAULT 'Pendiente'");
+            }
+
+            if (!in_array('Monto_Instalacion', $columns, true)) {
+                $this->pdo->exec("ALTER TABLE solicitud_cotizacion ADD COLUMN Monto_Instalacion DECIMAL(10,2) NOT NULL DEFAULT 0.00 AFTER Estado_Instalacion");
+            }
+        } catch (Exception $e) {
+            $this->lastError = $e->getMessage();
+        }
     }
 }

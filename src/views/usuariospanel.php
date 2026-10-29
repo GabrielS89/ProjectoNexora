@@ -9,8 +9,17 @@ if (!$is_partial) {
     require_once(INCLUDES_DIR . '/header.php');
 }
 
-// Definir si el usuario tiene permisos de administrador (Rol 2 o 3)
+$on_adminpanel = (strpos($_SERVER['REQUEST_URI'] ?? '', '/adminpanel.php') !== false) || (basename($_SERVER['PHP_SELF'] ?? '') === 'adminpanel.php');
+$usuario_base_url = $on_adminpanel ? 'adminpanel.php?page=usuarios' : 'usuariospanel.php';
+$usuario_form_action = $usuario_base_url . ($is_partial ? '&partial=1' : '?partial=1');
+
+// Definir si el usuario tiene permisos de administración completa
 $es_admin = isset($_SESSION['usuario_rol']) && in_array($_SESSION['usuario_rol'], [2, 3]);
+// Si llega el rol 4, solo puede usar el panel de instalación; no el CRUD de usuarios.
+if (isset($_SESSION['usuario_rol']) && (int)$_SESSION['usuario_rol'] === 4) {
+    $es_admin = false;
+}
+
 require_once(__DIR__ . '/../../database/database.php');
 
 // Variables para edición y feedback
@@ -126,7 +135,7 @@ if (isset($_GET['action'])) {
             if ($tipo_persona_editar === 'Empresa') {
                 $stmtEmpresa = $pdo->prepare("
                     SELECT e.*, r.Nombre_Completo AS Rep_Nombre, r.Cargo AS Rep_Cargo, 
-                           r.Email_Contacto AS Rep_Email, r.Telefono_Contacto AS Rep_Telefono 
+                    r.Email_Contacto AS Rep_Email, r.Telefono_Contacto AS Rep_Telefono 
                     FROM empresa e 
                     LEFT JOIN representante r ON r.ID_Representante = e.ID_Representante 
                     WHERE e.ID_Usuario = ?
@@ -168,7 +177,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $esquina = trim($_POST['esquina'] ?? '');
     $numpuerta = trim($_POST['numpuerta'] ?? '');
     $descripcion = trim($_POST['descripcion'] ?? '');
-    $rep_nombre = trim($_POST['rep_nombre'] ?? '');
+    $categoria      = trim($_POST['categoria'] ?? '');
+    $tamano         = trim($_POST['tamano'] ?? '');
+    $rep_nombre     = trim($_POST['rep_nombre'] ?? '');
     $rep_cargo = trim($_POST['rep_cargo'] ?? '');
     $rep_email = trim($_POST['rep_email'] ?? '');
     $rep_telefono = trim($_POST['rep_telefono'] ?? '');
@@ -217,11 +228,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmtEmp->execute([$id]);
                     $empresa = $stmtEmp->fetch();
                     if ($empresa) {
-                        $stmt = $pdo->prepare("UPDATE empresa SET RUT=?, Nombre_Empresa=?, Calle=?, Esquina=?, Numero_Puerta=?, Descripcion=?, Categoria_Empresarial=?, Tamano='Mediana', ID_Representante=? WHERE ID_Empresa=?");
-                        $stmt->execute([$rut, $nombre_empresa, $calle, $esquina, $numpuerta, $descripcion, $descripcion, $representante_id, $empresa['ID_Empresa']]);
+                        $stmt = $pdo->prepare("UPDATE empresa SET RUT=?, Nombre_Empresa=?, Calle=?, Esquina=?, Numero_Puerta=?, Descripcion=?, Categoria_Empresarial=?, Tamano=?, ID_Representante=? WHERE ID_Empresa=?");
+                        $stmt->execute([$rut, $nombre_empresa, $calle, $esquina, $numpuerta, $descripcion, $categoria, $tamano, $representante_id, $empresa['ID_Empresa']]);
                     } else {
-                        $stmt = $pdo->prepare("INSERT INTO empresa (ID_Usuario, RUT, Nombre_Empresa, Calle, Esquina, Numero_Puerta, Descripcion, Categoria_Empresarial, Tamano, ID_Representante) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Mediana', ?)");
-                        $stmt->execute([$id, $rut, $nombre_empresa, $calle, $esquina, $numpuerta, $descripcion, $descripcion, $representante_id]);
+                        $stmt = $pdo->prepare("INSERT INTO empresa (ID_Usuario, RUT, Nombre_Empresa, Calle, Esquina, Numero_Puerta, Descripcion, Categoria_Empresarial, Tamano, ID_Representante) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                        $stmt->execute([$id, $rut, $nombre_empresa, $calle, $esquina, $numpuerta, $descripcion, $categoria, $tamano, $representante_id]);
                     }
                 } else {
                     // Limpiar empresa y representante
@@ -268,7 +279,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt->execute([$rep_nombre, $rep_cargo, $rep_email, $rep_telefono]);
                     $representante_id = $pdo->lastInsertId();
 
-                    $stmt = $pdo->prepare("INSERT INTO empresa (ID_Usuario, RUT, Nombre_Empresa, Calle, Esquina, Numero_Puerta, Descripcion, Categoria_Empresarial, Tamano, ID_Representante) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Mediana', ?)");
+                    $stmt = $pdo->prepare("INSERT INTO empresa (ID_Usuario, RUT, Nombre_Empresa, Calle, Esquina, Numero_Puerta, Descripcion, Categoria_Empresarial, Tamano, ID_Representante) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                     $stmt->execute([$newUserId, $rut, $nombre_empresa, $calle, $esquina, $numpuerta, $descripcion, $descripcion, $representante_id]);
                 } else {
                     $stmt = $pdo->prepare("INSERT INTO persona (ID_Usuario) VALUES (?)");
@@ -287,7 +298,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (!$is_partial) {
-        header('Location: usuariospanel.php');
+        header('Location: ' . $usuario_base_url);
         exit;
     }
 }
@@ -299,192 +310,512 @@ $stmt = $pdo->query("SELECT u.ID_Usuario, u.Email, u.Nombre, u.Telefono, u.Tipo_
 $usuarios = $stmt->fetchAll();
 ?>
 
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--card-border); padding-bottom: 0.8rem;">
-        <h2 style="margin: 0; font-size: 1.3rem;"><?php echo $modo_edicion ? "✏ Editar Usuario / Empresa" : "➕ Registrar Nuevo Usuario"; ?></h2>
-        <?php if ($modo_edicion): ?>
-            <a href="usuariospanel.php?partial=1" class="partial-link btn btn-outline btn-sm">Cancelar Edición</a>
-        <?php endif; ?>
+    <div class="encabezado-admin">
+        <button type="button" class="btn btn-primary" onclick="abrirModalCrear()">Crear Nuevo Usuario</button>
     </div>
 
     <?php if (!empty($success_message)): ?>
-        <div class="alert-box alert-success">
-            <span class="alert-tag">ÉXITO</span>
-            <div><?php echo htmlspecialchars($success_message); ?></div>
-        </div>
+        <div class="alerta alerta--exito"><?php echo htmlspecialchars($success_message); ?></div>
     <?php endif; ?>
 
     <?php if (!empty($error_message)): ?>
-        <div class="alert-box alert-danger">
-            <span class="alert-tag">ERROR</span>
-            <div><?php echo htmlspecialchars($error_message); ?></div>
-        </div>
+        <div class="alerta alerta--error"><?php echo htmlspecialchars($error_message); ?></div>
     <?php endif; ?>
 
-    <form action="usuariospanel.php?partial=1" method="POST" id="usuarioForm" style="margin-bottom: 2.5rem; background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 10px; border: 1px solid var(--card-border);">
-        <input type="hidden" name="id" value="<?php echo $id_editar; ?>">
-        
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
-            <div>
-                <label>Correo Electrónico: <span style="color:#ef4444;">*</span></label>
-                <input type="email" name="email" value="<?php echo htmlspecialchars($email_editar); ?>" placeholder="usuario@email.com" required>
-            </div>
-            <div>
-                <label>Nombre Completo / Razón: <span style="color:#ef4444;">*</span></label>
-                <input type="text" name="nombre" value="<?php echo htmlspecialchars($nombre_editar); ?>" placeholder="Juan Pérez o Empresa S.A." required>
-            </div>
-            <div>
-                <label>Teléfono de Contacto: <span style="color:#ef4444;">*</span></label>
-                <input type="text" name="telefono" value="<?php echo htmlspecialchars($telefono_editar); ?>" placeholder="099 123 456" required>
-            </div>
-            <div>
-                <label>Tipo de Cuenta: <span style="color:#ef4444;">*</span></label>
-                <select name="tipo_persona" id="tipo_persona" onchange="mostrarCamposTipo()" required>
-                    <option value="Persona" <?php echo ($tipo_persona_editar === 'Persona') ? 'selected' : ''; ?>>Persona Particular</option>
-                    <option value="Empresa" <?php echo ($tipo_persona_editar === 'Empresa') ? 'selected' : ''; ?>>Empresa Corporativa</option>
-                </select>
-            </div>
-            <div>
-                <label>Rol en el Sistema: <span style="color:#ef4444;">*</span></label>
-                <select name="id_rol" required>
-                    <?php foreach ($roles as $rol): ?>
-                        <option value="<?= $rol['ID_Rol']; ?>" <?= ($rol['ID_Rol'] == $rol_editar) ? 'selected' : ''; ?>>
-                            <?= htmlspecialchars($rol['TipoRol']); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div>
-                <label>Contraseña: <?php echo $modo_edicion ? '(Opcional)' : '<span style="color:#ef4444;">*</span>'; ?></label>
-                <input type="password" name="password" value="" placeholder="<?php echo $modo_edicion ? 'Dejar en blanco para no cambiar' : 'Nueva contraseña'; ?>">
-            </div>
+    <div class="tarjeta-estadistica tarjeta--con-padding">
+        <div class="tarjeta-cabecera">
+            <h2 class="tarjeta-titulo">Usuarios Registrados</h2>
         </div>
 
-        <!-- Campos específicos para Empresa -->
-        <div id="empresaFields" style="display: <?php echo ($tipo_persona_editar === 'Empresa') ? 'block' : 'none'; ?>; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed var(--card-border);">
-            <h4 style="color: var(--primary-green-hover); margin-bottom: 1rem;">🏢 Datos Fiscales y Domicilio de la Empresa</h4>
-            
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
-                <div>
-                    <label>Nombre Comercial / Fantasía:</label>
-                    <input type="text" name="nombre_empresa" value="<?php echo htmlspecialchars($nombre_empresa_editar); ?>">
-                </div>
-                <div>
-                    <label>RUT / Identificación Fiscal:</label>
-                    <input type="text" name="rut" value="<?php echo htmlspecialchars($rut_editar); ?>">
-                </div>
-                <div>
-                    <label>Calle:</label>
-                    <input type="text" name="calle" value="<?php echo htmlspecialchars($calle_editar); ?>">
-                </div>
-                <div>
-                    <label>Esquina:</label>
-                    <input type="text" name="esquina" value="<?php echo htmlspecialchars($esquina_editar); ?>">
-                </div>
-                <div>
-                    <label>Número de Puerta:</label>
-                    <input type="text" name="numpuerta" value="<?php echo htmlspecialchars($numpuerta_editar); ?>">
-                </div>
-            </div>
-
-            <div style="margin-top: 0.8rem;">
-                <label>Descripción de la Actividad Empresarial:</label>
-                <textarea name="descripcion" rows="2"><?php echo htmlspecialchars($descripcion_editar); ?></textarea>
-            </div>
-
-            <h4 style="color: var(--primary-green-hover); margin-top: 1.2rem; margin-bottom: 0.8rem;">👤 Datos del Representante Legal</h4>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
-                <div>
-                    <label>Nombre Representante:</label>
-                    <input type="text" name="rep_nombre" value="<?php echo htmlspecialchars($rep_nombre_editar); ?>">
-                </div>
-                <div>
-                    <label>Cargo del Representante:</label>
-                    <input type="text" name="rep_cargo" value="<?php echo htmlspecialchars($rep_cargo_editar); ?>">
-                </div>
-                <div>
-                    <label>Email de Contacto:</label>
-                    <input type="email" name="rep_email" value="<?php echo htmlspecialchars($rep_email_editar); ?>">
-                </div>
-                <div>
-                    <label>Teléfono Directo:</label>
-                    <input type="text" name="rep_telefono" value="<?php echo htmlspecialchars($rep_telefono_editar); ?>">
-                </div>
-            </div>
-        </div>
-
-        <div style="margin-top: 1.5rem; display: flex; gap: 0.8rem;">
-            <button type="submit" class="btn btn-primary"><?php echo $modo_edicion ? "Actualizar Usuario" : "Guardar Usuario"; ?></button>
-            <?php if ($modo_edicion): ?>
-                <a href="usuariospanel.php?partial=1" class="partial-link btn btn-outline">Cancelar</a>
-            <?php endif; ?>
-        </div>
-    </form>
-
-    <div style="margin-top: 2rem;">
-        <h2 style="font-size: 1.3rem; margin-bottom: 1rem;">👥 Usuarios Registrados en el Sistema</h2>
-        <div style="overflow-x: auto;">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Email</th>
-                        <th>Nombre</th>
-                        <th>Teléfono</th>
-                        <th>Tipo</th>
-                        <th>Rol</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (!empty($usuarios)): ?>
-                        <?php foreach ($usuarios as $user): ?>
-                            <tr>
-                                <td><strong>#<?= $user['ID_Usuario']; ?></strong></td>
-                                <td><?= htmlspecialchars($user['Email']); ?></td>
-                                <td><?= htmlspecialchars($user['Nombre']); ?></td>
-                                <td><?= htmlspecialchars($user['Telefono'] ?: 'N/A'); ?></td>
-                                <td>
-                                    <span style="font-size: 0.8rem; font-weight: 600; color: <?= ($user['Tipo_Persona'] === 'Empresa') ? '#38bdf8' : 'var(--text-muted)'; ?>;">
-                                        <?= ($user['Tipo_Persona'] === 'Empresa') ? 'Empresa' : 'Persona'; ?>
-                                    </span>
-                                </td>
-                                <td>
-                                    <?php if ($user['TipoRol'] === 'Super_Admin' || $user['TipoRol'] === 'Admin'): ?>
-                                        <span class="admin-badge-role" style="font-size: 0.72rem; padding: 2px 8px;"><?= htmlspecialchars($user['TipoRol']); ?></span>
-                                    <?php else: ?>
-                                        <span style="font-size: 0.82rem; color: var(--text-muted);"><?= htmlspecialchars($user['TipoRol'] ?? 'Usuario'); ?></span>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <a class="partial-link" href="usuariospanel.php?action=edit&id=<?= $user['ID_Usuario']; ?>&partial=1">✏ Editar</a>
-                                    <a class="partial-link" href="usuariospanel.php?action=delete&id=<?= $user['ID_Usuario']; ?>&partial=1" data-confirm="¿Seguro que deseas eliminar este usuario?">🗑 Borrar</a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
+        <table class="tabla">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Teléfono</th>
+                    <th>Tipo Persona</th>
+                    <th>Rol</th>
+                    <th class="texto-centro">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (!empty($usuarios)): ?>
+                    <?php foreach ($usuarios as $usr): ?>
                         <tr>
-                            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">No hay usuarios registrados.</td>
+                            <td class="celda-id">#<?php echo $usr['ID_Usuario']; ?></td>
+                            <td class="celda-fuerte"><?php echo htmlspecialchars($usr['Nombre']); ?></td>
+                            <td><?php echo htmlspecialchars($usr['Email']); ?></td>
+                            <td><?php echo htmlspecialchars($usr['Telefono'] ?? '-'); ?></td>
+                            <td>
+                                <span class="distintivo-tipo"><?php echo ucfirst($usr['Tipo_Persona']); ?></span>
+                            </td>
+                            <td class="celda-fuerte">
+                                <?php 
+                                    if ($usr['ID_Rol'] == 3) echo '<span class="rol-superadmin">Super Admin</span>';
+                                    elseif ($usr['ID_Rol'] == 2) echo '<span class="rol-admin">Admin</span>';
+                                    elseif ($usr['ID_Rol'] == 4) echo '<span class="rol-admin">Instalación</span>';
+                                    else echo 'Usuario';
+                                ?>
+                            </td>
+                            <td class="texto-centro">
+                                <div class="grupo-acciones">
+                                    <button type="button" class="btn btn-outline btn--pequeno"
+                                        onclick='abrirModalEditar(<?php echo json_encode($usr, JSON_HEX_APOS | JSON_HEX_QUOT); ?>)'>
+                                        Editar
+                                    </button>
+
+                                    <?php if ((int)$usr['ID_Usuario'] !== (int)$_SESSION['user_id']): ?>
+                                        <a href="../controllers/admin_controller.php?action=delete_user&id=<?php echo $usr['ID_Usuario']; ?>" 
+                                            class="btn btn-danger btn--pequeno"
+                                            onclick="return confirm('¿Estás seguro de eliminar este usuario (#<?php echo $usr['ID_Usuario']; ?>)?');">
+                                            Eliminar
+                                        </a>
+                                    <?php else: ?>
+                                        <span class="etiqueta-yo">(Tú)</span>
+                                    <?php endif; ?>
+                                </div>
+                            </td>
                         </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="7" class="fila-vacia">No se encontraron usuarios en la base de datos.</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="modalCrear" class="modal">
+        <div class="modal-content modal-content--wide">
+            <div class="modal-header">
+                <h2 class="modal-title">Crear Nuevo Usuario</h2>
+                <button type="button" class="modal-close" onclick="cerrarModalCrear()">&times;</button>
+            </div>
+
+            <form action="../controllers/admin_controller.php" method="POST" class="modal-form">
+                <input type="hidden" name="action" value="create_user">
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="c_nombre">Nombre Completo:</label>
+                        <input type="text" id="c_nombre" name="nombre" placeholder="Ej. Ana Gómez" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="c_email">Correo Electrónico:</label>
+                        <input type="email" id="c_email" name="email" placeholder="ana@ejemplo.com" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="c_telefono">Teléfono:</label>
+                        <input type="text" id="c_telefono" name="telefono" placeholder="+598 99 123 456">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="c_password">Contraseña:</label>
+                        <input type="password" id="c_password" name="password" placeholder="••••••••" required>
+                    </div>
+
+                    <div class="form-field form-field--full">
+                        <label for="c_tipo_persona">Tipo de Usuario:</label>
+                        <select id="c_tipo_persona" name="tipo_persona" required onchange="toggleEmpresaPanel('c')">
+                            <option value="Persona">Persona (Cliente Individual)</option>
+                            <option value="Empresa">Empresa (Corporativo)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field form-field--full">
+                        <label for="c_id_rol">Rol de Acceso / Permisos:</label>
+                        <select id="c_id_rol" name="id_rol" required>
+                            <option value="1">Usuario Regular (Rol 1)</option>
+                            <option value="2">Administrador (Rol 2)</option>
+                            <option value="3">Super Administrador (Rol 3)</option>
+                            <option value="4">Instalación (Rol 4)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="empresa-panel" id="c_empresa_panel" data-modal="c" hidden>
+                    <div class="empresa-panel__header">
+                        <span>Datos de la empresa</span>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="c_nombre_empresa">Nombre de la empresa:</label>
+                            <input type="text" id="c_nombre_empresa" name="nombre_empresa" placeholder="Ej. Nexora S.A.">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="c_rut">RUT:</label>
+                            <input type="text" id="c_rut" name="rut" placeholder="123456789012">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="c_calle">Calle:</label>
+                            <input type="text" id="c_calle" name="calle" placeholder="Avenida de ejemplo">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="c_esquina">Esquina:</label>
+                            <input type="text" id="c_esquina" name="esquina" placeholder="Av. Brasil">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="c_numpuerta">Número de puerta:</label>
+                            <input type="text" id="c_numpuerta" name="numpuerta" placeholder="1234">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="c_categoria">Categoría empresarial:</label>
+                            <select id="c_categoria" name="categoria">
+                                <option value="">-- Selecciona un sector --</option>
+                                <option value="tecnologia">Tecnología e Informática</option>
+                                <option value="comercio">Comercio y Retail</option>
+                                <option value="industria">Industria y Logística</option>
+                                <option value="servicios">Servicios Profesionales</option>
+                            </select>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="c_tamano">Tamaño de la empresa:</label>
+                            <select id="c_tamano" name="tamano">
+                                <option value="pequena">1 a 5 empleados (Pequeña)</option>
+                                <option value="mediana">6 a 20 empleados (Mediana)</option>
+                                <option value="grande">Más de 20 empleados (Grande)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-field form-field--full">
+                            <label for="c_descripcion">Descripción:</label>
+                            <textarea id="c_descripcion" name="descripcion" rows="3" placeholder="Describe la actividad comercial de la empresa..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="empresa-panel__header">
+                        <span>Representante legal</span>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="c_rep_nombre">Nombre completo:</label>
+                            <input type="text" id="c_rep_nombre" name="rep_nombre" placeholder="Ej. María López">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="c_rep_cargo">Cargo:</label>
+                            <input type="text" id="c_rep_cargo" name="rep_cargo" placeholder="Gerente General">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="c_rep_email">Email de contacto:</label>
+                            <input type="email" id="c_rep_email" name="rep_email" placeholder="representante@empresa.com">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="c_rep_telefono">Teléfono del representante:</label>
+                            <input type="text" id="c_rep_telefono" name="rep_telefono" placeholder="+598 94 000 000">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Guardar Usuario</button>
+                    <button type="button" class="btn btn-outline" onclick="cerrarModalCrear()">Cancelar</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <script>
-        function mostrarCamposTipo() {
-            const select = document.getElementById('tipo_persona');
-            if (!select) return;
-            const empresaFields = document.getElementById('empresaFields');
-            if (!empresaFields) return;
+    <div id="modalEditar" class="modal">
+        <div class="modal-content modal-content--wide">
+            <div class="modal-header">
+                <h2 class="modal-title">Editar Usuario <span id="e_id_label"></span></h2>
+                <button type="button" class="modal-close" onclick="cerrarModalEditar()">&times;</button>
+            </div>
 
-            if (select.value === 'Empresa') {
-                empresaFields.style.display = 'block';
-            } else {
-                empresaFields.style.display = 'none';
+            <form action="../controllers/admin_controller.php" method="POST" class="modal-form">
+                <input type="hidden" name="action" value="update_user">
+                <input type="hidden" id="e_id_usuario" name="id_usuario">
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="e_nombre">Nombre Completo:</label>
+                        <input type="text" id="e_nombre" name="nombre" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="e_email">Correo Electrónico:</label>
+                        <input type="email" id="e_email" name="email" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="e_telefono">Teléfono:</label>
+                        <input type="text" id="e_telefono" name="telefono">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="e_password">Nueva Contraseña (Opcional):</label>
+                        <input type="password" id="e_password" name="password" placeholder="Ingresa nueva clave solo si deseas cambiarla">
+                    </div>
+
+                    <div class="form-field form-field--full">
+                        <label for="e_tipo_persona">Tipo de Usuario:</label>
+                        <select id="e_tipo_persona" name="tipo_persona" required onchange="toggleEmpresaPanel('e')">
+                            <option value="Persona">Persona (Cliente Individual)</option>
+                            <option value="Empresa">Empresa (Corporativo)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field form-field--full">
+                        <label for="e_id_rol">Rol de Acceso / Permisos:</label>
+                        <select id="e_id_rol" name="id_rol" required>
+                            <option value="1">Usuario Regular (Rol 1)</option>
+                            <option value="2">Administrador (Rol 2)</option>
+                            <option value="3">Super Administrador (Rol 3)</option>
+                            <option value="4">Instalación (Rol 4)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="empresa-panel" id="e_empresa_panel" data-modal="e" hidden>
+                    <div class="empresa-panel__header">
+                        <span>Datos de la empresa</span>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="e_nombre_empresa">Nombre de la empresa:</label>
+                            <input type="text" id="e_nombre_empresa" name="nombre_empresa" placeholder="Ej. Nexora S.A.">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="e_rut">RUT:</label>
+                            <input type="text" id="e_rut" name="rut" placeholder="123456789012">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="e_calle">Calle:</label>
+                            <input type="text" id="e_calle" name="calle" placeholder="Avenida de ejemplo">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="e_esquina">Esquina:</label>
+                            <input type="text" id="e_esquina" name="esquina" placeholder="Av. Brasil">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="e_numpuerta">Número de puerta:</label>
+                            <input type="text" id="e_numpuerta" name="numpuerta" placeholder="1234">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="e_categoria">Categoría empresarial:</label>
+                            <select id="e_categoria" name="categoria">
+                                <option value="">-- Selecciona un sector --</option>
+                                <option value="tecnologia">Tecnología e Informática</option>
+                                <option value="comercio">Comercio y Retail</option>
+                                <option value="industria">Industria y Logística</option>
+                                <option value="servicios">Servicios Profesionales</option>
+                            </select>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="e_tamano">Tamaño de la empresa:</label>
+                            <select id="e_tamano" name="tamano">
+                                <option value="pequena">1 a 5 empleados (Pequeña)</option>
+                                <option value="mediana">6 a 20 empleados (Mediana)</option>
+                                <option value="grande">Más de 20 empleados (Grande)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-field form-field--full">
+                            <label for="e_descripcion">Descripción:</label>
+                            <textarea id="e_descripcion" name="descripcion" rows="3" placeholder="Describe la actividad comercial de la empresa..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="empresa-panel__header">
+                        <span>Representante legal</span>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="e_rep_nombre">Nombre completo:</label>
+                            <input type="text" id="e_rep_nombre" name="rep_nombre" placeholder="Ej. María López">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="e_rep_cargo">Cargo:</label>
+                            <input type="text" id="e_rep_cargo" name="rep_cargo" placeholder="Gerente General">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="e_rep_email">Email de contacto:</label>
+                            <input type="email" id="e_rep_email" name="rep_email" placeholder="representante@empresa.com">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="e_rep_telefono">Teléfono del representante:</label>
+                            <input type="text" id="e_rep_telefono" name="rep_telefono" placeholder="+598 94 000 000">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Actualizar Cambios</button>
+                    <button type="button" class="btn btn-outline" onclick="cerrarModalEditar()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <style>
+        .modal-content--wide {
+            max-width: 880px;
+            width: min(92vw, 880px);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-field--full {
+            grid-column: 1 / -1;
+        }
+
+        .empresa-panel {
+            margin-top: 24px;
+            border: 1px solid rgba(52, 152, 219, 0.2);
+            background: rgba(52, 152, 219, 0.04);
+            border-radius: 16px;
+            padding: 18px;
+        }
+
+        .empresa-panel__header {
+            font-size: 0.76rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #1d4f91;
+            margin-bottom: 16px;
+        }
+
+        .modal-form input,
+        .modal-form select,
+        .modal-form textarea {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 720px) {
+            .form-grid {
+                grid-template-columns: 1fr;
             }
         }
-        mostrarCamposTipo();
+    </style>
+
+    <script>
+        function toggleEmpresaPanel(prefix) {
+            const select = document.getElementById(prefix + '_tipo_persona');
+            const panel = document.getElementById(prefix + '_empresa_panel');
+            const isEmpresa = select && select.value === 'Empresa';
+
+            if (panel) {
+                panel.hidden = !isEmpresa;
+            }
+
+            const fields = panel ? panel.querySelectorAll('input, textarea, select') : [];
+            fields.forEach((field) => {
+                field.required = isEmpresa;
+            });
+        }
+
+        function abrirModalCrear() {
+            document.getElementById('modalCrear').style.display = 'flex';
+            toggleEmpresaPanel('c');
+        }
+        function cerrarModalCrear() {
+            document.getElementById('modalCrear').style.display = 'none';
+            document.getElementById('modalCrear').querySelector('form').reset();
+            toggleEmpresaPanel('c');
+        }
+
+        function abrirModalEditar(user) {
+            document.getElementById('e_id_usuario').value = user.ID_Usuario;
+            document.getElementById('e_id_label').textContent = '#' + user.ID_Usuario;
+            document.getElementById('e_nombre').value = user.Nombre || '';
+            document.getElementById('e_email').value = user.Email || '';
+            document.getElementById('e_telefono').value = user.Telefono || '';
+            document.getElementById('e_password').value = '';
+            document.getElementById('e_tipo_persona').value = user.Tipo_Persona || 'Persona';
+            document.getElementById('e_id_rol').value = user.ID_Rol || 1;
+
+            document.getElementById('e_nombre_empresa').value = '';
+            document.getElementById('e_rut').value = '';
+            document.getElementById('e_calle').value = '';
+            document.getElementById('e_esquina').value = '';
+            document.getElementById('e_numpuerta').value = '';
+            document.getElementById('e_categoria').value = '';
+            document.getElementById('e_tamano').value = 'mediana';
+            document.getElementById('e_descripcion').value = '';
+            document.getElementById('e_rep_nombre').value = '';
+            document.getElementById('e_rep_cargo').value = '';
+            document.getElementById('e_rep_email').value = '';
+            document.getElementById('e_rep_telefono').value = '';
+
+            toggleEmpresaPanel('e');
+
+            if ((user.Tipo_Persona || 'Persona') === 'Empresa') {
+                fetch('../controllers/admin_controller.php?action=get_user_company&id=' + encodeURIComponent(user.ID_Usuario))
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data) return;
+                        document.getElementById('e_nombre_empresa').value = data.Nombre_Empresa || '';
+                        document.getElementById('e_rut').value = data.RUT || '';
+                        document.getElementById('e_calle').value = data.Calle || '';
+                        document.getElementById('e_esquina').value = data.Esquina || '';
+                        document.getElementById('e_numpuerta').value = data.Numero_Puerta || '';
+                        document.getElementById('e_categoria').value = data.Categoria_Empresarial || '';
+                        document.getElementById('e_tamano').value = data.Tamano || 'mediana';
+                        document.getElementById('e_descripcion').value = data.Descripcion || '';
+                        document.getElementById('e_rep_nombre').value = data.Rep_Nombre || '';
+                        document.getElementById('e_rep_cargo').value = data.Rep_Cargo || '';
+                        document.getElementById('e_rep_email').value = data.Rep_Email || '';
+                        document.getElementById('e_rep_telefono').value = data.Rep_Telefono || '';
+                    })
+                    .catch(() => {});
+            }
+
+            document.getElementById('modalEditar').style.display = 'flex';
+        }
+        function cerrarModalEditar() {
+            document.getElementById('modalEditar').style.display = 'none';
+            document.getElementById('modalEditar').querySelector('form').reset();
+            toggleEmpresaPanel('e');
+        }
+
+        window.addEventListener('DOMContentLoaded', function () {
+            toggleEmpresaPanel('c');
+            toggleEmpresaPanel('e');
+        });
+
+        window.onclick = function(event) {
+            const modalC = document.getElementById('modalCrear');
+            const modalE = document.getElementById('modalEditar');
+            if (event.target === modalC) cerrarModalCrear();
+            if (event.target === modalE) cerrarModalEditar();
+        }
     </script>
 
 <?php if (!$is_partial): ?>
