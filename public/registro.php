@@ -28,6 +28,15 @@ if ($err !== null) {
         case 'rut_invalido':
             $alert = '<div class="alerta alerta--error">El RUT debe tener exactamente 12 números.</div>';
             break;
+        case 'email_invalido':
+            $alert = '<div class="alerta alerta--error">Ingresa un correo electrónico válido de hasta 100 caracteres.</div>';
+            break;
+        case 'telefono_invalido':
+            $alert = '<div class="alerta alerta--error">El teléfono debe tener 8 o 9 dígitos, sin espacios ni otros caracteres.</div>';
+            break;
+        case 'nombre_invalido':
+            $alert = '<div class="alerta alerta--error">El nombre no puede superar los 100 caracteres.</div>';
+            break;
         case 'nombre_empresa_usado':
             $alert = '<div class="alerta alerta--error">El nombre de la empresa ya está registrado.</div>';
             break;
@@ -67,17 +76,17 @@ if (isset($_GET['e']) && $_GET['e'] !== '') {
             <input type="hidden" name="tipo_usuario" value="persona">
 
             <label for="nombre_p">Nombre Completo:</label>
-            <input type="text" id="nombre_p" name="nombre" placeholder="Ej. Juan Pérez" required>
+            <input type="text" id="nombre_p" name="nombre" maxlength="100" placeholder="Ej. Juan Pérez" required>
 
             <label for="email_p">Correo Electrónico:</label>
-            <input type="email" id="email_p" name="email" placeholder="ejemplo@correo.com" required>
+            <input type="email" id="email_p" name="email" maxlength="100" placeholder="ejemplo@correo.com" required>
 
             <label for="pass_p">Contraseña:</label>
             <small>Mínimo 8 caracteres, al menos una mayúscula, una minúscula, un número y un símbolo (!@#$%^&*)</small>
             <input type="password" id="pass_p" name="password" placeholder="••••••••" required>
 
             <label for="tel_p">Número de Teléfono:</label>
-            <input type="text" id="tel_p" name="telefono" placeholder="099 999 999" required>
+            <input type="tel" id="tel_p" name="telefono" maxlength="9" pattern="[0-9]{8,9}" inputmode="numeric" placeholder="099999999" required>
 
             <button type="submit" class="btn btn-primary">Crear Cuenta Personal</button>
         </form>
@@ -91,17 +100,17 @@ if (isset($_GET['e']) && $_GET['e'] !== '') {
             <input type="hidden" name="tipo_usuario" value="empresa">
 
             <label for="nombre_emp">Nombre de la Empresa:</label>
-            <input type="text" id="nombre_emp" name="nombre_empresa" placeholder="Ej. Tech Solutions S.A." required>
+            <input type="text" id="nombre_emp" name="nombre_empresa" maxlength="100" placeholder="Ej. Tech Solutions S.A." required>
 
             <label for="email_emp">Email Corporativo:</label>
-            <input type="email" id="email_emp" name="email" placeholder="contacto@empresa.com" required>
+            <input type="email" id="email_emp" name="email" maxlength="100" placeholder="contacto@empresa.com" required>
 
             <label for="pass_emp">Contraseña:</label>
             <small>Mínimo 8 caracteres, al menos una mayúscula, minúscula, número y carácter especial</small>
             <input type="password" id="pass_emp" name="password" placeholder="••••••••" required>
 
             <label for="tel_emp">Teléfono de Contacto:</label>
-            <input type="text" id="tel_emp" name="telefono" placeholder="099 999 999" required>
+            <input type="tel" id="tel_emp" name="telefono" maxlength="9" pattern="[0-9]{8,9}" inputmode="numeric" placeholder="099999999" required>
 
             <label for="rut_emp">RUT / Identificación Fiscal:</label>
             <input type="text" id="rut_emp" name="rut" placeholder="219998880011" required>
@@ -138,16 +147,16 @@ if (isset($_GET['e']) && $_GET['e'] !== '') {
                 <h3>Datos del Representante Legal / Contacto</h3>
 
                 <label for="rep_nom">Nombre Completo del Responsable:</label>
-                <input type="text" id="rep_nom" name="rep_nombre" placeholder="Ej. Carlos Rodríguez" required>
+                <input type="text" id="rep_nom" name="rep_nombre" maxlength="100" placeholder="Ej. Carlos Rodríguez" required>
 
                 <label for="rep_car">Cargo:</label>
                 <input type="text" id="rep_car" name="rep_cargo" placeholder="Ej. Gerente de TI" required>
 
                 <label for="rep_em">Email Directo:</label>
-                <input type="email" id="rep_em" name="rep_email" placeholder="carlos@empresa.com" required>
+                <input type="email" id="rep_em" name="rep_email" maxlength="100" placeholder="carlos@empresa.com" required>
 
                 <label for="rep_tel">Teléfono Directo:</label>
-                <input type="text" id="rep_tel" name="rep_telefono" placeholder="099 999 999" required>
+                <input type="tel" id="rep_tel" name="rep_telefono" maxlength="9" pattern="[0-9]{8,9}" inputmode="numeric" placeholder="099999999" required>
             </div>
 
             <button type="submit" class="btn btn-primary">Registrar Empresa</button>

@@ -1,6 +1,11 @@
 <?php
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(403);
+    exit('Acceso denegado. Este archivo solo recibe peticiones POST desde el formulario.');
+}
+
 require_once(__DIR__ . '/../../includes/config.php');
-require_once(__DIR__ . '/../models/User.php');
+require_once(__DIR__ . '/../models/user.php');
 
 $user = new User($pdo);
 
@@ -20,6 +25,19 @@ function validarPassword(string $password): array {
 function validarRUT(string $rut): bool {
     // El RUT debe tener exactamente 12 números
     return preg_match('/^\d{12}$/', $rut) === 1;
+}
+
+function validarEmailRegistro(string $email): bool {
+    return strlen($email) <= 100 && filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+}
+
+function validarNombreRegistro(string $nombre): bool {
+    $longitud = preg_match_all('/./us', $nombre);
+    return $longitud !== false && $longitud <= 100;
+}
+
+function validarTelefonoUruguayo(string $telefono): bool {
+    return preg_match('/^\d{8,9}$/D', $telefono) === 1;
 }
 
 function camposVacios(array $required, array $data): array {
@@ -95,15 +113,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
         if ($tipo_usuario === 'persona') {
             $datos = [
-                'email'    => filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL),
-                'nombre'   => htmlspecialchars($_POST['nombre'] ?? ''),
+                'email'    => trim($_POST['email'] ?? ''),
+                'nombre'   => trim($_POST['nombre'] ?? ''),
                 'password' => $_POST['password'] ?? '',
-                'telefono' => htmlspecialchars($_POST['telefono'] ?? '')
+                'telefono' => trim($_POST['telefono'] ?? '')
             ];
 
             // Validaciones
             if (!empty(camposVacios(['email','nombre','password','telefono'], $datos))) {
                 header('Location: ' . PUBLIC_PATH . '/registro.php?error=campos_vacios');
+                exit();
+            }
+
+            if (!validarNombreRegistro($datos['nombre'])) {
+                header('Location: ' . PUBLIC_PATH . '/registro.php?error=nombre_invalido');
+                exit();
+            }
+            if (!validarEmailRegistro($datos['email'])) {
+                header('Location: ' . PUBLIC_PATH . '/registro.php?error=email_invalido');
+                exit();
+            }
+            if (!validarTelefonoUruguayo($datos['telefono'])) {
+                header('Location: ' . PUBLIC_PATH . '/registro.php?error=telefono_invalido');
                 exit();
             }
 
@@ -133,10 +164,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
         if ($tipo_usuario === 'empresa') {
         $datos = [
-            'email'          => filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL),
-            'nombre_empresa' => htmlspecialchars($_POST['nombre_empresa'] ?? ''),
+            'email'          => trim($_POST['email'] ?? ''),
+            'nombre_empresa' => trim($_POST['nombre_empresa'] ?? ''),
             'password'       => $_POST['password'] ?? '',
-            'telefono'       => htmlspecialchars($_POST['telefono'] ?? ''),
+            'telefono'       => trim($_POST['telefono'] ?? ''),
             'rut'            => htmlspecialchars($_POST['rut'] ?? ''),
             'calle'          => htmlspecialchars($_POST['calle'] ?? ''),
             'esquina'        => htmlspecialchars($_POST['esquina'] ?? ''),
@@ -144,10 +175,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             'sector'      => htmlspecialchars($_POST['sector'] ?? ''),
             'tamano'         => htmlspecialchars($_POST['tamano'] ?? ''),
             'descripcion'    => htmlspecialchars($_POST['descripcion'] ?? ''),
-            'rep_nombre'     => htmlspecialchars($_POST['rep_nombre'] ?? ''),
+            'rep_nombre'     => trim($_POST['rep_nombre'] ?? ''),
             'rep_cargo'      => htmlspecialchars($_POST['rep_cargo'] ?? ''),
-            'rep_email'      => filter_var($_POST['rep_email'] ?? '', FILTER_SANITIZE_EMAIL),
-            'rep_telefono'   => htmlspecialchars($_POST['rep_telefono'] ?? '')
+            'rep_email'      => trim($_POST['rep_email'] ?? ''),
+            'rep_telefono'   => trim($_POST['rep_telefono'] ?? '')
         ];
 
             // Validaciones
@@ -156,6 +187,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $datos
             ))) {
                 header('Location: ' . PUBLIC_PATH . '/registro.php?error=campos_vacios');
+                exit();
+            }
+
+            if (!validarNombreRegistro($datos['nombre_empresa']) || !validarNombreRegistro($datos['rep_nombre'])) {
+                header('Location: ' . PUBLIC_PATH . '/registro.php?error=nombre_invalido');
+                exit();
+            }
+            if (!validarEmailRegistro($datos['email']) || !validarEmailRegistro($datos['rep_email'])) {
+                header('Location: ' . PUBLIC_PATH . '/registro.php?error=email_invalido');
+                exit();
+            }
+            if (!validarTelefonoUruguayo($datos['telefono']) || !validarTelefonoUruguayo($datos['rep_telefono'])) {
+                header('Location: ' . PUBLIC_PATH . '/registro.php?error=telefono_invalido');
                 exit();
             }
 
@@ -183,14 +227,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 exit();
             }
 
-            // TESTING: Mostrar error SQL directamente
-            $error = $user->getLastError();
-            echo "<pre style='background: #f0f0f0; padding: 20px; border: 2px solid red; margin: 20px; border-radius: 5px;'>";
-            echo "<h2 style='color: red;'>🔴 SQL ERROR (TESTING):</h2>";
-            echo htmlspecialchars($error);
-            echo "</pre>";
-            exit();
-            
             // $mensaje = urlencode($user->getLastError() ?: 'Error al registrar la empresa.');
             // header('Location: ' . PUBLIC_PATH . '/registro.php?error=registro_fallido&mensaje=' . $mensaje);
             // exit();

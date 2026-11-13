@@ -58,12 +58,6 @@ $es_admin = in_array($rolActual, [2, 3, 4], true);
             <p>Ver y editar la información de tu cuenta, avatar y datos personales.</p>
             <a href="<?php echo VIEWS_PATH; ?>/dashboard.php" class="btn btn-outline">Ver Perfil</a>
         </div>
-
-        <div class="feature-card">
-            <h3>Configuración</h3>
-            <p>Ajusta tus preferencias de privacidad y notificaciones de tu espacio de trabajo.</p>
-            <a href="<?php echo VIEWS_PATH; ?>/settings.php" class="btn btn-outline">Ir a Configuración</a>
-        </div>
         
         <div class="feature-card">
             <h3>Soporte Técnico</h3>

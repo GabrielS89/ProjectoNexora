@@ -1,0 +1,13 @@
+RewriteEngine On
+
+# No reescribir archivos o carpetas reales
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Si la ruta no es una carpeta interna, redirigir a public/
+RewriteCond %{REQUEST_URI} !^/public/ [NC]
+RewriteCond %{REQUEST_URI} !^/src/ [NC]
+RewriteCond %{REQUEST_URI} !^/includes/ [NC]
+RewriteCond %{REQUEST_URI} !^/database/ [NC]
+RewriteRule ^(.*)$ public/$1 [L,QSA]

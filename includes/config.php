@@ -8,18 +8,33 @@ if (session_status() === PHP_SESSION_NONE) {
 // Incluir conexión a la base de datos
 require_once(__DIR__ . '/../database/database.php');
 
+// Calcular la URL base de forma automática para local y hosting
+$baseUrl = getenv('BASE_URL');
+if ($baseUrl === false || trim((string)$baseUrl) === '') {
+    $docRoot = rtrim((string)($_SERVER['DOCUMENT_ROOT'] ?? ''), '/');
+    $projectDir = rtrim((string)dirname(__DIR__), '/');
+
+    if ($docRoot !== '' && strpos($projectDir, $docRoot) === 0) {
+        $relative = str_replace($docRoot, '', $projectDir);
+        $baseUrl = $relative !== '' ? $relative : '';
+    } else {
+        $baseUrl = '/Proyecto3ro';
+    }
+}
+
 // Definir URLs base
-define('BASE_URL', '/Proyecto3ro');
+define('BASE_URL', $baseUrl);
 define('PUBLIC_PATH', BASE_URL . '/public');
 define('INCLUDES_PATH', BASE_URL . '/includes');
 define('VIEWS_PATH', BASE_URL . '/src/views');
 
 // Definir rutas de sistema (paths) reutilizables para includes y public
 define('ROOT_DIR', dirname(__DIR__));
-define('INCLUDES_DIR', __DIR__); // directorio físico de includes
+define('INCLUDES_DIR', __DIR__);
 define('PUBLIC_DIR', ROOT_DIR . '/public');
 define('MODELS_PATH', ROOT_DIR . '/src/models');
 define('CONTROLLERS_PATH', ROOT_DIR . '/src/controllers');
+
 // Función para verificar si el usuario está logueado
 function isUserLoggedIn() {
     return isset($_SESSION['user_id']);

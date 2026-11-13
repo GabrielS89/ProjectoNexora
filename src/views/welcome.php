@@ -18,7 +18,6 @@ require_once(INCLUDES_DIR . '/header.php');
         <h2>Tu espacio Nexora</h2>
         <p class="texto-bienvenida">Estos son los datos asociados a tu cuenta.</p>
         <div class="datos-cuenta">
-            <p><strong>ID de Usuario:</strong> #<?php echo $_SESSION['user_id'] ?? 'N/A'; ?></p>
             <p><strong>Email:</strong> <?php echo htmlspecialchars($_SESSION['email'] ?? 'N/A'); ?></p>
             <p><strong>Tipo de Usuario:</strong> <?php echo ucfirst($_SESSION['tipo_usuario'] ?? 'N/A'); ?></p>
         </div>
